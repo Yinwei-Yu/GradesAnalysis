@@ -1,14 +1,16 @@
 '''
 2024/7/5
     class User
+    setUserName()
+    setPassWord()
 by 刘杨健
 '''
 
-'''
-用户基类
-'''
-
-class User():
+#User基类
+#userName:string 用户姓名
+#passWord:string 密码
+#ID:int 编号，每个用户应该具有唯一编号
+class User:
     def __init__(self,userName,passWord,ID):
         self.__userName=userName
         self.__passWord=passWord
@@ -51,3 +53,20 @@ class User():
             return True
         else:
             return False
+
+    #测试函数 打印用户信息
+    def showUserInfo(self):
+        print(f'用户名：{self.__userName}\t密码：{self.__passWord}\t编号：{self.__ID}')
+
+# 测试函数
+if __name__ == '__main__':
+    stu=User("berber",114514,0)
+    stu.showUserInfo()
+    stu.setUserName("liangjian")
+    stu.showUserInfo()
+    stu.setUserName(' ')
+    stu.showUserInfo()
+    stu.setPassWord(' ')
+    stu.showUserInfo()
+    stu.setPassWord('123456')
+    stu.showUserInfo()
