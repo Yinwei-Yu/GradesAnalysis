@@ -19,10 +19,10 @@ class Grades:
                  chemistry: Chemistry, biology: Biology, history: History, politics: Politics,
                  geography: Geography):
         self.totalGrades = (
-                chinese.score + math.score + english.score + chemistry.score + biology.score + history.score +
+                chinese.score + math.score + english.score + physics.score+chemistry.score + biology.score + history.score +
                 politics.score + geography.score)
-        self.grades = {chinese, math, english, physics, chemistry, biology,
-                       history, politics, geography}
+        self.grades = [chinese, math, english, physics, chemistry, biology,
+                       history, politics, geography]
         self.gradesAnalysis: str = ""
         self.ranking: int = 0
 
