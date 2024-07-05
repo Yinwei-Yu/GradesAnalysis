@@ -47,6 +47,9 @@ class GradeManager:
             pass
         return
 
+
+
+    #修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
         self.student[num].stuGrades.totalGrades = (
                 self.student[num].stuGrades.grades[0].score +
@@ -59,7 +62,6 @@ class GradeManager:
                 self.student[num].stuGrades.grades[7].score +
                 self.student[num].stuGrades.grades[8].score
         )
-
     # 修改学生成绩，修改成功返回True，否则返回False
     # name：学生姓名 stuID：学生学号 sub:学科名，英文全称 grade:修改后的分数
     def changeGrades(self, name, stuID, sub, grade):
@@ -89,8 +91,6 @@ class GradeManager:
 
     # 对学生按照总成绩进行排名
     # 成功返回True，否则返回False
-    # 采用快速排序
-
     def sortGrades(self, arr):
         pass
 
@@ -98,7 +98,6 @@ class GradeManager:
     # 成功返回True，否则返回False
     def calculateRanking(self):
         pass
-
 
 # 测试函数
 if __name__ == '__main__':
