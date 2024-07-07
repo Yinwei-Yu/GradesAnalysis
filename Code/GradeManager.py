@@ -127,7 +127,7 @@ class GradeManager:
     def generateGradesAnalysis(self,mode):
         pass
 
-
+gradeManager=GradeManager()
 # 测试函数
 if __name__ == '__main__':
     '''
