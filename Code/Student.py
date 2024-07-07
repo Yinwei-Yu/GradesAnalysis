@@ -62,5 +62,3 @@ if __name__ == '__main__':
     # 调用 generate_grades_analysis 方法
     student.stuGrades.generateGradesAnalysis()
 
-
-
