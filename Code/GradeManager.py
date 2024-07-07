@@ -47,9 +47,7 @@ class GradeManager:
             pass
         return
 
-
-
-    #修改成绩后用于修改总成绩
+    # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
         self.student[num].stuGrades.totalGrades = (
                 self.student[num].stuGrades.grades[0].score +
@@ -62,6 +60,7 @@ class GradeManager:
                 self.student[num].stuGrades.grades[7].score +
                 self.student[num].stuGrades.grades[8].score
         )
+
     # 修改学生成绩，修改成功返回True，否则返回False
     # name：学生姓名 stuID：学生学号 sub:学科名，英文全称 grade:修改后的分数
     def changeGrades(self, name, stuID, sub, grade):
@@ -91,13 +90,19 @@ class GradeManager:
 
     # 对学生按照总成绩进行排名
     # 成功返回True，否则返回False
-    def sortGrades(self, arr):
-        pass
+    def sortGrades(self):
+        try:
+            self.student.sort(key=lambda s: s.stuGrades.totalGrades, reverse=True)
+            return True
+        except Exception as e:
+            print(f"排序时出现错误: {e}")
+            return False
 
     # 计算单科排名
     # 成功返回True，否则返回False
     def calculateRanking(self):
         pass
+
 
 # 测试函数
 if __name__ == '__main__':
@@ -119,8 +124,10 @@ if __name__ == '__main__':
     print("张三：", manager.student[0].stuGrades.grades[0].score)
     manager.changeGrades("张三", 1, "Chinese", 1)
     print("张三：", manager.student[0].stuGrades.grades[0].score)
+    print("排序前:")
     for x in manager.student:
         print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试修改功能
-    manager.sort()
+    manager.sortGrades()
+    print("排序后：")
     for x in manager.student:
         print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试排序功能

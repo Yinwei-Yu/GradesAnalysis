@@ -3,3 +3,4 @@ class Student:
         self.name = name
         self.stuID = stuID
         self.stuGrades = stuGrades
+
