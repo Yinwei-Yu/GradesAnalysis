@@ -18,6 +18,7 @@ import Student as stu
 import CheckApplication
 import Grades as gr
 from Subject import *
+import pandas as pd
 
 
 class GradeManager:
@@ -37,6 +38,23 @@ class GradeManager:
     # 实现从输入导入
     def inputSingle(self, name, stuID, grade):
         self.student.append(stu.Student(name, stuID, grade))
+        self.stuNum += 1
+        return
+
+    # 从csv文件导入
+    # path:文件路径，需要为csv格式文件，excel自带保存为csv格式功能
+    def inputCSV(self, path):
+        df = pd.read_csv(path)
+        for index, row in df.iterrows():
+            grades = gr.Grades(
+                Chinese(row['语文']), Math(row['数学']), English(row['英语']),
+                Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
+                History(row['历史']), Politics(row['政治']), Geography(row['地理'])
+            )
+            stuTemp = stu.Student(row['姓名'], row['学号'], grades)
+            self.student.append(stuTemp)
+        self.stuNum = len(self.student)
+        return
 
     # 导入学生成绩 mode==1单个导入，arg接收学生姓名学号和成绩信息
     # mode==2时接受文件路径
@@ -44,7 +62,7 @@ class GradeManager:
         if mode == 1:
             self.inputSingle(*args)
         elif mode == 2:
-            pass
+            self.inputCSV(*args)
         return
 
     # 修改成绩后用于修改总成绩
@@ -103,31 +121,52 @@ class GradeManager:
     def calculateRanking(self):
         pass
 
+    #成绩分析
+    #mode==1:直方图
+    #mode==2:折线分析图
+    def generateGradesAnalysis(self,mode):
+        pass
+
 
 # 测试函数
 if __name__ == '__main__':
-    grade1 = gr.Grades(Chinese(120), Math(150), English(145), Physics(100), Chemistry(100), Biology(100), History(0),
-                       Politics(0), Geography(0))
-    grade2 = gr.Grades(Chinese(150), Math(100), English(149), Physics(0), Chemistry(0), Biology(0), History(100),
-                       Politics(100), Geography(100))
-    stu1 = stu.Student("张三", 1, grade1)
-    stu2 = stu.Student("袁华", 2, grade2)
-    stus = [stu1, stu2]
-    manager = GradeManager(stus, 2, [])
+    '''
+   grade1 = gr.Grades(Chinese(120), Math(150), English(145), Physics(100), Chemistry(100), Biology(100), History(0),
+                      Politics(0), Geography(0))
+   grade2 = gr.Grades(Chinese(150), Math(100), English(149), Physics(0), Chemistry(0), Biology(0), History(100),
+                      Politics(100), Geography(100))
+   stu1 = stu.Student("张三", 1, grade1)
+   stu2 = stu.Student("袁华", 2, grade2)
+   stus = [stu1, stu2]
+   manager = GradeManager(stus, 2, [])
+   for x in manager.student:
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+   grade3 = gr.Grades(Chinese(139), Math(100), English(149),
+                      Physics(0), Chemistry(0), Biology(0), History(100), Politics(100), Geography(100))
+   manager.inputGrades(1, "夏洛", 3, grade3)
+   for x in manager.student:
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试添加功能
+   print("张三：", manager.student[0].stuGrades.grades[0].score)
+   manager.changeGrades("张三", 1, "Chinese", 1)
+   print("张三：", manager.student[0].stuGrades.grades[0].score)
+   print("排序前:")
+   for x in manager.student:
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试修改功能
+   manager.sortGrades()
+   print("排序后：")
+   for x in manager.student:
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试排序功能
+   '''
+
+    #测试从csv文件导入
+    '''
+    manager = GradeManager([], 0, [])
+    manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.csv")
     for x in manager.student:
         print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
-    grade3 = gr.Grades(Chinese(139), Math(100), English(149),
-                       Physics(0), Chemistry(0), Biology(0), History(100), Politics(100), Geography(100))
-    manager.inputGrades(1, "夏洛", 3, grade3)
-    for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试添加功能
-    print("张三：", manager.student[0].stuGrades.grades[0].score)
-    manager.changeGrades("张三", 1, "Chinese", 1)
-    print("张三：", manager.student[0].stuGrades.grades[0].score)
-    print("排序前:")
-    for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试修改功能
+    
     manager.sortGrades()
     print("排序后：")
     for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试排序功能
+        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+    '''
