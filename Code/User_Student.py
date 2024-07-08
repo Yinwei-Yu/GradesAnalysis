@@ -5,15 +5,21 @@ by 刘链凯
 '''
 import User
 import GradeManager
+import Grades
+import Student
+import AccountManager
+import CheckApplication
 class User_Student(User):
     def __init__(self, userName, passWord, ID):
         super().__init__(userName, passWord, ID)
-    def getSingleGrades(self, name, stuID, sub, grade)->bool:
-        gradeManager = GradeManager.GradeManager(self.userName, self.ID, [])
-        return gradeManager.inputSingle(name, stuID, grade)
-    def GradesCheck(self, name, stuID, subject)->bool:
-        gradeManager = GradeManager.GradeManager(self.userName, self.ID, [])
-        return gradeManager.inputGrades(1, name, stuID, subject)
+    def getSingleGrades(self)->bool:
+       pass
+
+
+
+    def GradesCheck(self,subject)->bool:
+        stu=CheckApplication.CheckApplication(self.userName,self.ID,subject)
+        list[CheckApplication].append(stu)
 
 
 
