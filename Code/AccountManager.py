@@ -1,5 +1,6 @@
 import pandas as pd
 
+from GradeManager import gradeManager
 from User import *
 
 
@@ -32,8 +33,8 @@ class AccountManager:
 
         self.userNum = len(self.users)
         print(self.userNum)
-        # for ID in self.users:
-        #     print(self.users[ID].userName, self.users[ID].passWord, ID, sep=" ")
+        for ID in self.users:
+            print(self.users[ID].userName, self.users[ID].password, ID, sep=" ")
 
         return
 
@@ -67,14 +68,48 @@ class AccountManager:
         else:
             return False
 
+    # 创建新用户名
+
+    def createUser(self, userName: str, password: int, ID: int, flag: int) -> bool:
+        # 判断用户名是否已经创建
+        if self.users.get(ID) is None:
+            if flag == 1:
+                self.users.update({ID: User_Administrator(userName, password, ID, flag)})
+            if flag == 2:
+                self.users.update({ID: User_Teacher(userName, password, ID, flag)})
+            return True
+        else:
+            return False
+
     def printUserInfo(self):
         print(self.userName, self.ID, self.password, self.flag)
 
     def changeUserName(self, newUserName: str) -> bool:
         pass
 
-    def getGrades(self, mode: int, *args: None) -> list:
-        pass
+    def saveUserInfo(self):
+        user_name_list = [self.users[key].userName for key in self.users]
+        user_password_list = [self.users[key].password for key in self.users]
+        user_ID_list = [self.users[key].ID for key in self.users]
+        user_flag_list = [self.users[key].flag for key in self.users]
+        data = {'用户名': user_name_list, '密码': user_password_list, '学号/工号': user_ID_list, '类型': user_flag_list}
+
+        df = pd.DataFrame(data)
+
+        df.to_csv('users.csv', index=False, mode='w')
+
+
+# 获取成绩
+# mode==1时返回学生类型
+# mode==2时返回全班分析
+# 待完成
+def getGrades(self, mode, stuID=0) -> list:
+    if mode == 1:
+        for temp in gradeManager.student:
+            if temp.ID == stuID:
+                return temp
+    if mode == 2:
+        return gradeManager.student
 
 
 if __name__ == "__main__":
@@ -85,3 +120,5 @@ if __name__ == "__main__":
     accountManager = AccountManager()
     accountManager.inputUsers("./users.csv")
     accountManager.login('user1', 111111)
+    accountManager.printUserInfo()
+    accountManager.saveUserInfo()
