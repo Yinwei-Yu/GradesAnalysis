@@ -121,13 +121,13 @@ class GradeManager:
     num接收科目参数：语文0，数学1，英语2，物理3，化学4，生物5，历史6，政治7，地理8
     isReverse接收大小关系，True从大到小，False从小到大
     '''
+
     def subRanking(self, num, isReverse):
         if num < 0 or num > 8:
             print("科目不存在！")
             return []
         tempStuList = sorted(self.student, key=lambda sub: sub.stuGrades.grades[num].score, reverse=isReverse)
         return tempStuList
-
 
     '''
     计算单科排名
@@ -136,6 +136,7 @@ class GradeManager:
     成功返回一个存储排序结果的列表，原有的student列表中内容顺序不变
     失败返回一个空列表
     '''
+
     def calculateRanking(self, subject, mode):
         if mode != 1 and mode != 2:
             print("请选择正确的排序方式!")
@@ -172,11 +173,14 @@ class GradeManager:
     # mode==1:直方图
     # mode==2:折线分析图
     '''
+
     def generateGradesAnalysis(self, mode):
         pass
 
 
 # gradeManager=GradeManager()
+
+
 # 测试函数
 if __name__ == '__main__':
     '''
@@ -189,22 +193,22 @@ if __name__ == '__main__':
    stus = [stu1, stu2]
    manager = GradeManager(stus, 2, [])
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
    grade3 = gr.Grades(Chinese(139), Math(100), English(149),
                       Physics(0), Chemistry(0), Biology(0), History(100), Politics(100), Geography(100))
    manager.inputGrades(1, "夏洛", 3, grade3)
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试添加功能
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试添加功能
    print("张三：", manager.student[0].stuGrades.grades[0].score)
    manager.changeGrades("张三", 1, "Chinese", 1)
    print("张三：", manager.student[0].stuGrades.grades[0].score)
    print("排序前:")
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试修改功能
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试修改功能
    manager.sortGrades()
    print("排序后：")
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试排序功能
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试排序功能
    '''
 
     # 测试从csv文件导入
@@ -212,19 +216,17 @@ if __name__ == '__main__':
     manager = GradeManager([], 0, [])
     manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.csv")
     for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
-    '''
-    manager.sortGrades()
-    print("排序后：")
-    for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
+
+    # 测试单科排名
     '''
     print("按语文排名前：")
     for x in manager.student:
         print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
 
-    templist = manager.calculateRanking("chinese", 0)
+    templist = manager.calculateRanking("chinese", 1)
 
     print("按语文排名后：")
     for x in templist:
         print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
+    '''
