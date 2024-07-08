@@ -1,3 +1,8 @@
+from GradeManager import GradeManager
+
+
+
+
 class AccountManager:
     # 从账号文件中读取
     def __init__(self):
@@ -41,3 +46,10 @@ class AccountManager:
 
     def getGrades(self, mode: int, *args: None) -> list:
         pass
+
+
+if __name__ == "__main__":
+    gradeManager = GradeManager([], 0, [])
+    gradeManager.inputCSV("./student.csv")
+    for x in gradeManager.student:
+        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)

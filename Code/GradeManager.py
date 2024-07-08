@@ -32,6 +32,7 @@ class GradeManager:
         self.stuNum = stuNum
         self.checkApplication = checkApplication
 
+
     # name:str
     # stuID:int
     # grades:Grades
@@ -127,7 +128,7 @@ class GradeManager:
     def generateGradesAnalysis(self,mode):
         pass
 
-gradeManager=GradeManager()
+
 # 测试函数
 if __name__ == '__main__':
     '''
@@ -140,22 +141,22 @@ if __name__ == '__main__':
    stus = [stu1, stu2]
    manager = GradeManager(stus, 2, [])
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
    grade3 = gr.Grades(Chinese(139), Math(100), English(149),
                       Physics(0), Chemistry(0), Biology(0), History(100), Politics(100), Geography(100))
    manager.inputGrades(1, "夏洛", 3, grade3)
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试添加功能
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试添加功能
    print("张三：", manager.student[0].stuGrades.grades[0].score)
    manager.changeGrades("张三", 1, "Chinese", 1)
    print("张三：", manager.student[0].stuGrades.grades[0].score)
    print("排序前:")
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试修改功能
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试修改功能
    manager.sortGrades()
    print("排序后：")
    for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试排序功能
+       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试排序功能
    '''
 
     #测试从csv文件导入
@@ -163,10 +164,10 @@ if __name__ == '__main__':
     manager = GradeManager([], 0, [])
     manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.csv")
     for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
     
     manager.sortGrades()
     print("排序后：")
     for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
+        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
     '''
