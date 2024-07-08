@@ -28,9 +28,6 @@ class Grades:
         self.totalRanking: int = 0
         self.rankings = []
 
-    def setRanking(self, ranking: int):
-        self.totalRanking = ranking
-
     # 待实现
     def generateGradesAnalysis(self, ranking: int, rankings: list):
         self.totalRanking = ranking

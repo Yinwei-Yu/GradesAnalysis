@@ -44,9 +44,11 @@ by 李胤玮
 
 '''
 
-import Student as stu
+import pandas as pd
+
 import CheckApplication
 import Grades as gr
+import Student as stu
 from Subject import *
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -307,7 +309,10 @@ class GradeManager:
 
 
 # gradeManager=GradeManager()
-
+gradeManager = GradeManager([], 0, [])
+gradeManager.inputCSV("./student.csv")
+for x in gradeManager.student:
+    print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
 
 # 测试函数
 if __name__ == '__main__':
