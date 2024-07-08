@@ -116,18 +116,67 @@ class GradeManager:
             print(f"排序时出现错误: {e}")
             return False
 
-    # 计算单科排名
-    # 成功返回True，否则返回False
-    def calculateRanking(self):
+    '''
+    单科排名的包装函数
+    num接收科目参数：语文0，数学1，英语2，物理3，化学4，生物5，历史6，政治7，地理8
+    isReverse接收大小关系，True从大到小，False从小到大
+    '''
+    def subRanking(self, num, isReverse):
+        if num < 0 or num > 8:
+            print("科目不存在！")
+            return []
+        tempStuList = sorted(self.student, key=lambda sub: sub.stuGrades.grades[num].score, reverse=isReverse)
+        return tempStuList
+
+
+    '''
+    计算单科排名
+    subject接收科目名
+    mode==1时从大到小 mode==2时从小到大
+    成功返回一个存储排序结果的列表，原有的student列表中内容顺序不变
+    失败返回一个空列表
+    '''
+    def calculateRanking(self, subject, mode):
+        if mode != 1 and mode != 2:
+            print("请选择正确的排序方式!")
+            return []
+
+        # 根据 mode 设置 isReverse 值
+        isReverse = (mode == 1)
+
+        # 主要处理
+        if subject in ["Chinese", "chinese", "语文"]:
+            return self.subRanking(0, isReverse)
+        elif subject in ["Math", "math", "数学"]:
+            return self.subRanking(1, isReverse)
+        elif subject in ["English", "english", "英语"]:
+            return self.subRanking(2, isReverse)
+        elif subject in ["Physics", "physics", "物理"]:
+            return self.subRanking(3, isReverse)
+        elif subject in ["Chemistry", "chemistry", "化学"]:
+            return self.subRanking(4, isReverse)
+        elif subject in ["Biology", "biology", "生物"]:
+            return self.subRanking(5, isReverse)
+        elif subject in ["History", "history", "历史"]:
+            return self.subRanking(6, isReverse)
+        elif subject in ["Politics", "politics", "政治"]:
+            return self.subRanking(7, isReverse)
+        elif subject in ["Geography", "geography", "地理"]:
+            return self.subRanking(8, isReverse)
+        else:
+            print("请输入正确的科目名！")
+            return []
+
+    '''
+    # 成绩分析
+    # mode==1:直方图
+    # mode==2:折线分析图
+    '''
+    def generateGradesAnalysis(self, mode):
         pass
 
-    #成绩分析
-    #mode==1:直方图
-    #mode==2:折线分析图
-    def generateGradesAnalysis(self,mode):
-        pass
 
-gradeManager=GradeManager()
+# gradeManager=GradeManager()
 # 测试函数
 if __name__ == '__main__':
     '''
@@ -158,15 +207,24 @@ if __name__ == '__main__':
        print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)  # 测试排序功能
    '''
 
-    #测试从csv文件导入
-    '''
+    # 测试从csv文件导入
+
     manager = GradeManager([], 0, [])
     manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.csv")
     for x in manager.student:
         print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
-    
+    '''
     manager.sortGrades()
     print("排序后：")
     for x in manager.student:
         print(x.name, " ", x.stuID, " ", x.stuGrades.totalGrades)
     '''
+    print("按语文排名前：")
+    for x in manager.student:
+        print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
+
+    templist = manager.calculateRanking("chinese", 0)
+
+    print("按语文排名后：")
+    for x in templist:
+        print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
