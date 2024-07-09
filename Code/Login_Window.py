@@ -9,7 +9,6 @@ import tkinter as tk
 Login_window = tk.Tk()
 Login_window.title('main window')
 Login_window.geometry('600x400')
-
 # 显示标题，高考成绩管理系统
 first_title = tk.Label(Login_window, text='高考成绩管理系统', font=('Arial', 20), width=20, height=2)
 first_title.pack(side='top')

@@ -40,16 +40,32 @@ GradeManager：
 
 by 李胤玮
 
+2024/7/9
+GradeManager：
+    inputCheckApplications() //根据csv文件导入成绩复核申请表
+    addCheckApplication()//老师可以进行成绩复核申请
+    saveCheckApplication()//保存成绩申请到csv文件中
+by陈邱华
 '''
+
+import os
+<<<<<<< Updated upstream
+=======
+
+import matplotlib.pyplot as plt
+import pandas as pd
+>>>>>>> Stashed changes
 
 import CheckApplication
 import Grades as gr
 import Student as stu
-from Subject import *
-import pandas as pd
+<<<<<<< Updated upstream
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+import pandas as pd
+=======
+>>>>>>> Stashed changes
+from Subject import *
 
 
 class GradeManager:
@@ -58,10 +74,16 @@ class GradeManager:
     # stuNum 整形，记录学生总数；
     # checkApplication 列表，元素类型是CheckApplication
 
-    def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication]):
+    def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication],
+                 checkApplicationNum: int):
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
         self.student = student
         self.stuNum = stuNum
         self.checkApplication = checkApplication
+        self.checkApplicationNum = checkApplicationNum
 
     # name:str
     # stuID:int
@@ -123,6 +145,41 @@ class GradeManager:
             print("非法的导入模式！")
             return False
         return
+
+    def inputCheckApplications(self, path):
+        df = pd.read_csv(path)
+        for index, row in df.iterrows():
+<<<<<<< Updated upstream
+            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'], row['学生学号'],
+=======
+            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'], row['学号'],
+>>>>>>> Stashed changes
+                                                                  row['申请科目'])
+            self.checkApplication.append(check_application)
+        self.checkApplicationNum = len(self.checkApplication)
+        return
+
+    def addCheckApplication(self, teacherName, stuName, stuID, subject):
+        for stu in self.student:
+            if stu.name == stuName and stu.stuID == stuID:
+                check_application = CheckApplication.CheckApplication(teacherName, stuName, stuID, subject)
+                self.checkApplication.append(check_application)
+                self.checkApplicationNum = len(self.checkApplication)
+                self.saveCheckApplication()
+                return True
+
+        return False
+
+    def saveCheckApplication(self):
+        teacher_name_list = [check_application.applicationReviewer for check_application in self.checkApplication]
+        stu_name_list = [check_application.stuName for check_application in self.checkApplication]
+        stu_ID_list = [check_application.stuID for check_application in self.checkApplication]
+        subject_list = [check_application.subjectToCheck for check_application in self.checkApplication]
+        data = {'申请老师': teacher_name_list, '被申请学生姓名': stu_name_list, '学生学号': stu_ID_list,
+                '申请科目': subject_list}
+
+        df = pd.DataFrame(data)
+        df.to_csv('checkApplications.csv', index=False, mode='w')
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
@@ -278,7 +335,7 @@ class GradeManager:
             total_hpg = (student.stuGrades.grades[6].score + student.stuGrades.grades[7].score +
                          student.stuGrades.grades[8].score)
 
-            #保证两个数据长度一样，排除为0的数据
+            # 保证两个数据长度一样，排除为0的数据
             if way == 1:
                 if total_pcb != 0:
                     total_scores_physics_chemistry_biology.append(total_pcb)
@@ -350,7 +407,7 @@ class GradeManager:
                 '历史': student.stuGrades.grades[6].score,
                 '政治': student.stuGrades.grades[7].score,
                 '地理': student.stuGrades.grades[8].score,
-                '总分':student.stuGrades.totalScores
+                '总分': student.stuGrades.totalScores
             }
             # 将这个学生的信息字典添加到数据列表中
             data.append(student_data)
@@ -364,9 +421,15 @@ class GradeManager:
 
 
 # gradeManager=GradeManager()
-gradeManager = GradeManager([], 0, [])
+gradeManager = GradeManager([], 0, [],0)
+<<<<<<< Updated upstream
 gradeManager.inputCSV("./student_grades.csv")
 gradeManager.sortGrades()
+gradeManager.inputCheckApplications('./checkApplications.csv')
+=======
+gradeManager.inputCSV("./student.csv")
+gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
+>>>>>>> Stashed changes
 
 # 测试函数
 if __name__ == '__main__':
@@ -399,9 +462,17 @@ if __name__ == '__main__':
    '''
 
     # 测试从csv文件导入
+<<<<<<< Updated upstream
 
-    manager = GradeManager([], 0, [])
-    manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+    # manager = GradeManager([], 0, [])
+    # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+=======
+    gradeManager = GradeManager([], 0, [], 0)
+    gradeManager.inputCSV("./student.csv")
+    gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
+    #manager = GradeManager([], 0, [],0)
+    #manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+>>>>>>> Stashed changes
     # for x in manager.student:
     #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
 
