@@ -1,5 +1,3 @@
-
-
 '''
 2024/7/5
 GradeManager：
@@ -42,17 +40,32 @@ GradeManager：
 
 by 李胤玮
 
+2024/7/9
+GradeManager：
+    inputCheckApplications() //根据csv文件导入成绩复核申请表
+    addCheckApplication()//老师可以进行成绩复核申请
+    saveCheckApplication()//保存成绩申请到csv文件中
+by陈邱华
 '''
 
+import os
+<<<<<<< Updated upstream
+=======
 
+import matplotlib.pyplot as plt
+import pandas as pd
+>>>>>>> Stashed changes
 
 import CheckApplication
 import Grades as gr
 import Student as stu
-from Subject import *
-import pandas as pd
+<<<<<<< Updated upstream
 import matplotlib.pyplot as plt
-import os
+import numpy as np
+import pandas as pd
+=======
+>>>>>>> Stashed changes
+from Subject import *
 
 
 class GradeManager:
@@ -61,10 +74,16 @@ class GradeManager:
     # stuNum 整形，记录学生总数；
     # checkApplication 列表，元素类型是CheckApplication
 
-    def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication]):
+    def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication],
+                 checkApplicationNum: int):
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
         self.student = student
         self.stuNum = stuNum
         self.checkApplication = checkApplication
+        self.checkApplicationNum = checkApplicationNum
 
     # name:str
     # stuID:int
@@ -86,6 +105,9 @@ class GradeManager:
     # 从csv文件导入
     # path:文件路径，需要为csv格式文件，excel自带保存为csv格式功能
     def inputCSV(self, path):
+        if not path:
+            print("文件不存在！")
+            return False
         df = pd.read_csv(path)
         for index, row in df.iterrows():
             grades = gr.Grades(
@@ -123,6 +145,41 @@ class GradeManager:
             print("非法的导入模式！")
             return False
         return
+
+    def inputCheckApplications(self, path):
+        df = pd.read_csv(path)
+        for index, row in df.iterrows():
+<<<<<<< Updated upstream
+            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'], row['学生学号'],
+=======
+            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'], row['学号'],
+>>>>>>> Stashed changes
+                                                                  row['申请科目'])
+            self.checkApplication.append(check_application)
+        self.checkApplicationNum = len(self.checkApplication)
+        return
+
+    def addCheckApplication(self, teacherName, stuName, stuID, subject):
+        for stu in self.student:
+            if stu.name == stuName and stu.stuID == stuID:
+                check_application = CheckApplication.CheckApplication(teacherName, stuName, stuID, subject)
+                self.checkApplication.append(check_application)
+                self.checkApplicationNum = len(self.checkApplication)
+                self.saveCheckApplication()
+                return True
+
+        return False
+
+    def saveCheckApplication(self):
+        teacher_name_list = [check_application.applicationReviewer for check_application in self.checkApplication]
+        stu_name_list = [check_application.stuName for check_application in self.checkApplication]
+        stu_ID_list = [check_application.stuID for check_application in self.checkApplication]
+        subject_list = [check_application.subjectToCheck for check_application in self.checkApplication]
+        data = {'申请老师': teacher_name_list, '被申请学生姓名': stu_name_list, '学生学号': stu_ID_list,
+                '申请科目': subject_list}
+
+        df = pd.DataFrame(data)
+        df.to_csv('checkApplications.csv', index=False, mode='w')
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
@@ -162,6 +219,7 @@ class GradeManager:
                 elif sub == "Politics":
                     self.student[i].stuGrades.grades[8].score = grade
                 self.renewTotalGrade(i)
+                self.saveGradesToCSV('./student_grades.csv')
             return True
         return False
 
@@ -169,7 +227,8 @@ class GradeManager:
     # 成功返回True，否则返回False
     def sortGrades(self):
         try:
-            self.student.sort(key=lambda s: s.stuGrades.totalGrades, reverse=True)
+            self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
+            self.saveGradesToCSV('./rankedCSV.csv')
             return True
         except Exception as e:
             print(f"排序时出现错误: {e}")
@@ -244,7 +303,8 @@ class GradeManager:
         # Collect scores for each subject
         for student in self.student:
             for i, subject in enumerate(subjects):
-                scores[subject].append(student.stuGrades.grades[i].score)
+                if student.stuGrades.grades[i].score != 0:
+                    scores[subject].append(student.stuGrades.grades[i].score)
 
         # Plot the histogram for the specified subject
         plt.figure(figsize=(10, 6))
@@ -265,6 +325,7 @@ class GradeManager:
         total_scores_chinese_math_english = []
         total_scores_physics_chemistry_biology = []
         total_scores_history_politics_geography = []
+
         # 将学生的每三科总分分别存储
         for student in self.student:
             total_cme = (student.stuGrades.grades[0].score + student.stuGrades.grades[1].score +
@@ -273,22 +334,39 @@ class GradeManager:
                          student.stuGrades.grades[5].score)
             total_hpg = (student.stuGrades.grades[6].score + student.stuGrades.grades[7].score +
                          student.stuGrades.grades[8].score)
-            total_scores_chinese_math_english.append(total_cme)
-            total_scores_physics_chemistry_biology.append(total_pcb)
-            total_scores_history_politics_geography.append((total_hpg))
 
-        # 绘制折线图
-        plt.figure(figsize=(10, 6))
+            # 保证两个数据长度一样，排除为0的数据
+            if way == 1:
+                if total_pcb != 0:
+                    total_scores_physics_chemistry_biology.append(total_pcb)
+                    total_scores_chinese_math_english.append(total_cme)
+
+            elif way == 2:
+                if total_hpg != 0:
+                    total_scores_history_politics_geography.append(total_hpg)
+                    total_scores_chinese_math_english.append(total_cme)
+
+        # 将数据转换为numpy数组
         if way == 1:
-            plt.plot(total_scores_chinese_math_english, total_scores_physics_chemistry_biology, marker='o')
-            sub = 'Physics Chemistry Biology'
-        elif way == 2:
-            plt.plot(total_scores_chinese_math_english, total_scores_history_politics_geography, marker='o')
-            sub = 'History Politics Geography'
+            x = np.array(total_scores_physics_chemistry_biology)
+        if way == 2:
+            x = np.array(total_scores_history_politics_geography)
+        y = np.array(total_scores_chinese_math_english)
 
-        plt.title(f'Line graph of CME and {sub}')
-        plt.xlabel(f'{sub}')
-        plt.ylabel('Chinese Math English')
+        # 计算线性回归
+        coefficients = np.polyfit(x, y, 1)
+        poly = np.poly1d(coefficients)
+        y_fit = poly(x)
+
+        # 绘制散点图和拟合线
+        plt.figure(figsize=(10, 6))
+        plt.scatter(x, y, marker='o', label='Data points')
+        plt.plot(x, y_fit, color='red', label='Fit line')
+
+        plt.title('Linear Fit of PCB and CME Scores')
+        plt.xlabel('Physics Chemistry Biology Total Scores')
+        plt.ylabel('Chinese Math English Total Scores')
+        plt.legend()
         plt.grid(True)
         plt.show()
 
@@ -309,13 +387,49 @@ class GradeManager:
 
     def dispAllGrades(self):
         for stu in self.student:
+            print(f"姓名:{stu.name},学号:{stu.stuID}")
             stu.stuGrades.displayGradesAnalysis()
+
+    def saveGradesToCSV(self, path):
+        # 创建一个列表存储每个学生的数据字典
+        data = []
+        for student in self.student:
+            # 创建一个字典存储单个学生的信息
+            student_data = {
+                '姓名': student.name,
+                '学号': student.stuID,
+                '语文': student.stuGrades.grades[0].score,
+                '数学': student.stuGrades.grades[1].score,
+                '英语': student.stuGrades.grades[2].score,
+                '物理': student.stuGrades.grades[3].score,
+                '化学': student.stuGrades.grades[4].score,
+                '生物': student.stuGrades.grades[5].score,
+                '历史': student.stuGrades.grades[6].score,
+                '政治': student.stuGrades.grades[7].score,
+                '地理': student.stuGrades.grades[8].score,
+                '总分': student.stuGrades.totalScores
+            }
+            # 将这个学生的信息字典添加到数据列表中
+            data.append(student_data)
+
+        # 将数据列表转换为 DataFrame
+        df = pd.DataFrame(data)
+
+        # 将 DataFrame 保存到 CSV 文件中
+        df.to_csv(path, index=False)
+        print(f"学生数据已成功保存到 {path}")
 
 
 # gradeManager=GradeManager()
-gradeManager = GradeManager([], 0, [])
+gradeManager = GradeManager([], 0, [],0)
+<<<<<<< Updated upstream
+gradeManager.inputCSV("./student_grades.csv")
+gradeManager.sortGrades()
+gradeManager.inputCheckApplications('./checkApplications.csv')
+=======
 gradeManager.inputCSV("./student.csv")
-
+gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
+>>>>>>> Stashed changes
 
 # 测试函数
 if __name__ == '__main__':
@@ -348,9 +462,17 @@ if __name__ == '__main__':
    '''
 
     # 测试从csv文件导入
+<<<<<<< Updated upstream
 
-    manager = GradeManager([], 0, [])
-    manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+    # manager = GradeManager([], 0, [])
+    # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+=======
+    gradeManager = GradeManager([], 0, [], 0)
+    gradeManager.inputCSV("./student.csv")
+    gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
+    #manager = GradeManager([], 0, [],0)
+    #manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+>>>>>>> Stashed changes
     # for x in manager.student:
     #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
 
@@ -367,5 +489,5 @@ if __name__ == '__main__':
         print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
     '''
 
-    #manager.generateGradesAnalysis(1, "Math")
+    # manager.generateGradesAnalysis(1, "Math")
     # manager.generateGradesAnalysis(2,1)

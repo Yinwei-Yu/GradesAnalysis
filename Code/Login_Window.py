@@ -6,6 +6,7 @@ by 刘杨健
 import tkinter as tk
 
 # 主窗口设置
+
 login_window = tk.Tk()
 login_window.title('main window')
 login_window.geometry('600x400')

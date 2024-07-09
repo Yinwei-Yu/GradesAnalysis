@@ -64,10 +64,10 @@ class AccountManager:
     # 账号登录
     # userName:str 从前端获得的用户名
     # password:str 从前端获得的密码信息
-    def login(self, userName: str, password: str) -> bool:
+    def login(self, userName: str, password: str, flag: int) -> bool:
         for ID in self.users:
             user = self.users[ID]
-            if user.userName == userName and user.password == password:
+            if user.userName == userName and user.password == password and user.flag == flag:
                 self.userName = user.userName
                 self.password = user.password
                 self.ID = user.ID
@@ -196,7 +196,17 @@ if __name__ == "__main__":
     while True:
         print('管理员账号：user1，密码：111111')
         print("请输入选项：1、登录，2、注册（仅限管理员和教师），3、退出系统：")
-        op = eval(input())
+        try:
+            op = eval(input())
+        except Exception as e:
+            print("非法输入!",e)
+            continue
+
+        #错误处理
+        if op not in [1,2,3]:
+            print("非法输入!\n请重试!")
+            continue
+
         if op == 1:
             print('请输入账号：')
             account = input()
@@ -205,7 +215,7 @@ if __name__ == "__main__":
             if accountManager.login(account, password) is False:
                 continue
 
-        if op == 2:
+        elif op == 2:
             print('请输入新账号：')
             account = input()
             print('请输入新账号密码：')
@@ -218,7 +228,7 @@ if __name__ == "__main__":
             print('注册成功，请登录！')
             continue
 
-        if op == 3:
+        elif op == 3:
             break
 
         if accountManager.flag == 1:
@@ -226,7 +236,7 @@ if __name__ == "__main__":
             while True:
                 print(
                     '请输入选项：\n1、查看成绩\n2、修改账号名称\n3、修改密码\n4、导入学生账号\n5、查看成绩修改申请单\n'
-                    '6、输出当前账号信息\n7、输出所有账号信息\n8、查看所有学生成绩\n9、登出账号\n')
+                    '6、输出当前账号信息\n7、输出所有账号信息\n8、查看所有学生成绩\n9、查看成绩复核申请表\n10、登出账号\n')
 
                 op = eval(input())
                 if op <= 0 or op > 9:

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
+<<<<<<< HEAD
     <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+=======
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+    </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (GradesAnalysis)" jdkType="Python SDK" />
+>>>>>>> a369f174e3be3cbc0eae126de70c54411f8ced30
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
