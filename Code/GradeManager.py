@@ -48,23 +48,12 @@ GradeManager：
 by陈邱华
 '''
 
-import os
-<<<<<<< Updated upstream
-=======
-
-import matplotlib.pyplot as plt
-import pandas as pd
->>>>>>> Stashed changes
-
 import CheckApplication
 import Grades as gr
 import Student as stu
-<<<<<<< Updated upstream
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-=======
->>>>>>> Stashed changes
 from Subject import *
 
 
@@ -76,10 +65,7 @@ class GradeManager:
 
     def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication],
                  checkApplicationNum: int):
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         self.student = student
         self.stuNum = stuNum
         self.checkApplication = checkApplication
@@ -149,22 +135,21 @@ class GradeManager:
     def inputCheckApplications(self, path):
         df = pd.read_csv(path)
         for index, row in df.iterrows():
-<<<<<<< Updated upstream
-            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'], row['学生学号'],
-=======
-            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'], row['学号'],
->>>>>>> Stashed changes
+            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'],
+                                                                  row['学生学号'],
                                                                   row['申请科目'])
             self.checkApplication.append(check_application)
         self.checkApplicationNum = len(self.checkApplication)
         return
 
     def addCheckApplication(self, teacherName, stuName, stuID, subject):
+
         for stu in self.student:
             if stu.name == stuName and stu.stuID == stuID:
                 check_application = CheckApplication.CheckApplication(teacherName, stuName, stuID, subject)
                 self.checkApplication.append(check_application)
                 self.checkApplicationNum = len(self.checkApplication)
+                # print(self.checkApplicationNum)
                 self.saveCheckApplication()
                 return True
 
@@ -179,7 +164,7 @@ class GradeManager:
                 '申请科目': subject_list}
 
         df = pd.DataFrame(data)
-        df.to_csv('checkApplications.csv', index=False, mode='w')
+        df.to_csv('./checkApplications.csv', index=False, mode='w')
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
@@ -421,15 +406,12 @@ class GradeManager:
 
 
 # gradeManager=GradeManager()
-gradeManager = GradeManager([], 0, [],0)
-<<<<<<< Updated upstream
+gradeManager = GradeManager([], 0, [], 0)
+
 gradeManager.inputCSV("./student_grades.csv")
 gradeManager.sortGrades()
 gradeManager.inputCheckApplications('./checkApplications.csv')
-=======
-gradeManager.inputCSV("./student.csv")
-gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
->>>>>>> Stashed changes
+# gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
 
 # 测试函数
 if __name__ == '__main__':
@@ -462,17 +444,13 @@ if __name__ == '__main__':
    '''
 
     # 测试从csv文件导入
-<<<<<<< Updated upstream
 
-    # manager = GradeManager([], 0, [])
-    # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
-=======
     gradeManager = GradeManager([], 0, [], 0)
     gradeManager.inputCSV("./student.csv")
     gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
-    #manager = GradeManager([], 0, [],0)
-    #manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
->>>>>>> Stashed changes
+    # manager = GradeManager([], 0, [],0)
+    # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+
     # for x in manager.student:
     #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
 

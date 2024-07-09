@@ -186,6 +186,10 @@ class AccountManager:
     def dispAllGrades(self):
         gradeManager.dispAllGrades()
 
+    def printCheckApplication(self):
+        for check_application in gradeManager.checkApplication:
+            check_application.printCheckApplication()
+
 
 if __name__ == "__main__":
     # gradeManager = GradeManager([], 0, [])
@@ -212,7 +216,7 @@ if __name__ == "__main__":
             account = input()
             print('请输入密码：')
             password = input()
-            if accountManager.login(account, password) is False:
+            if accountManager.login(account, password,1) is False:
                 continue
 
         elif op == 2:
@@ -289,6 +293,9 @@ if __name__ == "__main__":
                     input()
 
                 if op == 9:
+                    accountManager.printCheckApplication()
+
+                if op == 10:
                     accountManager.logout()
                     accountManager.saveUserInfo()
                     break
