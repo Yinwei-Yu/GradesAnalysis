@@ -1,24 +1,58 @@
+
+
 '''
-
 2024/7/5
-class GradeManager
+GradeManager：
 
-GradeManager:class
-__init__()
-inputSingle()
-inputGrades()
-renewTotalGrade()
-changeGrade()
+1. __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication])
+   - student:包含学生信息的列表，可以传入空列表[]
+   - stuNum：传入初始值为0
+   - checkApplication：接收申请修改成绩的列表，初始值为空列表
+2. inputGrades(self, mode, *args)
+   - 输入成绩
+   - mode：
+     - mode==1时传入单个学生成绩
+       - args请提供三个参数：
+         - name：学生姓名
+         - stuID：学生学号
+         - grade：类型为Grades的学生成绩
+     - mode==2时传入文件路径，文件需要为excel或者csv文件格式
+
+3. changeGrades(self,name,stuID,sub,grade)
+   - name:学生姓名
+   - stuID：学生学号
+   - sub：需要修改的科目，为学科英文名，首字母大写
+   - grade：对应科目需要修改为的分数
+4. sortGrades（self）
+   - 按照总成绩进行排序
+   - 会修改student列表
+   - 成功返回True 失败返回False
+5. caculateRanking(self,subject,mode)
+   - 按照单科排名
+   - 不会修改student列表顺序
+   - 返回一个存储排序结果的新列表，失败返回空列表
+   - subject：学科名，接受对应学科英文名（首字母大小写均可），中文名
+   - mode：排序模式，mode==1从大到小，mode==2从小到大
+6. generateGradesAnalysis(self,mode,*subOrway)
+   - 产生成绩分析图表
+   - mode==1生成总成绩，subOrway接受学科名，需为对应学科英文名，首字母大写
+   - mode==2生成折线图，subOrway接受1或2
+     - subOrway==1时产生语数英物化生线性关系图
+     - subOrway==2时产生语数英史政地线性关系图
 
 by 李胤玮
 
 '''
 
-import Student as stu
+
+
 import CheckApplication
 import Grades as gr
+import Student as stu
 from Subject import *
 import pandas as pd
+import matplotlib.pyplot as plt
+import os
 
 
 class GradeManager:
@@ -41,6 +75,14 @@ class GradeManager:
         self.stuNum += 1
         return
 
+    # 将传入的excel文件转换为csv文件
+    def excelToCsv(self, excelFilePath, sheetName, csvFilePath):
+        # 读取excel文件
+        df = pd.read_excel(excelFilePath)
+        # 将数据保存为csv文件
+        df.to_csv(csvFilePath)
+        return True
+
     # 从csv文件导入
     # path:文件路径，需要为csv格式文件，excel自带保存为csv格式功能
     def inputCSV(self, path):
@@ -56,13 +98,30 @@ class GradeManager:
         self.stuNum = len(self.student)
         return
 
+    # 批量导入函数
+    def inputMore(self, path, sheetName=None, outputPath=None):
+        fileExtension = os.path.splitext(path)[1].lower()
+        csvFilePath = r"tempPath.csv"
+        # 如果是excel文件
+        if fileExtension in ['.xls', '.xlsx']:
+            # 转化为csv文件
+            self.excelToCsv(path, sheetName, csvFilePath)
+            self.inputCSV(csvFilePath)
+        elif fileExtension == '.csv':
+            self.inputCSV(path)
+        else:
+            print("请导入excel文件或者csv文件！")
+
     # 导入学生成绩 mode==1单个导入，arg接收学生姓名学号和成绩信息
     # mode==2时接受文件路径
     def inputGrades(self, mode, *args):
         if mode == 1:
             self.inputSingle(*args)
         elif mode == 2:
-            self.inputCSV(*args)
+            self.inputMore(*args)
+        else:
+            print("非法的导入模式！")
+            return False
         return
 
     # 修改成绩后用于修改总成绩
@@ -87,21 +146,21 @@ class GradeManager:
                 if sub == "Chinese":
                     self.student[i].stuGrades.grades[0].score = grade
                 elif sub == "Math":
-                    self.student[i].stuGrades.math.score = grade
+                    self.student[i].stuGrades.grades[1].score = grade
                 elif sub == "English":
-                    self.student[i].stuGrades.english.score = grade
+                    self.student[i].stuGrades.grades[2].score = grade
                 elif sub == "Physics":
-                    self.student[i].stuGrades.physics.score = grade
+                    self.student[i].stuGrades.grades[3].score = grade
                 elif sub == "Chemistry":
-                    self.student[i].stuGrades.chemistry.score = grade
+                    self.student[i].stuGrades.grades[4].score = grade
                 elif sub == "Biology":
-                    self.student[i].stuGrades.biology.score = grade
+                    self.student[i].stuGrades.grades[5].score = grade
                 elif sub == "History":
-                    self.student[i].stuGrades.history.score = grade
+                    self.student[i].stuGrades.grades[6].score = grade
                 elif sub == "Geography":
-                    self.student[i].stuGrades.geography.score = grade
+                    self.student[i].stuGrades.grades[7].score = grade
                 elif sub == "Politics":
-                    self.student[i].stuGrades.politics.score = grade
+                    self.student[i].stuGrades.grades[8].score = grade
                 self.renewTotalGrade(i)
             return True
         return False
@@ -169,16 +228,93 @@ class GradeManager:
             return []
 
     '''
+    直方图分析
+    subject接收需要分析的科目
+    '''
+
+    def plotHistograms(self, subjectName: str):
+        subjects = ['Chinese', 'Math', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Politics', 'Geography']
+
+        if subjectName not in subjects:
+            print(f"学科：{subjectName}不存在！")
+            return
+
+        scores = {subject: [] for subject in subjects}
+
+        # Collect scores for each subject
+        for student in self.student:
+            for i, subject in enumerate(subjects):
+                scores[subject].append(student.stuGrades.grades[i].score)
+
+        # Plot the histogram for the specified subject
+        plt.figure(figsize=(10, 6))
+        plt.hist(scores[subjectName], bins=10, edgecolor='black')
+        plt.title(f'{subjectName} score distribution')
+        plt.xlabel('score')
+        plt.ylabel('students numbers')
+        plt.grid(False)
+        plt.show()
+
+    '''
+    折线图分析，接收一个参数way
+    way==1时产生语数英和物化生的折线图
+    way==2时产生语数英和史政地的折线图
+    '''
+
+    def plotLineCharts(self, way):
+        total_scores_chinese_math_english = []
+        total_scores_physics_chemistry_biology = []
+        total_scores_history_politics_geography = []
+        # 将学生的每三科总分分别存储
+        for student in self.student:
+            total_cme = (student.stuGrades.grades[0].score + student.stuGrades.grades[1].score +
+                         student.stuGrades.grades[2].score)
+            total_pcb = (student.stuGrades.grades[3].score + student.stuGrades.grades[4].score +
+                         student.stuGrades.grades[5].score)
+            total_hpg = (student.stuGrades.grades[6].score + student.stuGrades.grades[7].score +
+                         student.stuGrades.grades[8].score)
+            total_scores_chinese_math_english.append(total_cme)
+            total_scores_physics_chemistry_biology.append(total_pcb)
+            total_scores_history_politics_geography.append((total_hpg))
+
+        # 绘制折线图
+        plt.figure(figsize=(10, 6))
+        if way == 1:
+            plt.plot(total_scores_chinese_math_english, total_scores_physics_chemistry_biology, marker='o')
+            sub = 'Physics Chemistry Biology'
+        elif way == 2:
+            plt.plot(total_scores_chinese_math_english, total_scores_history_politics_geography, marker='o')
+            sub = 'History Politics Geography'
+
+        plt.title(f'Line graph of CME and {sub}')
+        plt.xlabel(f'{sub}')
+        plt.ylabel('Chinese Math English')
+        plt.grid(True)
+        plt.show()
+
+    '''
     # 成绩分析
     # mode==1:直方图
     # mode==2:折线分析图
     '''
 
-    def generateGradesAnalysis(self, mode):
-        pass
+    def generateGradesAnalysis(self, mode, *subOrway):
+        if mode == 1:
+            self.plotHistograms(*subOrway)
+        elif mode == 2:
+            self.plotLineCharts(*subOrway)
+        else:
+            print("分析模式不存在！")
+            return False
+
+    def dispAllGrades(self):
+        for stu in self.student:
+            stu.stuGrades.displayGradesAnalysis()
 
 
 # gradeManager=GradeManager()
+gradeManager = GradeManager([], 0, [])
+gradeManager.inputCSV("./student.csv")
 
 
 # 测试函数
@@ -214,9 +350,9 @@ if __name__ == '__main__':
     # 测试从csv文件导入
 
     manager = GradeManager([], 0, [])
-    manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.csv")
-    for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
+    manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+    # for x in manager.student:
+    #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
 
     # 测试单科排名
     '''
@@ -230,3 +366,6 @@ if __name__ == '__main__':
     for x in templist:
         print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
     '''
+
+    #manager.generateGradesAnalysis(1, "Math")
+    # manager.generateGradesAnalysis(2,1)

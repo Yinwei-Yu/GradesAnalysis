@@ -28,9 +28,6 @@ class Grades:
         self.totalRanking: int = 0
         self.rankings = []
 
-    def setRanking(self, ranking: int):
-        self.totalRanking = ranking
-
     # 待实现
     def generateGradesAnalysis(self, ranking: int, rankings: list):
         self.totalRanking = ranking
@@ -40,11 +37,8 @@ class Grades:
         return self.gradesAnalysis
 
     def displayGradesAnalysis(self):
-        print(self.totalScores)
-        print(self.totalRanking)
-        print(self.gradesAnalysis)
-        print(self.totalRanking)
-        print(self.rankings)
+        print(
+            f'总分：{self.totalScores}排名：{self.totalRanking}语文：{self.grades[0].score}数学：{self.grades[0].score}英语：{self.grades[0].score}物理：{self.grades[0].score}化学：{self.grades[0].score}生物：{self.grades[0].score}')
 
 
 # 测试函数
