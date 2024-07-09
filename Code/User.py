@@ -47,19 +47,25 @@ class User:
             return False
 
     # 设置密码
-    def setPassWord(self, myStr):
-        if myStr == self.passWord:
+    def setPassword(self, myStr):
+        if myStr == self.password:
             return True
         # 如果密码违法，则设置失败
         if self.__isLegal(myStr):
-            self.passWord = myStr
+            self.password = myStr
             return True
         else:
             return False
 
     # 测试函数 打印用户信息
     def showUserInfo(self):
-        print(f'用户名：{self.userName}\t密码：{self.passWord}\t编号：{self.ID}')
+        print(f'用户名：{self.userName}\t密码：{self.password}\t学号/工号：{self.ID} \t类型：', end='')
+        if self.flag == 1:
+            print('管理员')
+        if self.flag == 2:
+            print('教师')
+        if self.flag == 3:
+            print('学生')
 
 
 '''

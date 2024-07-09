@@ -1,7 +1,7 @@
+
+
 '''
-
 2024/7/5
-
 GradeManager：
 
 1. __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication])
@@ -32,7 +32,7 @@ GradeManager：
    - 不会修改student列表顺序
    - 返回一个存储排序结果的新列表，失败返回空列表
    - subject：学科名，接受对应学科英文名（首字母大小写均可），中文名
-   - mode：排序模式，mode\==1从大到小，mode==2从小到大
+   - mode：排序模式，mode==1从大到小，mode==2从小到大
 6. generateGradesAnalysis(self,mode,*subOrway)
    - 产生成绩分析图表
    - mode==1生成总成绩，subOrway接受学科名，需为对应学科英文名，首字母大写
@@ -44,7 +44,7 @@ by 李胤玮
 
 '''
 
-import pandas as pd
+
 
 import CheckApplication
 import Grades as gr
@@ -307,12 +307,15 @@ class GradeManager:
             print("分析模式不存在！")
             return False
 
+    def dispAllGrades(self):
+        for stu in self.student:
+            stu.stuGrades.displayGradesAnalysis()
+
 
 # gradeManager=GradeManager()
 gradeManager = GradeManager([], 0, [])
 gradeManager.inputCSV("./student.csv")
-for x in gradeManager.student:
-    print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
+
 
 # 测试函数
 if __name__ == '__main__':
@@ -348,8 +351,8 @@ if __name__ == '__main__':
 
     manager = GradeManager([], 0, [])
     manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
-    for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
+    # for x in manager.student:
+    #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
 
     # 测试单科排名
     '''

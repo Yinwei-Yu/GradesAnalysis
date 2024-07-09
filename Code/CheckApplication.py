@@ -8,5 +8,6 @@ class CheckApplication:
         return '姓名：' + self.Name + ' 学号：' + self.StuID + ' 请求复核的学科：' + self.SubjectToCheck + '\n'
 
 
-People = CheckApplication('szk', '2023302112035', '物理')
-print(People.createCheckApplication())
+if __name__ == '__main__':
+    People = CheckApplication('szk', '2023302112035', '物理')
+    print(People.createCheckApplication())
