@@ -34,12 +34,18 @@ class Grades:
         self.rankings = rankings
 
     def getGradesAnalysis(self):
+        if 0 < self.totalRanking < 6:
+            self.gradesAnalysis = "Excellent"
+        elif 5 < self.totalRanking < 11:
+            self.gradesAnalysis = "Good"
+        else:
+            self.gradesAnalysis = "OK"
         return self.gradesAnalysis
 
     def displayGradesAnalysis(self):
         print(
             f'总分：{self.totalScores}排名：{self.totalRanking}语文：{self.grades[0].score}数学：{self.grades[0].score}英语：{self.grades[0].score}物理：{self.grades[0].score}化学：{self.grades[0].score}生物：{self.grades[0].score}')
-
+        print(self.getGradesAnalysis())
 
 # 测试函数
 if __name__ == '__main__':
