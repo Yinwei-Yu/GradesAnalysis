@@ -1,5 +1,3 @@
-
-
 '''
 2024/7/5
 GradeManager：
@@ -44,14 +42,13 @@ by 李胤玮
 
 '''
 
-
-
 import CheckApplication
 import Grades as gr
 import Student as stu
 from Subject import *
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 
 
@@ -86,6 +83,9 @@ class GradeManager:
     # 从csv文件导入
     # path:文件路径，需要为csv格式文件，excel自带保存为csv格式功能
     def inputCSV(self, path):
+        if not path:
+            print("文件不存在！")
+            return False
         df = pd.read_csv(path)
         for index, row in df.iterrows():
             grades = gr.Grades(
@@ -162,6 +162,7 @@ class GradeManager:
                 elif sub == "Politics":
                     self.student[i].stuGrades.grades[8].score = grade
                 self.renewTotalGrade(i)
+                self.saveGradesToCSV('./student_grades.csv')
             return True
         return False
 
@@ -169,7 +170,8 @@ class GradeManager:
     # 成功返回True，否则返回False
     def sortGrades(self):
         try:
-            self.student.sort(key=lambda s: s.stuGrades.totalGrades, reverse=True)
+            self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
+            self.saveGradesToCSV('./rankedCSV.csv')
             return True
         except Exception as e:
             print(f"排序时出现错误: {e}")
@@ -244,7 +246,8 @@ class GradeManager:
         # Collect scores for each subject
         for student in self.student:
             for i, subject in enumerate(subjects):
-                scores[subject].append(student.stuGrades.grades[i].score)
+                if student.stuGrades.grades[i].score != 0:
+                    scores[subject].append(student.stuGrades.grades[i].score)
 
         # Plot the histogram for the specified subject
         plt.figure(figsize=(10, 6))
@@ -265,6 +268,7 @@ class GradeManager:
         total_scores_chinese_math_english = []
         total_scores_physics_chemistry_biology = []
         total_scores_history_politics_geography = []
+
         # 将学生的每三科总分分别存储
         for student in self.student:
             total_cme = (student.stuGrades.grades[0].score + student.stuGrades.grades[1].score +
@@ -273,22 +277,39 @@ class GradeManager:
                          student.stuGrades.grades[5].score)
             total_hpg = (student.stuGrades.grades[6].score + student.stuGrades.grades[7].score +
                          student.stuGrades.grades[8].score)
-            total_scores_chinese_math_english.append(total_cme)
-            total_scores_physics_chemistry_biology.append(total_pcb)
-            total_scores_history_politics_geography.append((total_hpg))
 
-        # 绘制折线图
-        plt.figure(figsize=(10, 6))
+            #保证两个数据长度一样，排除为0的数据
+            if way == 1:
+                if total_pcb != 0:
+                    total_scores_physics_chemistry_biology.append(total_pcb)
+                    total_scores_chinese_math_english.append(total_cme)
+
+            elif way == 2:
+                if total_hpg != 0:
+                    total_scores_history_politics_geography.append(total_hpg)
+                    total_scores_chinese_math_english.append(total_cme)
+
+        # 将数据转换为numpy数组
         if way == 1:
-            plt.plot(total_scores_chinese_math_english, total_scores_physics_chemistry_biology, marker='o')
-            sub = 'Physics Chemistry Biology'
-        elif way == 2:
-            plt.plot(total_scores_chinese_math_english, total_scores_history_politics_geography, marker='o')
-            sub = 'History Politics Geography'
+            x = np.array(total_scores_physics_chemistry_biology)
+        if way == 2:
+            x = np.array(total_scores_history_politics_geography)
+        y = np.array(total_scores_chinese_math_english)
 
-        plt.title(f'Line graph of CME and {sub}')
-        plt.xlabel(f'{sub}')
-        plt.ylabel('Chinese Math English')
+        # 计算线性回归
+        coefficients = np.polyfit(x, y, 1)
+        poly = np.poly1d(coefficients)
+        y_fit = poly(x)
+
+        # 绘制散点图和拟合线
+        plt.figure(figsize=(10, 6))
+        plt.scatter(x, y, marker='o', label='Data points')
+        plt.plot(x, y_fit, color='red', label='Fit line')
+
+        plt.title('Linear Fit of PCB and CME Scores')
+        plt.xlabel('Physics Chemistry Biology Total Scores')
+        plt.ylabel('Chinese Math English Total Scores')
+        plt.legend()
         plt.grid(True)
         plt.show()
 
@@ -309,13 +330,43 @@ class GradeManager:
 
     def dispAllGrades(self):
         for stu in self.student:
+            print(f"姓名:{stu.name},学号:{stu.stuID}")
             stu.stuGrades.displayGradesAnalysis()
+
+    def saveGradesToCSV(self, path):
+        # 创建一个列表存储每个学生的数据字典
+        data = []
+        for student in self.student:
+            # 创建一个字典存储单个学生的信息
+            student_data = {
+                '姓名': student.name,
+                '学号': student.stuID,
+                '语文': student.stuGrades.grades[0].score,
+                '数学': student.stuGrades.grades[1].score,
+                '英语': student.stuGrades.grades[2].score,
+                '物理': student.stuGrades.grades[3].score,
+                '化学': student.stuGrades.grades[4].score,
+                '生物': student.stuGrades.grades[5].score,
+                '历史': student.stuGrades.grades[6].score,
+                '政治': student.stuGrades.grades[7].score,
+                '地理': student.stuGrades.grades[8].score,
+                '总分':student.stuGrades.totalScores
+            }
+            # 将这个学生的信息字典添加到数据列表中
+            data.append(student_data)
+
+        # 将数据列表转换为 DataFrame
+        df = pd.DataFrame(data)
+
+        # 将 DataFrame 保存到 CSV 文件中
+        df.to_csv(path, index=False)
+        print(f"学生数据已成功保存到 {path}")
 
 
 # gradeManager=GradeManager()
 gradeManager = GradeManager([], 0, [])
-gradeManager.inputCSV("./student.csv")
-
+gradeManager.inputCSV("./student_grades.csv")
+gradeManager.sortGrades()
 
 # 测试函数
 if __name__ == '__main__':
@@ -367,5 +418,5 @@ if __name__ == '__main__':
         print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
     '''
 
-    #manager.generateGradesAnalysis(1, "Math")
+    # manager.generateGradesAnalysis(1, "Math")
     # manager.generateGradesAnalysis(2,1)

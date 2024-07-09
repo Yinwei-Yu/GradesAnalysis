@@ -38,7 +38,11 @@ class Grades:
 
     def displayGradesAnalysis(self):
         print(
-            f'总分：{self.totalScores}排名：{self.totalRanking}语文：{self.grades[0].score}数学：{self.grades[0].score}英语：{self.grades[0].score}物理：{self.grades[0].score}化学：{self.grades[0].score}生物：{self.grades[0].score}')
+            f'总分：{self.totalScores}排名：{self.totalRanking}语文：{self.grades[0].score}数学：{self.grades[1].score}英语：{self.grades[2].score}'
+            f'物理：{self.grades[3].score}化学：{self.grades[4].score}生物：{self.grades[5].score}'
+            f'历史:{self.grades[6].score}政治:{self.grades[7].score}历史:{self.grades[8].score}')
+
+
 
 
 # 测试函数

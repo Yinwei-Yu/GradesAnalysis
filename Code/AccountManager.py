@@ -196,7 +196,17 @@ if __name__ == "__main__":
     while True:
         print('管理员账号：user1，密码：111111')
         print("请输入选项：1、登录，2、注册（仅限管理员和教师），3、退出系统：")
-        op = eval(input())
+        try:
+            op = eval(input())
+        except Exception as e:
+            print("非法输入!",e)
+            continue
+
+        #错误处理
+        if op not in [1,2,3]:
+            print("非法输入!\n请重试!")
+            continue
+
         if op == 1:
             print('请输入账号：')
             account = input()
@@ -205,7 +215,7 @@ if __name__ == "__main__":
             if accountManager.login(account, password) is False:
                 continue
 
-        if op == 2:
+        elif op == 2:
             print('请输入新账号：')
             account = input()
             print('请输入新账号密码：')
@@ -218,7 +228,7 @@ if __name__ == "__main__":
             print('注册成功，请登录！')
             continue
 
-        if op == 3:
+        elif op == 3:
             break
 
         if accountManager.flag == 1:
