@@ -1,23 +1,23 @@
 #pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pandas openpyxl sqlalchemy
-#pip install -i https://pypi.tuna.tsinghua.edu.cn/simple mysql-connector-python
-import pandas as pd
-from sqlalchemy import create_engine
-
-# 读取Excel文件
-excel_file = 'Grades.xlsx'
-sheet_name = 'Sheet1' # 如果你的Excel文件有多个工作表，更改这里的名称
-df = pd.read_excel(excel_file, sheet_name=sheet_name, engine='openpyxl')
-
-# 连接到MySQL数据库
-db_connection_str = 'mysql+mysqlconnector://username:password@host:port/database'
-db_connection = create_engine(db_connection_str)
-
-# 将DataFrame写入SQL表
-table_name = 'your_table_name' # 更改为你想要的表名
-df.to_sql(table_name, db_connection, if_exists='replace', index=False)
-
-print("Data imported to MySQL successfully!")
-#替换上述代码中的your_excel_file.xlsx、Sheet1、username、password、host、port、database和your_table_name为实际值
+# #pip install -i https://pypi.tuna.tsinghua.edu.cn/simple mysql-connector-python
+# import pandas as pd
+# from sqlalchemy import create_engine
+#
+# # 读取Excel文件
+# excel_file = 'Grades.xlsx'
+# sheet_name = 'Sheet1' # 如果你的Excel文件有多个工作表，更改这里的名称
+# df = pd.read_excel(excel_file, sheet_name=sheet_name, engine='openpyxl')
+#
+# # 连接到MySQL数据库
+# db_connection_str = 'mysql+mysqlconnector://username:password@host:port/database'
+# db_connection = create_engine(db_connection_str)
+#
+# # 将DataFrame写入SQL表
+# table_name = 'your_table_name' # 更改为你想要的表名
+# df.to_sql(table_name, db_connection, if_exists='replace', index=False)
+#
+# print("Data imported to MySQL successfully!")
+# 替换上述代码中的your_excel_file.xlsx、Sheet1、username、password、host、port、database和your_table_name为实际值
 
 
 
@@ -28,22 +28,23 @@ con=Connection(
     host='localhost',
     port=3306,
     user='root',
-    password='123456'
+    password='865486'
 ) # 构建链接对象
 
 # 非查询性质
 cursor=con.cursor() #获取游标对象
+
 con.select_db("mbb") # 选择数据库
-# excute中的语句即SQL语句，需自学
+#excute中的语句即SQL语句，需自学
 cursor.execute("create table teacher(id int,name varchar(10),age int);") # 执行SQL语句
 # 将代码使用多次换行时最好使用“三引号”，比如:
-sql="""
-    create table teacher(
-        id int,
-        name varchar(10),
-        age int
-    );
-    """
+# sql="""
+#     create table teacher(
+#         id int,
+#         name varchar(10),
+#         age int
+#     );
+#     """
 #cursor.execute(sql)
 
 # 使用fetchone()获取一条结果
@@ -123,21 +124,6 @@ DDL-表管理：
 """
 
 """
-字段即行，列即列
-"""
-
-"""
-DCL(数据控制语言):
-创建用户：create user 用户名@主机名 identified by '密码';
-删除用户：drop user 用户名@主机名;
-修改用户：alter user 用户名@主机名 identified by '新密码';
-授权：grant 权限 on 数据库名.表名 to 用户名@主机名;
-      grant 权限 on 数据库名.* to 用户名@主机名;
-      grant 权限 on *.* to 用户名@主机名;
-      grant 权限 on 数据库名.表名 to 用户名@主机名 identified by '新密码';
-"""
-
-"""
 DML(数据操作语言):
 #[]括号中数据可省略
 数据插入:
@@ -149,26 +135,43 @@ DML(数据操作语言):
 """
 
 """
+where的条件判断:
+     比较运算符:>,<,>=,<=,!=,between...and..[在某个范围内，包括最大值和最小值],
+              in(...)[在in之后的列表中的值，多选一],like 占位符,is null[是NULL]
+     逻辑运算符:and或&&,or或||,not或!
+"""
+
+"""
 DQL:
 数据查询：
    基本查询:select 列1,列2,.../* from 表 [where 条件判断];     #从表中选择某些列进行展示，/代表或者，*代表所有列
    设置别名: select 列1 [as 别名1],列2 [as 别名2],... from 表名;
    去除重复记录:select distinct 字段列表 from 表名;
-   条件查询:select 字段列表 from 表名 where 条件列表 
+   条件查询:select 字段列表 from 表名 where 条件判断;
 分组聚合：select 字段1,字段2,.../聚合函数 from 表 [where 条件] group by 列;  # /代表或者
 聚合函数：sum（列）--求和
         avg（列）--求平均值
         min（列）--求最小值
         max（列）--求最大值
         count（列|*）--求数量
+        语法:select 聚合函数(字段列表) from 表名;
 结果排序(可以对查询的结果使用order by关键字，指定某个列进行排序)：select 列|聚合函数|* from 表
         where...
-        group by...
-        order by...[asc|desc];
+        group by 分组字段名;
+        order by 列1 排序方式1,列2 排序方式2...;
         # asc--升序；desc--降序
-结果分页限制：select 列|聚合函数|* from 表
-            where...
-            group by...
-            order by...[asc|desc]
-            limit n[,m];   # n代表限制数量，“n，m”代表跳过前n条，从n+1条开始取m条
+结果分页限制：select 字段列表 from 表名 limit 起始索引,查询记录数; (起始索引从0开始;起始索引=（查询页码-1）*每页记录数;如果查询的是第一页，只要写查询记录数)
+"""
+
+"""
+DCL(数据控制语言):
+创建用户：create user 用户名@主机名 identified by '密码';
+删除用户：drop user 用户名@主机名;
+修改用户：alter user 用户名@主机名 identified by '新密码';
+查看权限：show grants for '用户名'@'主机名';
+授权：grant 权限 on 数据库名.表名 to '用户名'@'主机名';
+      grant 权限 on 数据库名.* to '用户名'@'主机名';
+      grant 权限 on *.* to '用户名'@'主机名';
+      grant 权限 on 数据库名.表名 to '用户名'@'主机名'; identified by '新密码';
+撤销权限：revoke 权限 on 数据库名.表名 from '用户名'@'主机名';
 """
