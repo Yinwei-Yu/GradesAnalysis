@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 # 读取Excel文件
-excel_file = 'student.csv'
+excel_file = 'excelFiles/student.csv'
 sheet_name = 'Sheet1' # 如果你的Excel文件有多个工作表，更改这里的名称
 df = pd.read_excel(excel_file, sheet_name=sheet_name, engine='openpyxl')
 

@@ -45,22 +45,34 @@ GradeManager：
     inputCheckApplications() //根据csv文件导入成绩复核申请表
     addCheckApplication()//老师可以进行成绩复核申请
     saveCheckApplication()//保存成绩申请到csv文件中
+
+2024/7/10
+GradeManager
+    创建了inputMySQL() (未实现)
+    getGradesTable() //将学生成绩列表转换为字典列表类型
+    修改了saveGradesToCSV()
+    saveGradesToMySQL()//将学生成绩存储到数据库
+
 by陈邱华
 '''
+
+import os
+
+import matplotlib.pyplot as plt
+import mysql.connector  # pip install mysql-connector-python
+import numpy as np
+import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
 
 import CheckApplication
 import Grades as gr
 import Student as stu
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 from Subject import *
 
 
 class GradeManager:
 
     # student：存储学生数据的列表，元素类型是Student；
-    # stuNum 整形，记录学生总数；
+    # stuNum 整型，记录学生总数；
     # checkApplication 列表，元素类型是CheckApplication
 
     def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication],
@@ -120,13 +132,37 @@ class GradeManager:
         else:
             print("请导入excel文件或者csv文件！")
 
+    # 待实现
+    def inputMySQL(self,
+                   path='./excelFiles/rankedCSV.csv',  # 文件路径
+                   host="mysql.sqlpub.com",  # 主机地址
+                   user="orangeisland66",  # 数据库用户名
+                   password="HM1620kJfibETKIE",  # 密码
+                   database="orangeisland66",  # 数据库名称
+                   table="rankedGrades",  # 数据库表名
+                   ):
+
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+
     # 导入学生成绩 mode==1单个导入，arg接收学生姓名学号和成绩信息
     # mode==2时接受文件路径
+    # mode==3时通过sql数据库导入
     def inputGrades(self, mode, *args):
         if mode == 1:
             self.inputSingle(*args)
         elif mode == 2:
             self.inputMore(*args)
+        elif mode == 3:
+            self.inputMySQL(*args)#待实现
         else:
             print("非法的导入模式！")
             return False
@@ -156,7 +192,7 @@ class GradeManager:
         return False
 
     def saveCheckApplication(self):
-        teacher_name_list = [check_application.applicationReviewer for check_application in self.checkApplication]
+        teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
         stu_name_list = [check_application.stuName for check_application in self.checkApplication]
         stu_ID_list = [check_application.stuID for check_application in self.checkApplication]
         subject_list = [check_application.subjectToCheck for check_application in self.checkApplication]
@@ -164,7 +200,7 @@ class GradeManager:
                 '申请科目': subject_list}
 
         df = pd.DataFrame(data)
-        df.to_csv('./checkApplications.csv', index=False, mode='w')
+        df.to_csv('./excelFiles/checkApplications.csv', index=False, mode='w')
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
@@ -204,7 +240,7 @@ class GradeManager:
                 elif sub == "Politics":
                     self.student[i].stuGrades.grades[8].score = grade
                 self.renewTotalGrade(i)
-                self.saveGradesToCSV('./student_grades.csv')
+                self.saveGradesToCSV('excelFiles/student_grades.csv')
             return True
         return False
 
@@ -213,7 +249,7 @@ class GradeManager:
     def sortGrades(self):
         try:
             self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
-            self.saveGradesToCSV('./rankedCSV.csv')
+            self.saveGradesToCSV('excelFiles/rankedCSV.csv')
             return True
         except Exception as e:
             print(f"排序时出现错误: {e}")
@@ -375,8 +411,9 @@ class GradeManager:
             print(f"姓名:{stu.name},学号:{stu.stuID}")
             stu.stuGrades.displayGradesAnalysis()
 
-    def saveGradesToCSV(self, path):
-        # 创建一个列表存储每个学生的数据字典
+    # 获取dict类型学生成绩表格
+    def getGradesTable(self) -> list:
+        # 创建一个字典列表存储每个学生的数据
         data = []
         for student in self.student:
             # 创建一个字典存储单个学生的信息
@@ -396,21 +433,68 @@ class GradeManager:
             }
             # 将这个学生的信息字典添加到数据列表中
             data.append(student_data)
+        return data
 
-        # 将数据列表转换为 DataFrame
-        df = pd.DataFrame(data)
+    def saveGradesToCSV(self, path):
 
+        # 将数据转换为 DataFrame
+        df = pd.DataFrame(self.getGradesTable())
         # 将 DataFrame 保存到 CSV 文件中
         df.to_csv(path, index=False)
         print(f"学生数据已成功保存到 {path}")
+
+    # 将学生成绩数据保存到数据库中
+    def saveGradesToMySQL(self,
+                          host="mysql.sqlpub.com",  # 主机地址
+                          user="orangeisland66",  # 数据库用户名
+                          password="HM1620kJfibETKIE",  # 密码
+                          database="orangeisland66",  # 数据库名称
+                          table="rankedGrades",  # 数据库表名
+                          ):
+        # 将数据转换为 DataFrame
+        df = pd.DataFrame(self.getGradesTable())
+        # print(df)
+        # 将dataframe保存至数据库
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        # 先清空表格
+        sql = 'TRUNCATE TABLE {};'.format(table)
+        mycursor.execute(sql)
+        # 遍历Excel表格中的每一行，并将每一行插入到数据库中
+        for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
+            sql = (f"INSERT INTO {table} "
+                   f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "
+                   f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+            val = row  # 插入的数据
+            print("正在插入数据至数据库{}:".format(database), val)  # 输出正在插入的数据
+            mycursor.execute(sql, val)  # 执行SQL插入语句
+
+        # 提交更改并关闭数据库连接
+        mydb.commit()  # 提交更改
+        mycursor.close()  # 关闭游标对象
+        mydb.close()  # 关闭数据库连接
 
 
 # gradeManager=GradeManager()
 gradeManager = GradeManager([], 0, [], 0)
 
-gradeManager.inputCSV("./student_grades.csv")
+gradeManager.inputCSV("./excelFiles/student_grades.csv")
+
 gradeManager.sortGrades()
-gradeManager.inputCheckApplications('./checkApplications.csv')
+gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
+gradeManager.saveGradesToMySQL()
+# gradeManager.inputMySQL()
 # gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
 
 # 测试函数
@@ -446,7 +530,7 @@ if __name__ == '__main__':
     # 测试从csv文件导入
 
     gradeManager = GradeManager([], 0, [], 0)
-    gradeManager.inputCSV("./student.csv")
+    gradeManager.inputCSV("./excelFiles/student.csv")
     gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
     # manager = GradeManager([], 0, [],0)
     # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")

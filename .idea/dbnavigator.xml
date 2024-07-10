@@ -57,11 +57,18 @@ db.close()  # 关闭数据库连接]]></console>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="consoles/Connection" />
+      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/student_grades" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.student_grades" active-filter-id="EMPTY_FILTER">
+      <filter id="9ee16a28-6e55-4b09-a37c-e3125b0b7db5" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="姓名" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
@@ -75,19 +82,19 @@ db.close()  # 关闭数据库连接]]></console>
           <description value="database of gradesanalysis" />
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
-          <database-version value="9.0" />
+          <database-version value="8.0" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
           <url-type value="DATABASE" />
-          <host value="localhost" />
+          <host value="mysql.sqlpub.com" />
           <port value="3306" />
-          <database value="mysql" />
+          <database value="orangeisland66" />
           <tns-folder value="" />
           <tns-profile value="" />
           <type value="USER_PASSWORD" />
-          <user value="root" />
-          <deprecated-pwd value="MTIzNDU2" />
+          <user value="orangeisland66" />
+          <deprecated-pwd value="SE0xNjIwa0pmaWJFVEtJRQ==" />
         </database>
         <properties>
           <auto-commit value="false" />

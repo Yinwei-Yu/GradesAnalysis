@@ -35,7 +35,7 @@ class AccountManager:
         # 管理员为1，教师为2，学生为3
         self.ID: int = 0
         self.userNum = 0
-        self.inputUsers('./users.csv')
+        self.inputUsers('./excelFiles/users.csv')
 
     # 读取用户信息
     # 文件格式为.csv
@@ -150,7 +150,7 @@ class AccountManager:
 
         df = pd.DataFrame(data)
 
-        df.to_csv('users.csv', index=False, mode='w')
+        df.to_csv('./excelFiles/users.csv', index=False, mode='w')
 
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
