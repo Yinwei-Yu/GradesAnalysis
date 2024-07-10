@@ -4,12 +4,12 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 # 读取Excel文件
-excel_file = 'Grades.xlsx'
+excel_file = 'student.csv'
 sheet_name = 'Sheet1' # 如果你的Excel文件有多个工作表，更改这里的名称
 df = pd.read_excel(excel_file, sheet_name=sheet_name, engine='openpyxl')
 
 # 连接到MySQL数据库
-db_connection_str = 'mysql+mysqlconnector://username:password@host:port/database'
+db_connection_str = 'mysql+mysqlconnector://root:123456@localhost:3306/database'
 db_connection = create_engine(db_connection_str)
 
 # 将DataFrame写入SQL表

@@ -203,11 +203,11 @@ if __name__ == "__main__":
         try:
             op = eval(input())
         except Exception as e:
-            print("非法输入!",e)
+            print("非法输入!", e)
             continue
 
-        #错误处理
-        if op not in [1,2,3]:
+        # 错误处理
+        if op not in [1, 2, 3]:
             print("非法输入!\n请重试!")
             continue
 
@@ -216,7 +216,7 @@ if __name__ == "__main__":
             account = input()
             print('请输入密码：')
             password = input()
-            if accountManager.login(account, password,1) is False:
+            if accountManager.login(account, password, 1) is False:
                 continue
 
         elif op == 2:
