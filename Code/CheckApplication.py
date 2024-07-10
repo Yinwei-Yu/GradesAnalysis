@@ -20,6 +20,6 @@ class CheckApplication:
 
 #测试用例
 if __name__ == '__main__':
-    People = CheckApplication('szk', '2023302112035', '物理')
+    People = CheckApplication('lf','szk', '2023302112035', '物理')
     print(People.printCheckApplication())
 
