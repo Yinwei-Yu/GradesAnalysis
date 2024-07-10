@@ -10,6 +10,7 @@ by 刘杨健
     Student_Window
     修改了学生界面的窗口显示,在Login_Window里面调用里面的
     show_student_window,这样可以实现退出的时候返回到上一个界面
+    同时在退出的时候会清空之前的输入
 by 廖雨龙
 """
 import tkinter as tk

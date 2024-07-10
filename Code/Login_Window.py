@@ -5,6 +5,7 @@ by 刘杨健
 """
 import tkinter as tk
 from Student_Window import show_student_window
+from Teacher_Window import show_teacher_window
 # 主窗口设置
 
 login_window = tk.Tk()
@@ -78,6 +79,7 @@ def log_in():
             login_hit=1
         elif identity_var.get()=='老师':
             login_hit=2
+            show_teacher_window(login_window,username_entry,password_entry)
         else:                   # 学生
             login_hit=3
             show_student_window(login_window,username_entry,password_entry)
