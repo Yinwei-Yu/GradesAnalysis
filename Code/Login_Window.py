@@ -4,7 +4,7 @@
 by 刘杨健
 """
 import tkinter as tk
-
+from Student_Window import show_student_window
 # 主窗口设置
 
 login_window = tk.Tk()
@@ -58,7 +58,7 @@ login_label.place(x=240, y=280)
 
 # 按钮+函数，传出的内容显示在标签上，内容通过var传递
 
-#登录信号，初始为0，学生登录为1，教师登录为2，管理员登录为3
+# 登录信号，初始为0，学生登录为1，教师登录为2，管理员登录为3
 login_hit = 0
 
 def log_in():
@@ -73,13 +73,14 @@ def log_in():
         login_var.set('请选择身份')
     else:
         login_var.set('成功登录')
-        login_window.destroy()
+        login_window.withdraw()
         if identity_var.get()=='管理员':
             login_hit=1
         elif identity_var.get()=='老师':
             login_hit=2
         else:                   # 学生
             login_hit=3
+            show_student_window(login_window,username_entry,password_entry)
     print(login_hit)
 
 # 退出函数
