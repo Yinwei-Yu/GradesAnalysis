@@ -1,3 +1,10 @@
+'''
+2024/7/5
+    class CheckApplication
+        __init__()
+        printCheckApplication()
+by  沈智恺
+'''
 class CheckApplication:
 
     def __init__(self, teacherName, stuName, stuID, subject):
@@ -13,5 +20,5 @@ class CheckApplication:
 
 if __name__ == '__main__':
     People = CheckApplication('szk', '2023302112035', '物理')
-    print(People.createCheckApplication())
+    print(People.printCheckApplication())
 
