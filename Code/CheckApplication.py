@@ -22,4 +22,3 @@ class CheckApplication:
 if __name__ == '__main__':
     People = CheckApplication('lf','szk', '2023302112035', '物理')
     print(People.printCheckApplication())
-
