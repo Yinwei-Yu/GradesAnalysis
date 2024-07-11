@@ -3,7 +3,7 @@ import pymysql
 
 '''
 2024/7/11：
-    该模块实现在MySQL数据库中创建表
+    createTable该模块实现在MySQL数据库中创建表
 by陈邱华
 '''
 
@@ -22,10 +22,10 @@ def createTable(table_name, host, user, password, port, charset, database):
     # sql = ('create table {} (姓名 varchar(20) not null, 学号 varchar(20) not null, '
     #        '语文 varchar(20) not null,数学 varchar(20) not null)').format(
     #     table_name)
-    sql = ('create table {} (姓名 varchar(20) not null, 学号 varchar(20) not null, 语文 varchar(20) not null,'
-           '数学 varchar(20) not null, 英语 varchar(20) not null, 物理 varchar(20) not null, 化学 varchar(20) not null,'
-           ' 生物 varchar(20) not null, 历史 varchar(20) not null, 政治 varchar(20) not null, 地理 varchar(20) not null,'
-           ' 总分 varchar(20) not null);').format(table_name)
+    sql = (f'create table {table_name} (姓名 varchar(20) not null, 学号 varchar(20) not null, 语文 varchar(20) not null,'
+           f'数学 varchar(20) not null, 英语 varchar(20) not null, 物理 varchar(20) not null, 化学 varchar(20) not null,'
+           f' 生物 varchar(20) not null, 历史 varchar(20) not null, 政治 varchar(20) not null, 地理 varchar(20) not null,'
+           f' 总分 varchar(20) not null);')
 
     try:
         cursor.execute(sql)
