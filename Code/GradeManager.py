@@ -54,6 +54,11 @@ GradeManager
     saveGradesToMySQL()//将学生成绩存储到数据库
 
 by陈邱华
+
+2024/7/11
+GradeManager
+   补充了inputMysQL()
+   by 刘链凯
 '''
 
 import os
@@ -68,7 +73,6 @@ import Grades as gr
 import Student as stu
 from Subject import *
 from mysql1 import createTable
-
 
 class GradeManager:
 
@@ -135,7 +139,6 @@ class GradeManager:
 
     # 待实现
     def inputMySQL(self,
-                   path='./excelFiles/rankedCSV.csv',  # 文件路径
                    host="mysql.sqlpub.com",  # 主机地址
                    user="orangeisland66",  # 数据库用户名
                    password="HM1620kJfibETKIE",  # 密码
@@ -153,6 +156,30 @@ class GradeManager:
             )
         except Exception as e:
             print('无法连接至数据库{}'.format(database), e)
+        # 创建游标
+        cursor = mydb.cursor(dictionary=True)
+
+        # 执行SQL查询语句
+        query = f"SELECT * FROM {table}"
+        cursor.execute(query)
+        # 获取所有记录列表
+        results = cursor.fetchall()
+        # 将结果转换为DataFrame
+        df = pd.DataFrame(results)
+        print(df)
+        for index, row in df.iterrows():
+            grades = gr.Grades(
+                Chinese(row['语文']), Math(row['数学']), English(row['英语']),
+                Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
+                History(row['历史']), Politics(row['政治']), Geography(row['地理'])
+            )
+            stuTemp = stu.Student(row['姓名'], row['学号'], grades)
+            self.student.append(stuTemp)
+        self.stuNum = len(self.student)
+
+        if mydb.is_connected():
+            cursor.close()
+            mydb.close()
 
     # 导入学生成绩 mode==1单个导入，arg接收学生姓名学号和成绩信息
     # mode==2时接受文件路径
@@ -499,12 +526,12 @@ class GradeManager:
 # gradeManager=GradeManager()
 gradeManager = GradeManager([], 0, [], 0)
 
-gradeManager.inputCSV("./excelFiles/student_grades.csv")
-
+#gradeManager.inputCSV("./excelFiles/student_grades.csv")
+gradeManager.inputMySQL()
 gradeManager.sortGrades()
 gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
 gradeManager.saveGradesToMySQL()
-# gradeManager.inputMySQL()
+
 # gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
 
 # 测试函数
