@@ -95,7 +95,7 @@ class AccountManager:
             return False
         else:
             self.password = newPassword
-            self.saveUserInfo()
+            self.saveUserInfoToCSV()
             return True
 
     # 创建新用户名
@@ -114,7 +114,7 @@ class AccountManager:
             if flag == 2:
                 self.users.update({ID: User_Teacher(userName, password, ID, flag)})
             print("成功创建用户名！")
-            self.saveUserInfo()
+            self.saveUserInfoToCSV()
             return True
         else:
             print("该用户名已被创建！")
@@ -135,23 +135,29 @@ class AccountManager:
     def changeUserName(self, newUserName: str) -> bool:
         if self.users[self.ID].setUserName(newUserName) is True:
             self.userName = newUserName
-            self.saveUserInfo()
+            self.saveUserInfoToCSV()
             return True
         else:
             return False
 
-    # 保存用户信息，便于下次系统启动时获取信息
-    def saveUserInfo(self):
+    def getUserInofoTable(self):
+        data = []
         user_name_list = [self.users[key].userName for key in self.users]
         user_password_list = [self.users[key].password for key in self.users]
         user_ID_list = [self.users[key].ID for key in self.users]
         user_flag_list = [self.users[key].flag for key in self.users]
         data = {'用户名': user_name_list, '密码': user_password_list, '学号/工号': user_ID_list, '类型': user_flag_list}
+        return data
 
+    # 保存用户信息，便于下次系统启动时获取信息
+    def saveUserInfoToCSV(self):
+        data = self.getUserInofoTable()
         df = pd.DataFrame(data)
-
         df.to_csv('./excelFiles/users.csv', index=False, mode='w')
 
+    def saveUserInfoToMySQL(self):
+        data = self.getUserInofoTable()
+        df= pd.DataFrame(data)
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
     def refreshUserInfo(self):
@@ -162,7 +168,7 @@ class AccountManager:
                 self.users.update(
                     {student.stuID: User(self.users[student.stuID].userName, self.users[student.stuID].password,
                                          student.stuID, 3)})
-        self.saveUserInfo()
+        self.saveUserInfoToCSV()
 
     # 获取成绩
     # mode==1时返回学生分析
@@ -297,7 +303,7 @@ if __name__ == "__main__":
 
                 if op == 10:
                     accountManager.logout()
-                    accountManager.saveUserInfo()
+                    accountManager.saveUserInfoToCSV()
                     break
 
 # accountManager.inputUsers("./users.csv")
