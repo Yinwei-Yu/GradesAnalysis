@@ -1,8 +1,10 @@
+import mysql.connector  # pip install mysql-connector-python
 import pandas as pd
 
 from GradeManager import gradeManager
 from MySQLInfo import *
 from User import *
+from createMySQLTable import *
 
 '''
 2024/7/8
@@ -15,7 +17,7 @@ AccountManager类
     printUserInfo()
     changeUserName()
     saveUserInfo()
-    
+
 by陈邱华
 
 2024/7/9
@@ -46,11 +48,11 @@ class AccountManager:
         for index, row in df.iterrows():
             flag = row['类型']
             if flag == 1:
-                user = User_Administrator(row['用户名'], str(row['密码']), row['学号/工号'], flag)
+                user = User_Administrator(row['用户名'], str(row['密码']), row['学号或工号'], flag)
             if flag == 2:
-                user = User_Teacher(row['用户名'], str(row['密码']), row['学号/工号'], flag)
+                user = User_Teacher(row['用户名'], str(row['密码']), row['学号或工号'], flag)
             if flag == 3:
-                user = User_Student(row['用户名'], str(row['密码']), row['学号/工号'], flag)
+                user = User_Student(row['用户名'], str(row['密码']), row['学号或工号'], flag)
 
             self.users.update({user.ID: user})
             # print(type(user))
@@ -147,7 +149,7 @@ class AccountManager:
         user_password_list = [self.users[key].password for key in self.users]
         user_ID_list = [self.users[key].ID for key in self.users]
         user_flag_list = [self.users[key].flag for key in self.users]
-        data = {'用户名': user_name_list, '密码': user_password_list, '学号/工号': user_ID_list, '类型': user_flag_list}
+        data = {'用户名': user_name_list, '密码': user_password_list, '学号或工号': user_ID_list, '类型': user_flag_list}
         return data
 
     # 保存用户信息，便于下次系统启动时获取信息
@@ -161,10 +163,51 @@ class AccountManager:
                             user=user,  # 数据库用户名
                             password=password,  # 密码
                             database=database,  # 数据库名称
-                            table=table  # 数据库表名
+                            table=usersTable,  # 数据库表名
                             ):
+        # 将数据转换为 DataFrame
         data = self.getUserInofoTable()
         df = pd.DataFrame(data)
+        # print(df)
+        # 将dataframe保存至数据库
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        # 先清空表格
+        sql = 'TRUNCATE TABLE {};'.format(table)
+        # mycursor.execute(sql)
+        try:
+            mycursor.execute(sql)
+        except mysql.connector.errors.ProgrammingError as e:
+            print("表格还未创建，正在创建表格……", e)
+            createCheckApplicationsTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+
+        mycursor.close()
+        mycursor = mydb.cursor()
+        # 遍历Excel表格中的每一行，并将每一行插入到数据库中
+        for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
+            sql = (f'INSERT INTO {table} '
+                   f'(用户名,密码,学号或工号,类型) '
+                   f'VALUES (%s,%s,%s,%s)')
+            val = row  # 插入的数据
+            print("正在插入数据至数据库{}:".format(database), val)  # 输出正在插入的数据
+            mycursor.execute(sql, val)  # 执行SQL插入语句
+
+        # 提交更改并关闭数据库连接
+        mydb.commit()  # 提交更改
+        mycursor.close()  # 关闭游标对象
+        mydb.close()  # 关闭数据库连接
 
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
@@ -254,10 +297,11 @@ if __name__ == "__main__":
             while True:
                 print(
                     '请输入选项：\n1、查看成绩\n2、修改账号名称\n3、修改密码\n4、导入学生账号\n5、查看成绩修改申请单\n'
-                    '6、输出当前账号信息\n7、输出所有账号信息\n8、查看所有学生成绩\n9、查看成绩复核申请表\n10、登出账号\n')
+                    '6、输出当前账号信息\n7、输出所有账号信息\n8、查看所有学生成绩\n9、查看成绩复核申请表\n10、保存成绩信息至数据库\n'
+                    '11、保存用户信息至数据库\n12、保存成绩审核申请表至数据库\n13、退出至登录界面')
 
                 op = eval(input())
-                if op <= 0 or op > 9:
+                if op <= 0 or op > 13:
                     continue
                 if op == 1:
                     accountManager.getGrades(2)
@@ -308,8 +352,25 @@ if __name__ == "__main__":
 
                 if op == 9:
                     accountManager.printCheckApplication()
+                    print('按enter继续……')
+                    input()
 
                 if op == 10:
+                    gradeManager.saveGradesToMySQL()
+                    print('按enter继续……')
+                    input()
+
+                if op == 11:
+                    accountManager.saveUserInfoToMySQL()
+                    print('按enter继续……')
+                    input()
+
+                if op == 12:
+                    gradeManager.saveCheckApplicationsToMySQL()
+                    print('按enter继续……')
+                    input()
+
+                if op == 13:
                     accountManager.logout()
                     accountManager.saveUserInfoToCSV()
                     break

@@ -71,9 +71,10 @@ import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
 import CheckApplication
 import Grades as gr
 import Student as stu
-from Subject import *
-from mysql1 import createTable
 from MySQLInfo import *
+from Subject import *
+from createMySQLTable import *
+
 
 class GradeManager:
 
@@ -144,7 +145,7 @@ class GradeManager:
                    user=user,  # 数据库用户名
                    password=password,  # 密码
                    database=database,  # 数据库名称
-                   table=table,  # 数据库表名
+                   table=rankedGradesTable,  # 数据库表名
                    ):
 
         global mydb
@@ -215,21 +216,10 @@ class GradeManager:
                 self.checkApplication.append(check_application)
                 self.checkApplicationNum = len(self.checkApplication)
                 # print(self.checkApplicationNum)
-                self.saveCheckApplication()
+                self.saveCheckApplicationsToCSV()
                 return True
 
         return False
-
-    def saveCheckApplication(self):
-        teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
-        stu_name_list = [check_application.stuName for check_application in self.checkApplication]
-        stu_ID_list = [check_application.stuID for check_application in self.checkApplication]
-        subject_list = [check_application.subjectToCheck for check_application in self.checkApplication]
-        data = {'申请老师': teacher_name_list, '被申请学生姓名': stu_name_list, '学生学号': stu_ID_list,
-                '申请科目': subject_list}
-
-        df = pd.DataFrame(data)
-        df.to_csv('./excelFiles/checkApplications.csv', index=False, mode='w')
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
@@ -279,7 +269,7 @@ class GradeManager:
         try:
             self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
             self.saveGradesToCSV('excelFiles/rankedCSV.csv')
-            self.saveGradesToMySQL()
+            # self.saveGradesToMySQL()
             return True
         except Exception as e:
             print(f"排序时出现错误: {e}")
@@ -479,7 +469,7 @@ class GradeManager:
                           user=user,  # 数据库用户名
                           password=password,  # 密码
                           database=database,  # 数据库名称
-                          table=table,  # 数据库表名
+                          table=rankedGradesTable,  # 数据库表名
                           ):
         # 将数据转换为 DataFrame
         df = pd.DataFrame(self.getGradesTable())
@@ -506,7 +496,7 @@ class GradeManager:
             mycursor.execute(sql)
         except mysql.connector.errors.ProgrammingError as e:
             print("表格还未创建，正在创建表格……", e)
-            createTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+            createRankedGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
         mycursor.close()
         mycursor = mydb.cursor()
@@ -524,17 +514,87 @@ class GradeManager:
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
 
+    def getCheckApplicaionsTable(self):
+        teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
+        stu_name_list = [check_application.stuName for check_application in self.checkApplication]
+        stu_ID_list = [check_application.stuID for check_application in self.checkApplication]
+        subject_list = [check_application.subjectToCheck for check_application in self.checkApplication]
+        data = {'申请老师': teacher_name_list, '被申请学生姓名': stu_name_list, '学生学号': stu_ID_list,
+                '申请科目': subject_list}
+        return data
+
+    def saveCheckApplicationsToCSV(self):
+        teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
+        stu_name_list = [check_application.stuName for check_application in self.checkApplication]
+        stu_ID_list = [check_application.stuID for check_application in self.checkApplication]
+        subject_list = [check_application.subjectToCheck for check_application in self.checkApplication]
+        data = {'申请老师': teacher_name_list, '被申请学生姓名': stu_name_list, '学生学号': stu_ID_list,
+                '申请科目': subject_list}
+
+        df = pd.DataFrame(data)
+        df.to_csv('./excelFiles/checkApplications.csv', index=False, mode='w')
+
+    def saveCheckApplicationsToMySQL(self,
+                                     host=host,  # 主机地址
+                                     user=user,  # 数据库用户名
+                                     password=password,  # 密码
+                                     database=database,  # 数据库名称
+                                     table=checkApplicationsTable,  # 数据库表名
+                                     ):
+        # 将数据转换为 DataFrame
+        df = pd.DataFrame(self.getCheckApplicaionsTable())
+        print(df)
+        # print(df)
+        # 将dataframe保存至数据库
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        # 先清空表格
+        sql = 'TRUNCATE TABLE {};'.format(table)
+        # mycursor.execute(sql)
+        try:
+            mycursor.execute(sql)
+        except mysql.connector.errors.ProgrammingError as e:
+            print("表格还未创建，正在创建表格……", e)
+            createCheckApplicationsTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+
+        mycursor.close()
+        mycursor = mydb.cursor()
+        # 遍历Excel表格中的每一行，并将每一行插入到数据库中
+        for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
+            sql = (f"INSERT INTO {table} "
+                   f"(申请老师,被申请学生姓名,学生学号,申请科目) "
+                   f"VALUES (%s,%s,%s,%s)")
+            val = row  # 插入的数据
+            print("正在插入数据至数据库{}:".format(database), val)  # 输出正在插入的数据
+            mycursor.execute(sql, val)  # 执行SQL插入语句
+
+        # 提交更改并关闭数据库连接
+        mydb.commit()  # 提交更改
+        mycursor.close()  # 关闭游标对象
+        mydb.close()  # 关闭数据库连接
+
 
 # gradeManager=GradeManager()
 gradeManager = GradeManager([], 0, [], 0)
 
 gradeManager.inputCSV("./excelFiles/student_grades.csv")
-gradeManager.inputMySQL()
-#gradeManager.renewTotalGrade()
+# gradeManager.inputMySQL()
+# gradeManager.renewTotalGrade()
 gradeManager.sortGrades()
-gradeManager.saveGradesToMySQL()
+# gradeManager.saveGradesToMySQL()
 gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
-
 
 # gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
 

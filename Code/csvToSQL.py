@@ -11,7 +11,7 @@ by陈邱华
 path: 
 
 '''
-from mysql1 import createTable
+from createMySQLTable import createRankedGradesTable
 
 
 def insert_excel_data_to_mysql(path, host, user, password, database, table):
@@ -65,7 +65,7 @@ def insert_excel_data_to_mysql(path, host, user, password, database, table):
     except mysql.connector.errors.ProgrammingError as e:
 
         print("表格还未创建，正在创建表格……", e)
-        createTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+        createRankedGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
     mycursor.close()
     mycursor = mydb.cursor()
