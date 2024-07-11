@@ -22,6 +22,7 @@ class Grades:
         self.totalScores = (
                 chinese.score + math.score + english.score + physics.score + chemistry.score + biology.score + history.score +
                 politics.score + geography.score)
+        #print(self.totalScores)
         self.grades = [chinese, math, english, physics, chemistry, biology,
                        history, politics, geography]
         self.gradesAnalysis: str = ""

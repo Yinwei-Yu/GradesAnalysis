@@ -1,6 +1,7 @@
 import pandas as pd
 
 from GradeManager import gradeManager
+from MySQLInfo import *
 from User import *
 
 '''
@@ -155,9 +156,16 @@ class AccountManager:
         df = pd.DataFrame(data)
         df.to_csv('./excelFiles/users.csv', index=False, mode='w')
 
-    def saveUserInfoToMySQL(self):
+    def saveUserInfoToMySQL(self,
+                            host=host,  # 主机地址
+                            user=user,  # 数据库用户名
+                            password=password,  # 密码
+                            database=database,  # 数据库名称
+                            table=table  # 数据库表名
+                            ):
         data = self.getUserInofoTable()
-        df= pd.DataFrame(data)
+        df = pd.DataFrame(data)
+
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
     def refreshUserInfo(self):

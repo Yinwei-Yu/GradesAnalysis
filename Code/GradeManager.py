@@ -73,6 +73,7 @@ import Grades as gr
 import Student as stu
 from Subject import *
 from mysql1 import createTable
+from MySQLInfo import *
 
 class GradeManager:
 
@@ -114,9 +115,9 @@ class GradeManager:
         df = pd.read_csv(path)
         for index, row in df.iterrows():
             grades = gr.Grades(
-                Chinese(row['语文']), Math(row['数学']), English(row['英语']),
-                Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
-                History(row['历史']), Politics(row['政治']), Geography(row['地理'])
+                Chinese(int(row['语文'])), Math(int(row['数学'])), English(int(row['英语'])),
+                Physics(int(row['物理'])), Chemistry(int(row['化学'])), Biology(int(row['生物'])),
+                History(int(row['历史'])), Politics(int(row['政治'])), Geography(int(row['地理']))
             )
             stuTemp = stu.Student(row['姓名'], row['学号'], grades)
             self.student.append(stuTemp)
@@ -139,11 +140,11 @@ class GradeManager:
 
     # 待实现
     def inputMySQL(self,
-                   host="mysql.sqlpub.com",  # 主机地址
-                   user="orangeisland66",  # 数据库用户名
-                   password="HM1620kJfibETKIE",  # 密码
-                   database="orangeisland66",  # 数据库名称
-                   table="rankedGrades",  # 数据库表名
+                   host=host,  # 主机地址
+                   user=user,  # 数据库用户名
+                   password=password,  # 密码
+                   database=database,  # 数据库名称
+                   table=table,  # 数据库表名
                    ):
 
         global mydb
@@ -169,9 +170,9 @@ class GradeManager:
         print(df)
         for index, row in df.iterrows():
             grades = gr.Grades(
-                Chinese(row['语文']), Math(row['数学']), English(row['英语']),
-                Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
-                History(row['历史']), Politics(row['政治']), Geography(row['地理'])
+                Chinese(int(row['语文'])), Math(int(row['数学'])), English(int(row['英语'])),
+                Physics(int(row['物理'])), Chemistry(int(row['化学'])), Biology(int(row['生物'])),
+                History(int(row['历史'])), Politics(int(row['政治'])), Geography(int(row['地理']))
             )
             stuTemp = stu.Student(row['姓名'], row['学号'], grades)
             self.student.append(stuTemp)
@@ -190,7 +191,7 @@ class GradeManager:
         elif mode == 2:
             self.inputMore(*args)
         elif mode == 3:
-            self.inputMySQL(*args)#待实现
+            self.inputMySQL(*args)
         else:
             print("非法的导入模式！")
             return False
@@ -278,6 +279,7 @@ class GradeManager:
         try:
             self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
             self.saveGradesToCSV('excelFiles/rankedCSV.csv')
+            self.saveGradesToMySQL()
             return True
         except Exception as e:
             print(f"排序时出现错误: {e}")
@@ -473,11 +475,11 @@ class GradeManager:
 
     # 将学生成绩数据保存到数据库中
     def saveGradesToMySQL(self,
-                          host="mysql.sqlpub.com",  # 主机地址
-                          user="orangeisland66",  # 数据库用户名
-                          password="HM1620kJfibETKIE",  # 密码
-                          database="orangeisland66",  # 数据库名称
-                          table="rankedGrades",  # 数据库表名
+                          host=host,  # 主机地址
+                          user=user,  # 数据库用户名
+                          password=password,  # 密码
+                          database=database,  # 数据库名称
+                          table=table,  # 数据库表名
                           ):
         # 将数据转换为 DataFrame
         df = pd.DataFrame(self.getGradesTable())
@@ -526,11 +528,13 @@ class GradeManager:
 # gradeManager=GradeManager()
 gradeManager = GradeManager([], 0, [], 0)
 
-#gradeManager.inputCSV("./excelFiles/student_grades.csv")
+gradeManager.inputCSV("./excelFiles/student_grades.csv")
 gradeManager.inputMySQL()
+#gradeManager.renewTotalGrade()
 gradeManager.sortGrades()
-gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
 gradeManager.saveGradesToMySQL()
+gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
+
 
 # gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
 
