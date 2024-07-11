@@ -16,6 +16,7 @@ by 廖雨龙
 import tkinter as tk
 from tkinter import messagebox
 
+
 # 修改了一下
 # 如果登录窗口收到的信号为1，则关闭登录窗口，打开学生窗口
 # if login_hit == 3:
@@ -27,15 +28,17 @@ def query_scores():
     # 这里要添加查询成绩的操作
     messagebox.showinfo("查询成绩", "这里是查询成绩的结果")
 
+
 # 修改用户名和密码的函数 未完成
 def modify_credentials():
     # 这里添加修改用户名和密码的操作
     messagebox.showinfo("修改用户名密码", "修改完成")
 
+
 # 实现用户的登出 回到主窗口 同时会清空原来输入的账号和密码
-def log_out(stu_window, login_window,username_entry,password_entry):
-    username_entry.delete(0,tk.END)
-    password_entry.delete(0,tk.END)
+def log_out(stu_window, login_window, username_entry, password_entry):
+    username_entry.delete(0, tk.END)
+    password_entry.delete(0, tk.END)
     stu_window.destroy()
     login_window.deiconify()
 
@@ -46,7 +49,7 @@ def log_out(stu_window, login_window,username_entry,password_entry):
 
 
 # 显示学生窗口的函数
-def show_student_window(login_window,username_entry,password_entry):
+def show_student_window(login_window, username_entry, password_entry):
     stu_window = tk.Toplevel()
     stu_window.title("Student Window")
     # 标题
@@ -59,6 +62,7 @@ def show_student_window(login_window,username_entry,password_entry):
     modify_button = tk.Button(stu_window, text="修改用户名密码", command=modify_credentials, width=30, height=3)
     modify_button.pack(pady=10)
     # 退出登陆按钮
-    exit_button = tk.Button(stu_window, text="退出登录", command=lambda: log_out(stu_window, login_window,username_entry
-                                                                                 ,password_entry), width=30,height=3)
+    exit_button = tk.Button(stu_window, text="退出登录",
+                            command=lambda: log_out(stu_window, login_window, username_entry
+                                                    , password_entry), width=30, height=3)
     exit_button.pack(pady=10)
