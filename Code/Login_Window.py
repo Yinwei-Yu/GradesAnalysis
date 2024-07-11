@@ -52,14 +52,7 @@ login_label.place(x=250,y=250)
 
 
 
-"""
-登录函数会检测学号和密码的输入是否为空，当二者均不为空时，获取到的学号和密码分别存放于userid 和 password中
-此时需要访问数据库查询对应账户，根据查询的结果进行页面跳转
-1、学号不存在，提示用户不存在
-2、学号存在，密码错误，提示用户重新输入密码，五次之后禁止再输入
 
-查询函数应返回identity信号，用于界面跳转
-"""
 
 # 身份信号，初始为0，学生登录为3，教师登录为2，管理员登录为1
 identity = 0
@@ -69,14 +62,23 @@ is_exist=False
 
 # 查询函数，应访问数据库，返回查询结果,密码错误，identity=0，否则返回相应的identity值
 def find_user(userid,password):
-    is_exist=False # 返回是否存在
+    is_exist=True # 返回是否存在
     identity=0
     return is_exist,identity
 
 # 记录密码错误次数
 fault_times=0
+
+"""
+登录函数会检测学号和密码的输入是否为空，当二者均不为空时，获取到的学号和密码分别存放于userid 和 password中
+此时需要访问数据库查询对应账户，根据查询的结果进行页面跳转
+1、学号不存在，提示用户不存在
+2、学号存在，密码错误，提示用户重新输入密码，五次之后禁止再输入
+
+查询函数返回identity信号，用于界面跳转
+"""
 def log_in():
-    global identity
+    global identity,fault_times
     if userid_entry.get()=="" and password_entry.get()=="":
         login_var.set('请输入学号/工号和密码')
     elif userid_entry.get()=="" and not password_entry.get()=="":
@@ -91,18 +93,18 @@ def log_in():
         if res_is_exist==False:     # 用户不存在
             login_var.set('用户不存在！')
         else:
-            if identity==0:
+            if res_identity==0:
                 fault_times+=1
                 login_var.set(f'密码错误，你还可以输入{5-fault_times}次')
-            elif identity==3:
+            elif res_identity==3:
                 login_window.withdraw()
-                show_student_window(login_window, username_entry, password_entry)
-            elif identity==2:
+                show_student_window(login_window, userid_entry, password_entry)
+            elif res_identity==2:
                 login_window.withdraw()
-                show_teacher_window(login_window, username_entry, password_entry)
+                show_teacher_window(login_window, userid_entry, password_entry)
             else:   # identity==1
                 pass
-        login_var.set('成功登录')
+        # login_var.set('成功登录')
 
     # 测试代码
     # print(userid_entry.get(),password_entry.get())
@@ -111,9 +113,6 @@ def log_in():
 def log_out():
     login_window.destroy()
 
-#登录函数
-def m_register():
-    print('跳转到注册界面')
 
 # 添加command参数补充按钮功能
 # 注册、登录、退出按钮
