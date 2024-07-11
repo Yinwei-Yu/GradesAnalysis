@@ -67,6 +67,7 @@ import CheckApplication
 import Grades as gr
 import Student as stu
 from Subject import *
+from mysql1 import createTable
 
 
 class GradeManager:
@@ -465,12 +466,21 @@ class GradeManager:
             )
         except Exception as e:
             print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
 
         # 创建一个游标对象
         mycursor = mydb.cursor()
         # 先清空表格
         sql = 'TRUNCATE TABLE {};'.format(table)
-        mycursor.execute(sql)
+        # mycursor.execute(sql)
+        try:
+            mycursor.execute(sql)
+        except mysql.connector.errors.ProgrammingError as e:
+            print("表格还未创建，正在创建表格……", e)
+            createTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+
+        mycursor.close()
+        mycursor = mydb.cursor()
         # 遍历Excel表格中的每一行，并将每一行插入到数据库中
         for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
             sql = (f"INSERT INTO {table} "
