@@ -64,7 +64,7 @@ is_exist=False
 # 查询函数，应访问数据库，返回查询结果,密码错误，identity=0，否则返回相应的identity值
 def find_user(userid,password):
     is_exist=True # 返回是否存在
-    identity=0
+    identity=3
     return is_exist,identity
 
 # 记录密码错误次数

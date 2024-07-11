@@ -268,6 +268,8 @@ class GradeManager:
     def sortGrades(self):
         try:
             self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
+            for i in range(len(self.student)):
+                self.student[i].stuGrades.totalRanking = i + 1
             self.saveGradesToCSV('excelFiles/rankedCSV.csv')
             # self.saveGradesToMySQL()
             return True
