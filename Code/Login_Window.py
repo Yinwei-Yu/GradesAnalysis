@@ -7,6 +7,7 @@ by 刘杨健
 """
 2024/7/11
     Login_Window调整登录界面
+    补充登录检测机制
 by 刘杨健
 """
 import tkinter as tk
