@@ -5,7 +5,9 @@ by 刘杨健
 """
 
 import tkinter as tk
-
+def last_step(current_window, previous_window):
+    previous_window.deiconify()
+    current_window.destroy()
 # 导入成绩函数
 def import_grades():
     pass
@@ -17,15 +19,35 @@ def admin_disp_grads():
 
 
 # 查看成绩申请表函数
-def admin_disp_apps():
+def admin_disp_apps(admin_window):
+# admin_window.withdraw()
+    # page2 = tk.Toplevel(admin_window)
+    # page2.title('申请表信息')
+    # page2.geometry("600x400")
+    # l2 = tk.Label(page2,text='申请表信息', font=("楷体", 20))
+    # l2.pack()
+    # page2.focus_force()
+    # page2.mainloop()
+    # last_step_button = tk.Button(_window, text='返回上一步', command=lambda: last_step(grade_window, tea_window),
+    #                              width=30, height=3)
+    # last_step_button.pack(pady=10)
     pass
-
 
 # 查看所有用户
-def admin_disp_users():
+def admin_disp_users(admin_window):
+    # admin_window.withdraw()
+    # user_window = tk.Toplevel(admin_window)
+    # user_window.title('账号信息')
+    # user_window.geometry("600x400")
+    # l1 = tk.Label(user_window,text='账号信息', font=("楷体", 20))
+    # l1.pack()
+    # user_window.focus_force()
+    # user_window.mainloop()
+    # last_step_button = tk.Button(user_window, text='返回上一步', command=lambda: last_step(user_window, admin_window),
+    #                              width=30, height=3)
+    # last_step_button.pack(pady=10)
+    # user_window.mainloop()
     pass
-
-
 # 修改密码
 def admin_modify_password():
     pass
@@ -63,11 +85,11 @@ def show_admin_window(login_window, username_entry, password_entry):
     bt_show_grades.place(x=180,y=100)
 
     # 查看成绩复核申请表
-    bt_show_apps = tk.Button(admin_window, text='查看成绩复核申请表', command=admin_disp_apps, font=('楷体', 18),width=20,height=1)
+    bt_show_apps = tk.Button(admin_window, text='查看成绩复核申请表', command=admin_disp_apps(admin_window), font=('楷体', 18),width=20,height=1)
     bt_show_apps.place(x=180,y=160)
 
     # 查看所有账户信息
-    bt_show_users = tk.Button(admin_window, text='查看账户信息', command=admin_disp_users, font=('楷体', 18),width=20,height=1)
+    bt_show_users = tk.Button(admin_window, text='查看账户信息', command=admin_disp_users(admin_window), font=('楷体', 18),width=20,height=1)
     bt_show_users.place(x=180,y=220)
 
     # 修改密码（包括修改管理员的密码和重置用户的密码）
