@@ -69,10 +69,10 @@ class AccountManager:
     # password:str 从前端获得的密码信息
     def login(self, ID: int, password: str):
         if self.users.get(ID) is None:
-            return False, 0  # 用户名不存在
+            return False, 0, 0  # 用户名不存在
         if self.users[ID].password == password:
-            return True, self.users[ID].flag  # 用户名存在且密码正确
-        return True, 0  # 用户存在但密码错误
+            return True, self.users[ID].flag, self.users[ID].userName  # 用户名存在且密码正确
+        return True, 0, 0  # 用户存在但密码错误
 
     # 登出，将类属性重置
     def logout(self) -> bool:

@@ -66,8 +66,8 @@ is_exist = False
 # 查询函数，应访问数据库，返回查询结果,密码错误，identity=0，否则返回相应的identity值
 
 def find_user(userid, password):
-    is_exist, identity = accountManager.login(int(userid), password)
-    return is_exist, identity
+    is_exist, identity, userName = accountManager.login(int(userid), password)
+    return is_exist, identity, userName
 
 
 # 记录密码错误次数
@@ -95,7 +95,7 @@ def log_in():
         userid = userid_entry.get()
         password = password_entry.get()
         # 调用查找函数
-        res_is_exist, res_identity = find_user(userid, password)
+        res_is_exist, res_identity, res_name = find_user(userid, password)
         if not res_is_exist:  # 用户不存在
             login_var.set('用户不存在！')
         else:
