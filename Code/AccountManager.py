@@ -67,18 +67,12 @@ class AccountManager:
     # 账号登录
     # userName:str 从前端获得的用户名
     # password:str 从前端获得的密码信息
-    def login(self, userName: str, password: str, flag: int) -> bool:
-        for ID in self.users:
-            user = self.users[ID]
-            if user.userName == userName and user.password == password and user.flag == flag:
-                self.userName = user.userName
-                self.password = user.password
-                self.ID = user.ID
-                self.flag = user.flag
-                print("登录成功")
-                return True
-        print("登录失败")
-        return False
+    def login(self, ID: int, password: str):
+        if self.users.get(ID) is None:
+            return False, 0  # 用户名不存在
+        if self.users[ID].password == password:
+            return True, self.users[ID].flag  # 用户名存在且密码正确
+        return True, 0  # 用户存在但密码错误
 
     # 登出，将类属性重置
     def logout(self) -> bool:
@@ -299,6 +293,7 @@ class AccountManager:
             check_application.printCheckApplication()
 
 
+accountManager = AccountManager()
 if __name__ == "__main__":
     # gradeManager = GradeManager([], 0, [])
     # gradeManager.inputCSV("./student.csv")
