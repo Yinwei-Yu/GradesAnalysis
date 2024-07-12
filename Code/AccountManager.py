@@ -273,7 +273,9 @@ class AccountManager:
     def getGrades(self, mode, stuID=0) -> list:
         if mode == 1:
             for temp in gradeManager.student:
-                if temp.ID == stuID:
+
+                if temp.stuID == stuID:
+                    print(temp.stuID)
                     return temp
         if mode == 2:
             gradeManager.generateGradesAnalysis(1, 'Chinese')
