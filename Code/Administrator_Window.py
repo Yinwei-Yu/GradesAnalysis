@@ -50,7 +50,7 @@ def admin_disp_apps(admin_window):
                                  width=30, height=3)
     last_step_button.pack()
     page2.mainloop()
-    pass
+
 
 
 # 查看所有用户
@@ -67,6 +67,8 @@ def admin_disp_users(admin_window):
     last_step_button.pack()
     user_window.mainloop()
     pass
+
+
 # 修改密码
 def admin_modify_password():
     pass
@@ -113,8 +115,9 @@ def show_admin_window(login_window, username_entry, password_entry):
     bt_show_apps.place(x=180, y=140)
 
     # 查看所有账户信息
+
     bt_show_users = tk.Button(admin_window, text='查看账户信息', command=lambda:admin_disp_users(admin_window), font=('楷体', 18), width=20,
-                              height=1)
+                            height=1)
     bt_show_users.place(x=180, y=190)
 
     # 修改密码（包括修改管理员的密码和重置用户的密码）
@@ -131,4 +134,5 @@ def show_admin_window(login_window, username_entry, password_entry):
     bt_logout = tk.Button(admin_window, text='退出登录',
                           command=lambda: admin_logout(admin_window, login_window, username_entry, password_entry),
                           font=('楷体', 18), width=20, height=1)
+
     bt_logout.place(x=180, y=340)

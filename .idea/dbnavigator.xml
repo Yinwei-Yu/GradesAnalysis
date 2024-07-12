@@ -56,12 +56,27 @@ db.close()  # 关闭数据库连接]]></console>
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/rankedgrades" />
+      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/checkapplications" />
+      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/users" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.rankedgrades" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.users" active-filter-id="f7bbf0fe-6ba6-44c6-997a-c9c9d90f171d">
+      <filter id="f7bbf0fe-6ba6-44c6-997a-c9c9d90f171d" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="学号或工号" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.checkapplications" active-filter-id="EMPTY_FILTER">
+      <filter id="86425ab4-3efc-46e2-a9f8-972c30b8ea6a" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="学生学号" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
     <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.student_grades" active-filter-id="EMPTY_FILTER">
       <filter id="9ee16a28-6e55-4b09-a37c-e3125b0b7db5" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="姓名" operator="=" value="" active="true" />

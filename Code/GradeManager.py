@@ -464,7 +464,7 @@ class GradeManager:
             data.append(student_data)
         return data
 
-    def saveGradesToCSV(self, path):
+    def saveGradesToCSV(self, path='./excelFiles/student_grades.csv'):
 
         # 将数据转换为 DataFrame
         df = pd.DataFrame(self.getGradesTable())
@@ -499,19 +499,19 @@ class GradeManager:
         # 创建一个游标对象
         mycursor = mydb.cursor()
         # 先清空表格
-        sql = 'TRUNCATE TABLE {};'.format(table)
+        # sql = 'TRUNCATE TABLE {};'.format(table)
         # mycursor.execute(sql)
-        try:
-            mycursor.execute(sql)
-        except mysql.connector.errors.ProgrammingError as e:
-            print("表格还未创建，正在创建表格……", e)
-            createRankedGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+        # try:
+        #     mycursor.execute(sql)
+        # except mysql.connector.errors.ProgrammingError as e:
+        #     print("表格还未创建，正在创建表格……", e)
+        #     createRankedGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
         mycursor.close()
         mycursor = mydb.cursor()
         # 遍历Excel表格中的每一行，并将每一行插入到数据库中
         for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
-            sql = (f"INSERT INTO {table} "
+            sql = (f"INSERT IGNORE INTO {table} "
                    f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "
                    f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
             val = row  # 插入的数据
@@ -571,19 +571,19 @@ class GradeManager:
         # 创建一个游标对象
         mycursor = mydb.cursor()
         # 先清空表格
-        sql = 'TRUNCATE TABLE {};'.format(table)
-        # mycursor.execute(sql)
-        try:
-            mycursor.execute(sql)
-        except mysql.connector.errors.ProgrammingError as e:
-            print("表格还未创建，正在创建表格……", e)
-            createCheckApplicationsTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+        # sql = 'TRUNCATE TABLE {};'.format(table)
+        # # mycursor.execute(sql)
+        # try:
+        #     mycursor.execute(sql)
+        # except mysql.connector.errors.ProgrammingError as e:
+        #     print("表格还未创建，正在创建表格……", e)
+        #     createCheckApplicationsTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
         mycursor.close()
         mycursor = mydb.cursor()
         # 遍历Excel表格中的每一行，并将每一行插入到数据库中
         for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
-            sql = (f"INSERT INTO {table} "
+            sql = (f"INSERT IGNORE INTO {table} "
                    f"(申请老师,被申请学生姓名,学生学号,申请科目) "
                    f"VALUES (%s,%s,%s,%s)")
             val = row  # 插入的数据
@@ -643,7 +643,7 @@ gradeManager = GradeManager([], 0, [], 0)
 gradeManager.inputCSV("./excelFiles/student_grades.csv")
 # gradeManager.inputMySQL()
 # gradeManager.renewTotalGrade()
-# gradeManager.sortGrades()
+gradeManager.sortGrades()
 # gradeManager.saveGradesToMySQL()
 # gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
 # gradeManager.getApplicaFromSql()

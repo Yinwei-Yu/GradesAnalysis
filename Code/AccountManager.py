@@ -148,10 +148,10 @@ class AccountManager:
         return data
 
     # 保存用户信息，便于下次系统启动时获取信息
-    def saveUserInfoToCSV(self):
+    def saveUserInfoToCSV(self, path='./excelFiles/users.csv'):
         data = self.getUserInofoTable()
         df = pd.DataFrame(data)
-        df.to_csv('./excelFiles/users.csv', index=False, mode='w')
+        df.to_csv(path, index=False, mode='w')
 
     def saveUserInfoToMySQL(self,
                             host=host,  # 主机地址
@@ -192,7 +192,7 @@ class AccountManager:
         mycursor = mydb.cursor()
         # 遍历Excel表格中的每一行，并将每一行插入到数据库中
         for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
-            sql = (f'INSERT INTO {table} '
+            sql = (f'INSERT IGNORE INTO {table} '
                    f'(用户名,密码,学号或工号,类型) '
                    f'VALUES (%s,%s,%s,%s)')
             val = row  # 插入的数据
@@ -206,11 +206,11 @@ class AccountManager:
 
     # 从数据库中读取用户信息
     def getUserFromSql(self,
-                       host,  # 主机地址
-                       user,  # 数据库用户名
-                       password,  # 密码
-                       database,  # 数据库名称
-                       table  # 数据库表名
+                       host=host,  # 主机地址
+                       user=user,  # 数据库用户名
+                       password=password,  # 密码
+                       database=database,  # 数据库名称
+                       table=usersTable  # 数据库表名
                        ):
 
         try:
@@ -273,7 +273,9 @@ class AccountManager:
     def getGrades(self, mode, stuID=0) -> list:
         if mode == 1:
             for temp in gradeManager.student:
-                if temp.ID == stuID:
+
+                if temp.stuID == stuID:
+                    print(temp.stuID)
                     return temp
         if mode == 2:
             gradeManager.generateGradesAnalysis(1, 'Chinese')
@@ -291,6 +293,24 @@ class AccountManager:
     def printCheckApplication(self):
         for check_application in gradeManager.checkApplication:
             check_application.printCheckApplication()
+
+    def refreshAll(self):
+        accountManager.saveGradesToMySQL()
+        gradeManager.inputMySQL()
+        gradeManager.saveGradesToCSV()
+        accountManager.refreshUserInfo()
+        accountManager.saveUserInfoToMySQL()
+        accountManager.getUserFromSql()
+        accountManager.saveUserInfoToCSV()
+
+    def inputGrades(self, path):
+        gradeManager.inputGrades(2, path)
+
+    def saveGradesToMySQL(self):
+        gradeManager.saveGradesToMySQL()
+
+    def saveGradesToCSV(self):
+        gradeManager.saveGradesToCSV()
 
 
 accountManager = AccountManager()
