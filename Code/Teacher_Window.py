@@ -3,25 +3,72 @@
     Teacher_Window
     教师的界面
 by 廖雨龙
+
+2024/7/12
+   修改密码中的确认按钮
+   提交申请的确认函数
+by 刘链凯
 """
 import tkinter as tk
 
 
 # 提交申请的确认函数
-def confirm_app(tea_name, stu_name, stuID, sub):
-    pass
+def confirm_app(tea_name, stu_name, stuID, sub,current_window):
+    # 隐藏当前窗口
+    current_window.withdraw()
+
+    # 创建一个新的窗口
+    confirm_window = tk.Toplevel(current_window)
+    confirm_window.title("申请提交确认")
+    confirm_window.geometry("600x400")
+
+    # 显示确认信息
+    confirmation_message = f"教师：{tea_name}\n学生：{stu_name}\n学号：{stuID}\n科目：{sub}\n\n申请已提交！"
+    confirmation_label = tk.Label(confirm_window, text=confirmation_message, font=("Arial", 14))
+    confirmation_label.pack(pady=20)
+
+    # 返回上一步的按钮
+    back_button = tk.Button(confirm_window, text="返回上一步",
+                            command=lambda: last_step(confirm_window, current_window),
+                            width=20, height=2)
+    back_button.pack(pady=10)
+
+    # 将焦点强制转移到新的确认窗口
+    confirm_window.focus_force()
+    confirm_window.mainloop()
 
 
 # 修改密码中的确认按钮  未完成
 # 参数 old:原来的密码 new1:第一次输入的新密码 new2:第二次输入的新的密码
-def confirm_password(old, new1, new2):
-    pass
+def confirm_password(old, new1, new2,password_window):
+    password_window.withdraw()
+    # 创建一个新的窗口，标题，大小
+    confirm_window = tk.Toplevel(password_window)
+    confirm_window.title("密码修改确认")
+    confirm_window.geometry("400x200")
+
+    # 检查密码修改状态并设置标签
+    if new1 == new2 and new1 != old:
+        message = "密码修改成功！"
+    else:
+        message = "密码修改失败，请检查输入！"
+
+    l1 = tk.Label(confirm_window, text=message, font=("Arial", 16))
+    l1.pack(pady=20)
+
+    # 返回上一步的按钮
+    last_step_button = tk.Button(confirm_window, text='返回上一步', command=lambda: last_step(confirm_window, password_window),
+                                 width=15, height=1)
+    last_step_button.pack(pady=10)
+
+    confirm_window.focus_force()
+    confirm_window.mainloop()
 
 
 # 成绩查询中的确认按钮
 # 点击之后会出现一个新的界面,显示是否找到和查找结果
 # 参数 stuID:学生的学号
-def confirm_grade(stuID):
+def confirm_grade(stuID,grade_window):
     pass
 
 
