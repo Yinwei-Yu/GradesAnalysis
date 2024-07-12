@@ -16,7 +16,7 @@ by 廖雨龙
 import tkinter as tk
 from tkinter import messagebox
 
-from AccountManager import accountManager
+
 
 
 # 修改了一下

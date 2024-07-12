@@ -638,12 +638,10 @@ class GradeManager:
 
 
 # gradeManager=GradeManager()
-gradeManager = GradeManager([], 0, [], 0)
 
-gradeManager.inputCSV("./excelFiles/student_grades.csv")
 # gradeManager.inputMySQL()
 # gradeManager.renewTotalGrade()
-gradeManager.sortGrades()
+# gradeManager.sortGrades()
 # gradeManager.saveGradesToMySQL()
 # gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
 # gradeManager.getApplicaFromSql()
@@ -682,9 +680,9 @@ if __name__ == '__main__':
 
     # 测试从csv文件导入
 
-    gradeManager = GradeManager([], 0, [], 0)
-    gradeManager.inputCSV("./excelFiles/student.csv")
-    gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
+    # gradeManager = GradeManager([], 0, [], 0)
+    # gradeManager.inputCSV("./excelFiles/student.csv")
+    # gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
     # manager = GradeManager([], 0, [],0)
     # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
 

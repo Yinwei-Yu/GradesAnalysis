@@ -26,7 +26,7 @@ def createRankedGradesTable(table_name, host, user, password, port, charset, dat
         f'create table if not exists {table_name} (姓名 varchar(20) not null, 学号 varchar(20) not null, 语文 varchar(20) not null,'
         f'数学 varchar(20) not null, 英语 varchar(20) not null, 物理 varchar(20) not null, 化学 varchar(20) not null,'
         f' 生物 varchar(20) not null, 历史 varchar(20) not null, 政治 varchar(20) not null, 地理 varchar(20) not null,'
-        f' 总分 varchar(20) not null);')
+        f' 总分 varchar(20) not null,primary key (学号));')
 
     try:
         cursor.execute(sql)
@@ -85,8 +85,8 @@ def createCheckApplicationsTable(table_name, host, user, password, port, charset
     cursor = db.cursor()
 
     sql = (
-        f'create table if not exists {table_name} (申请老师 varchar(20) not null  , 被申请学生姓名 varchar(20) not null unique , 学生学号 varchar(20) not null unique '
-        f', 申请科目 varchar(20) not null unique );')
+        f'create table if not exists {table_name} (申请老师 varchar(20) not null , 被申请学生姓名 varchar(20) not null , 学生学号 varchar(20) not null  '
+        f', 申请科目 varchar(20) not null ,primary key (被申请学生姓名,申请科目));')
 
     try:
         cursor.execute(sql)
@@ -144,11 +144,11 @@ def createCheckApplicationsTable1(table_name, host, user, password, port, charse
     finally:
         db.close()  # 确保总是关闭数据库连接
 
-host = 'mysql.sqlpub.com'  # 这里输入主机名称一般来说都是localhost
-user = 'orangeisland66'  # 这里输入mysql用户名
-password = 'HM1620kJfibETKIE'  # 这里输入密码
-port = 3306  # 这里输入端口号
-charset = 'utf8mb4'
-database = 'orangeisland66'  # 这里选择数据库
-table_name = 'hello3'
-createUsersTable(table_name, host, user, password, port, charset, database)
+# host = 'mysql.sqlpub.com'  # 这里输入主机名称一般来说都是localhost
+# user = 'orangeisland66'  # 这里输入mysql用户名
+# password = 'HM1620kJfibETKIE'  # 这里输入密码
+# port = 3306  # 这里输入端口号
+# charset = 'utf8mb4'
+# database = 'orangeisland66'  # 这里选择数据库
+# table_name = 'checkapplications'
+# createCheckApplicationsTable(table_name, host, user, password, port, charset, database)

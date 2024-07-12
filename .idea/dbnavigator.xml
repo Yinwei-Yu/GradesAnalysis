@@ -56,11 +56,7 @@ db.close()  # 关闭数据库连接]]></console>
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/rankedgrades" />
-      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/checkapplications" />
-      <object connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" object-ref="schemas/orangeisland66/tables/users" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" />

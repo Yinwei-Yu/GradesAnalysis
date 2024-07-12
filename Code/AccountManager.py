@@ -1,7 +1,6 @@
 import mysql.connector  # pip install mysql-connector-python
 import pandas as pd
 
-from GradeManager import gradeManager
 from MySQLInfo import *
 from User import *
 from createMySQLTable import *
@@ -313,13 +312,13 @@ class AccountManager:
         gradeManager.saveGradesToCSV()
 
 
-accountManager = AccountManager()
+
 if __name__ == "__main__":
     # gradeManager = GradeManager([], 0, [])
     # gradeManager.inputCSV("./student.csv")
     # for x in gradeManager.student:
     #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
-    accountManager = AccountManager()
+    #accountManager = AccountManager()
     while True:
         print('管理员账号：user1，密码：111111')
         print("请输入选项：1、登录，2、注册（仅限管理员和教师），3、退出系统：")
