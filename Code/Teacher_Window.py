@@ -4,7 +4,15 @@
     教师的界面
 by 廖雨龙
 """
+"""
+2024/7/12
+    Teacher_Window
+    优化了教师界面
+by 刘杨健
+"""
+
 import tkinter as tk
+from tkinter import messagebox
 
 
 # 提交申请的确认函数
@@ -15,7 +23,19 @@ def confirm_app(tea_name, stu_name, stuID, sub):
 # 修改密码中的确认按钮  未完成
 # 参数 old:原来的密码 new1:第一次输入的新密码 new2:第二次输入的新的密码
 def confirm_password(old, new1, new2):
-    pass
+    # 创建一个弹窗以显示提示信息
+    if old=='':
+        messagebox.showwarning('请输入旧密码')
+    else:
+        if new1=='':
+            messagebox.showwarning('请输入新密码')
+        elif not new1=='' and new2=='':
+            messagebox.showwarning('请确认新的密码')
+        else:
+            if not new1==new2:
+                messagebox.showerror('新的密码不一致，请重新输入')
+            else:
+                pass
 
 
 # 成绩查询中的确认按钮
@@ -122,30 +142,33 @@ def disp_single_analysis(grade_window):
 # 2. 所有学生成绩分析
 # 3. 查找个人成绩
 # 4. 个人成绩分析
-def disp_grades(tea_window):  # 这里存在一个问题,就是老师选择查看成绩后,原来的窗口无法隐藏 已解决
+def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选择查看成绩后,原来的窗口无法隐藏 已解决
     grade_window = tk.Toplevel(tea_window)
     grade_window.title("查看成绩")
+    grade_window.geometry('600x400')
+    grade_window.resizable(False,False)
     tea_window.withdraw()
 
+    #标题
+    welcome_title = tk.Label(grade_window, text='你好!' + name, font=('楷体', 10), width=10, height=2)
+    welcome_title.place(x=0, y=0)
+
     disp_all_grades_button = tk.Button(grade_window, text='显示所有学生成绩',
-                                       command=lambda: disp_all_grades(grade_window), width=30,
-                                       height=3)
-    disp_all_grades_button.pack(pady=10)
+                                       command=lambda: disp_all_grades(grade_window), font=('楷体', 18),width=20,height=1)
+    disp_all_grades_button.place(x=180,y=40)
     disp_all_analysis_button = tk.Button(grade_window, text='总体成绩分析',
-                                         command=lambda: disp_all_analysis(grade_window), width=30,
-                                         height=3)
-    disp_all_analysis_button.pack(pady=10)
+                                         command=lambda: disp_all_analysis(grade_window), font=('楷体', 18),width=20,height=1)
+    disp_all_analysis_button.place(x=180,y=100)
     disp_single_grade_button = tk.Button(grade_window, text='查看个人成绩',
-                                         command=lambda: disp_single_grade(grade_window), width=30,
-                                         height=3)
-    disp_single_grade_button.pack(pady=10)
+                                         command=lambda: disp_single_grade(grade_window),font=('楷体', 18),width=20,height=1)
+    disp_single_grade_button.place(x=180,y=160)
     disp_single_analysis_button = tk.Button(grade_window, text='查看个人成绩分析',
                                             command=lambda: disp_single_analysis(grade_window),
-                                            width=30, height=3)
-    disp_single_analysis_button.pack(pady=10)
+                                            font=('楷体', 18),width=20,height=1)
+    disp_single_analysis_button.place(x=180,y=220)
     last_step_button = tk.Button(grade_window, text='返回上一步', command=lambda: last_step(grade_window, tea_window),
-                                 width=30, height=3)
-    last_step_button.pack(pady=10)
+                                 font=('楷体', 18),width=20,height=1)
+    last_step_button.place(x=180,y=280)
     grade_window.mainloop()
 
 
@@ -191,32 +214,44 @@ def app_review(tea_window):
 
 
 # 修改自己密码的函数  (复用沈智恺的函数) # 未完成,缺少输入完之后的确认按钮
+"""
+1、没有输入
+    提示‘请输入密码’
+2、没有新的密码
+    提示‘请输入新的密码’
+3、只有新的密码没有原来的密码
+    提示‘请输入原来的密码’
+4、有新的密码和原来的密码
+    提示‘请确认新的密码’
+"""
 def change_my_password(tea_window, var):
     tea_window.withdraw()
     page4 = tk.Toplevel(tea_window)
     page4.title('修改密码')
     page4.geometry("600x400")
     # 修改密码标题
-    tk.Label(page4, text='修改密码', font=("华文行楷", 20)).pack()
+    change_password_title=tk.Label(page4, text='修改密码', font=('华文行楷', 30, 'bold'), width=20, height=2)
+    change_password_title.pack(side='top')
     # 原密码提示标签和文本框
-    tk.Label(page4, text='原密码', font=("Arial", 14)).place(x=100, y=75)
-    tk.Label(page4, text='修改后密码', font=("Arial", 14)).place(x=100, y=150)
-    tk.Label(page4, text='确认密码', font=("Arial", 14)).place(x=100, y=225)
-    ori_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=50)
-    ori_pas_entry.place(x=180, y=80)
-    new_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=44)
+    tk.Label(page4, text='原密码:', font=('楷体', 15)).place(x=100, y=75)
+    tk.Label(page4, text='新的密码:', font=('楷体', 15)).place(x=100, y=150)
+    tk.Label(page4, text='确认密码:', font=('楷体', 15)).place(x=100, y=225)
+    ori_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=38)     # , width=50
+    ori_pas_entry.place(x=220, y=80)
+    new_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=38)     # , width=44
     new_pas_entry.place(x=220, y=155)
-    con_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=47)
-    con_pas_entry.place(x=200, y=230)
+    con_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=38)     # , width=47
+    con_pas_entry.place(x=220, y=230)
     page4.focus_force()
+
     original = ori_pas_entry.get()
     new = new_pas_entry.get()
     confirm = con_pas_entry.get()
     confirm_button = tk.Button(page4, text="确认", command=lambda: confirm_password(original, new, confirm),
-                               width=30, height=3)
-    confirm_button.pack()
-    cancel_button = tk.Button(page4, text="取消", command=lambda: last_step(page4, tea_window), width=30, height=3)
-    cancel_button.pack()
+                               font=('楷体', 12), width=15, height=1)
+    confirm_button.place(x=150,y=300)
+    cancel_button = tk.Button(page4, text="取消", command=lambda: last_step(page4, tea_window), font=('楷体', 12), width=15, height=1)
+    cancel_button.place(x=300,y=300)
     page4.mainloop()
 
 
@@ -237,31 +272,32 @@ def log_out(tea_window, login_window, username_entry, password_entry):
 
 
 # 显示教师界面
-def show_teacher_window(login_window, username_entry, password_entry):
+def show_teacher_window(login_window, userid_entry, password_entry, name):
     tea_window = tk.Toplevel(login_window)
     tea_window.title("Teacher Window")
+    tea_window.geometry('600x400')
     var = tk.StringVar()
     var = None
     # 标题
-    welcome_title = tk.Label(tea_window, text='你好!', font=('Arial', 14), width=20, height=2)
-    welcome_title.pack(side='top')
+    welcome_title = tk.Label(tea_window, text='你好!'+name, font=('楷体', 10), width=10, height=2)
+    welcome_title.place(x=0,y=0)
     # 查看成绩->一个新的页面 包括各种成绩与分析
-    query_button = tk.Button(tea_window, text="查询成绩", command=lambda: disp_grades(tea_window),
-                             width=30, height=3)
-    query_button.pack(pady=10)
+    query_button = tk.Button(tea_window, text="查询成绩", command=lambda: disp_grades(tea_window, name), font=('楷体',18),
+                             width=20, height=2)
+    query_button.place(x=180,y=40)
     # 申请复核成绩按钮
-    app_review_button = tk.Button(tea_window, text="申请复核成绩", command=lambda: app_review(tea_window), width=30,
-                                  height=3)
-    app_review_button.pack(pady=10)
+    app_review_button = tk.Button(tea_window, text="申请复核成绩", command=lambda: app_review(tea_window), font=('楷体',18), width=20,
+                                  height=2)
+    app_review_button.place(x=180,y=120)
     # 修改自己的密码
-    cha_my_button = tk.Button(tea_window, text="修改我的密码", command=lambda: change_my_password(tea_window, var),
-                              width=30, height=3)
-    cha_my_button.pack(pady=10)
+    cha_my_button = tk.Button(tea_window, text="修改我的密码", command=lambda: change_my_password(tea_window, var), font=('楷体',18),
+                              width=20, height=2)
+    cha_my_button.place(x=180,y=200)
     # 修改学生的密码
     # cha_stu_button = tk.Button(tea_window, text="修改学生密码", command=change_stu_password, width=30, height=3)
     # cha_stu_button.pack(pady=10)
     # 退出登录
     exit_button = tk.Button(tea_window, text="退出登录",
-                            command=lambda: log_out(tea_window, login_window, username_entry
-                                                    , password_entry), width=30, height=3)
-    exit_button.pack(pady=10)
+                            command=lambda: log_out(tea_window, login_window, userid_entry
+                                                    , password_entry), font=('楷体',18), width=20, height=2)
+    exit_button.place(x=180,y=280)

@@ -111,7 +111,7 @@ def log_in():
                 show_student_window(login_window, userid_entry, password_entry, res_name)
             elif res_identity == 2:
                 login_window.withdraw()
-                show_teacher_window(login_window, userid_entry, password_entry)
+                show_teacher_window(login_window, userid_entry, password_entry, res_name)
             else:  # identity==1
                 login_window.withdraw()
                 show_admin_window(login_window, userid_entry, password_entry)
