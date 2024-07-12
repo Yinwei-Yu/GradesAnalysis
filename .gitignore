@@ -3,3 +3,7 @@
 *.iml
 .idea/.name
 Code/Administrator_Window1.py
+*.pyc
+*.iml
+*.xml
+*.pyc
