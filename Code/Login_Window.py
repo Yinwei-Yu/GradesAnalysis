@@ -1,107 +1,142 @@
+import tkinter as tk
+from Student_Window import show_student_window
+from Teacher_Window import show_teacher_window
+from Administrator_Window import show_admin_window
 """
 2024/7/9
     Login_Window
 by 刘杨健
 """
-import tkinter as tk
-from Student_Window import show_student_window
-from Teacher_Window import show_teacher_window
+
+"""
+2024/7/11
+    Login_Window调整登录界面
+    补充登录检测机制
+by 刘杨健
+"""
+
+
 # 主窗口设置
 
 login_window = tk.Tk()
 login_window.title('main window')
 login_window.geometry('600x400')
+login_window.resizable(False, False)
 
 # 显示标题，高考成绩管理系统
-first_title = tk.Label(login_window, text='高考成绩管理系统', font=('Arial', 20), width=20, height=2)
+first_title = tk.Label(login_window, text='高考成绩管理系统', font=('华文行楷', 30, 'bold'), width=20, height=2)
 first_title.pack(side='top')
 
-# 用户名和密码的提示标签
-username_label = tk.Label(login_window, text='用户名:', font=('Arial', 10))
-username_label.place(x=140, y=100)
-password_label = tk.Label(login_window, text='密码:', font=('Arial', 10))
-password_label.place(x=140, y=140)
-# 用户名和密码的输入框
-username_entry = tk.Entry(login_window, show=None, font=('Arial', 14))
-username_entry.place(x=190, y=100)
+# 用和密码的提示标签
+userid_label = tk.Label(login_window, text='学号/工号:', font=('楷体', 15))
+userid_label.place(x=120, y=170)
+password_label = tk.Label(login_window, text='密码:', font=('楷体', 15))
+password_label.place(x=170, y=210)
 
-password_entry = tk.Entry(login_window, show='*', font=('Arial', 14))
-password_entry.place(x=190, y=140)
+# 设置两个var获取输入的学号和密码
+var_userid = tk.StringVar()
+var_password = tk.StringVar()
 
-# 显示身份的标签（测试）
-identity_var = tk.StringVar()
-identity_disp = tk.Label(login_window, textvariable=identity_var)
-identity_disp.place(x=190, y=260)
+# 学号和密码的输入框
+userid_entry = tk.Entry(login_window, font=('楷体', 14), textvariable=var_userid)
+userid_entry.place(x=230, y=170)
 
+password_entry = tk.Entry(login_window, show='*', font=('楷体', 14), textvariable=var_password)
+password_entry.place(x=230, y=210)
 
-# 选项触发函数
-def identity_selection():
-    identity_var.set(identity_var.get())
+# 学号/工号和密码
+userid = ""
+password = ""
 
-# 身份选择Radiobutton
-identity_label = tk.Label(login_window, text='身份:', font=('Arial', 10))
-identity_label.place(x=140, y=180)
-identity_var.set("未选择身份")
-radiobt_student = tk.Radiobutton(login_window, text='学生', variable=identity_var, value='学生',
-                                 command=identity_selection)
-radiobt_teacher = tk.Radiobutton(login_window, text='老师', variable=identity_var, value='老师',
-                                 command=identity_selection)
-radiobt_administrator = tk.Radiobutton(login_window, text='管理员', variable=identity_var, value='管理员',
-                                       command=identity_selection)
-radiobt_student.place(x=190, y=180)
-radiobt_teacher.place(x=190, y=205)
-radiobt_administrator.place(x=190, y=230)
-
-# 接受log_in函数传出的内容显示在标签上
+# 登录提示标签
 login_var = tk.StringVar()
-login_label = tk.Label(login_window, textvariable=login_var)
-login_label.place(x=240, y=280)
+login_label = tk.Label(login_window, textvariable=login_var, font=('楷体', 14))
+login_label.place(x=250, y=250)
+login_label.pack(fill='x', padx=50, pady=20)
 
-# 按钮+函数，传出的内容显示在标签上，内容通过var传递
+# 身份信号，初始为0，学生登录为3，教师登录为2，管理员登录为1
+identity = 0
 
-# 登录信号，初始为0，学生登录为1，教师登录为2，管理员登录为3
-login_hit = 0
+# 标记用户是否存在
+is_exist = False
+
+
+# 查询函数，应访问数据库，返回查询结果,密码错误，identity=0，否则返回相应的identity值
+<<<<<<< Updated upstream
+def find_user(userid,password):
+    is_exist=True # 返回是否存在
+    identity=3
+    return is_exist,identity
+=======
+def find_user(userid, password):
+    global is_exist, identity
+    is_exist = True  # 返回是否存在
+    identity = 1
+    return is_exist, identity
+
+>>>>>>> Stashed changes
+
+# 记录密码错误次数
+fault_times = 0
+
+"""
+登录函数会检测学号和密码的输入是否为空，当二者均不为空时，获取到的学号和密码分别存放于userid 和 password中
+此时需要访问数据库查询对应账户，根据查询的结果进行页面跳转
+1、学号不存在，提示用户不存在
+2、学号存在，密码错误，提示用户重新输入密码，五次之后禁止再输入
+
+查询函数返回identity信号，用于界面跳转
+"""
+
 
 def log_in():
-    global login_hit
-    if username_entry.get().strip()=="" and password_entry.get().strip()=="":
-        login_var.set('请输入用户名和密码')
-    elif username_entry.get().strip()=="":
-        login_var.set('请输入用户名')
-    elif password_entry.get().strip()=="":
+    global identity, fault_times, userid, password
+    if userid_entry.get() == "" and password_entry.get() == "":
+        login_var.set('请输入学号/工号和密码')
+    elif userid_entry.get() == "" and not password_entry.get() == "":
+        login_var.set('请输入学号/工号')
+    elif password_entry.get() == "":
         login_var.set('请输入密码')
-    elif identity_var.get()=="未选择身份":
-        login_var.set('请选择身份')
     else:
-        login_var.set('成功登录')
-        login_window.withdraw()
-        if identity_var.get()=='管理员':
-            login_hit=1
-        elif identity_var.get()=='老师':
-            login_hit=2
-            show_teacher_window(login_window,username_entry,password_entry)
-        else:                   # 学生
-            login_hit=3
-            show_student_window(login_window,username_entry,password_entry)
-    print(login_hit)
+        userid = userid_entry.get()
+        password = password_entry.get()
+        # 调用查找函数
+        res_is_exist, res_identity = find_user(userid, password)
+        if not res_is_exist:  # 用户不存在
+            login_var.set('用户不存在！')
+        else:
+            if res_identity == 0:
+                fault_times += 1
+                if fault_times >= 5:
+                    login_var.set('密码错误次数达到五次，禁止输入')
+                    password_entry.config(state='disabled')
+                else:
+                    login_var.set(f'密码错误，你还可以输入{5 - fault_times}次')
+            elif res_identity == 3:
+                login_window.withdraw()
+                show_student_window(login_window, userid_entry, password_entry)
+            elif res_identity == 2:
+                login_window.withdraw()
+                show_teacher_window(login_window, userid_entry, password_entry)
+            else:  # identity==1
+                login_window.withdraw()
+                show_admin_window(login_window, userid_entry, password_entry)
+        # login_var.set('成功登录')
+
+    # 测试代码
+    # print(userid_entry.get(),password_entry.get())
+
 
 # 退出函数
 def log_out():
     login_window.destroy()
 
-#登录函数
-def m_register():
-    print('跳转到注册界面')
 
 # 添加command参数补充按钮功能
 # 注册、登录、退出按钮
-bt_register=tk.Button(login_window,text='注册',font=('Arial',12),width=10,height=1,command=m_register)
-bt_register.place(x=100,y=300)
-bt_login = tk.Button(login_window, text='登录', font=('Arial', 12), width=10, height=1, command=log_in)
-bt_login.place(x=250, y=300)
-bt_logout = tk.Button(login_window, text='退出', font=('Arial', 12), width=10, height=1, command=log_out)
-bt_logout.place(x=400, y=300)
+bt_login = tk.Button(login_window, text='登录', font=('楷体', 12), width=15, height=1, command=log_in)
+bt_login.place(x=150, y=300)
+bt_logout = tk.Button(login_window, text='退出', font=('楷体', 12), width=15, height=1, command=log_out)
+bt_logout.place(x=300, y=300)
 
 login_window.mainloop()
-
-
