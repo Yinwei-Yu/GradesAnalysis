@@ -196,7 +196,9 @@ def change_my_password(tea_window, var):
     page4 = tk.Toplevel(tea_window)
     page4.title('修改密码')
     page4.geometry("600x400")
-    tk.Label(page4, text='修改密码', font=("Arial", 20)).pack()
+    # 修改密码标题
+    tk.Label(page4, text='修改密码', font=("华文行楷", 20)).pack()
+    # 原密码提示标签和文本框
     tk.Label(page4, text='原密码', font=("Arial", 14)).place(x=100, y=75)
     tk.Label(page4, text='修改后密码', font=("Arial", 14)).place(x=100, y=150)
     tk.Label(page4, text='确认密码', font=("Arial", 14)).place(x=100, y=225)

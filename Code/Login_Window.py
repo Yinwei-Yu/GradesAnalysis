@@ -1,7 +1,10 @@
 import tkinter as tk
+
+from AccountManager import accountManager
+from Administrator_Window import show_admin_window
 from Student_Window import show_student_window
 from Teacher_Window import show_teacher_window
-from Administrator_Window import show_admin_window
+
 """
 2024/7/9
     Login_Window
@@ -14,7 +17,6 @@ by 刘杨健
     补充登录检测机制
 by 刘杨健
 """
-
 
 # 主窗口设置
 
@@ -62,19 +64,11 @@ is_exist = False
 
 
 # 查询函数，应访问数据库，返回查询结果,密码错误，identity=0，否则返回相应的identity值
-<<<<<<< Updated upstream
-def find_user(userid,password):
-    is_exist=True # 返回是否存在
-    identity=3
-    return is_exist,identity
-=======
-def find_user(userid, password):
-    global is_exist, identity
-    is_exist = True  # 返回是否存在
-    identity = 1
-    return is_exist, identity
 
->>>>>>> Stashed changes
+def find_user(userid, password):
+    is_exist, identity, userName = accountManager.login(int(userid), password)
+    return is_exist, identity, userName
+
 
 # 记录密码错误次数
 fault_times = 0
@@ -101,7 +95,7 @@ def log_in():
         userid = userid_entry.get()
         password = password_entry.get()
         # 调用查找函数
-        res_is_exist, res_identity = find_user(userid, password)
+        res_is_exist, res_identity, res_name = find_user(userid, password)
         if not res_is_exist:  # 用户不存在
             login_var.set('用户不存在！')
         else:

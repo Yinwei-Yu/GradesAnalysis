@@ -543,7 +543,7 @@ class GradeManager:
         df = pd.DataFrame(data)
         df.to_csv('./excelFiles/checkApplications.csv', index=False, mode='w')
 
-    #从数据库中读取申请表信息并加入列表中
+    # 从数据库中读取申请表信息并加入列表中
     def saveCheckApplicationsToMySQL(self,
                                      host=host,  # 主机地址
                                      user=user,  # 数据库用户名
@@ -643,10 +643,10 @@ gradeManager = GradeManager([], 0, [], 0)
 gradeManager.inputCSV("./excelFiles/student_grades.csv")
 # gradeManager.inputMySQL()
 # gradeManager.renewTotalGrade()
-gradeManager.sortGrades()
+# gradeManager.sortGrades()
 # gradeManager.saveGradesToMySQL()
-#gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
-gradeManager.getApplicaFromSql()
+# gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
+# gradeManager.getApplicaFromSql()
 
 # gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
 
