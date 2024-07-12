@@ -3,6 +3,12 @@
     管理员窗口
 by 刘杨健
 """
+"""
+2024/7/12
+    添加：
+    加入查看申请表与查看账户信息功能
+by  沈智恺
+"""
 
 import tkinter as tk
 def last_step(current_window, previous_window):
