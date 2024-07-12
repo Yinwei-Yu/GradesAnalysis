@@ -108,7 +108,7 @@ def log_in():
                     login_var.set(f'密码错误，你还可以输入{5 - fault_times}次')
             elif res_identity == 3:
                 login_window.withdraw()
-                show_student_window(login_window, userid_entry, password_entry)
+                show_student_window(login_window, userid_entry, password_entry, res_name)
             elif res_identity == 2:
                 login_window.withdraw()
                 show_teacher_window(login_window, userid_entry, password_entry)

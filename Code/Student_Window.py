@@ -16,6 +16,8 @@ by 廖雨龙
 import tkinter as tk
 from tkinter import messagebox
 
+from AccountManager import accountManager
+
 
 # 修改了一下
 # 如果登录窗口收到的信号为1，则关闭登录窗口，打开学生窗口
@@ -24,9 +26,10 @@ from tkinter import messagebox
 #    stu_window.geometry('600x400')
 
 # 成绩查询的函数 未完成
-def query_scores():
+def query_scores(userid):
     # 这里要添加查询成绩的操作
-    messagebox.showinfo("查询成绩", "这里是查询成绩的结果")
+    student = accountManager.getGrades(1, int(userid))
+    messagebox.showinfo("查询成绩", student.stuGrades.displayGradesAnalysis())
 
 
 # 修改用户名和密码的函数 未完成
@@ -49,20 +52,21 @@ def log_out(stu_window, login_window, username_entry, password_entry):
 
 
 # 显示学生窗口的函数
-def show_student_window(login_window, username_entry, password_entry):
+def show_student_window(login_window, userid_entry, password_entry, username):
     stu_window = tk.Toplevel()
     stu_window.title("Student Window")
     # 标题
-    welcome_title = tk.Label(stu_window, text='你好!', font=('Arial', 14), width=20, height=2)
+    welcome_title = tk.Label(stu_window, text='你好!' + username, font=('Arial', 14), width=20, height=2)
     welcome_title.pack(side='top')
     # 成绩查询按钮 query_button = tk.Button(stu_window, text="查询成绩", command=query_scores, width=30, height=3)
-    query_button = tk.Button(stu_window, text="查询成绩", command=query_scores, width=30, height=3)
+    query_button = tk.Button(stu_window, text="查询成绩", command=lambda: query_scores(userid_entry.get()), width=30,
+                             height=3)
     query_button.pack(pady=10)
     # 修改用户名和密码的按钮
     modify_button = tk.Button(stu_window, text="修改用户名密码", command=modify_credentials, width=30, height=3)
     modify_button.pack(pady=10)
     # 退出登陆按钮
     exit_button = tk.Button(stu_window, text="退出登录",
-                            command=lambda: log_out(stu_window, login_window, username_entry
+                            command=lambda: log_out(stu_window, login_window, userid_entry
                                                     , password_entry), width=30, height=3)
     exit_button.pack(pady=10)
