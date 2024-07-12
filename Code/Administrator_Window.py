@@ -30,7 +30,7 @@ def admin_disp_apps(admin_window):
     # page2.mainloop()
     # last_step_button = tk.Button(_window, text='返回上一步', command=lambda: last_step(grade_window, tea_window),
     #                              width=30, height=3)
-    # last_step_button.pack(pady=10)
+    # last_step_button.pack()
     pass
 
 # 查看所有用户
@@ -45,8 +45,9 @@ def admin_disp_users(admin_window):
     # user_window.mainloop()
     # last_step_button = tk.Button(user_window, text='返回上一步', command=lambda: last_step(user_window, admin_window),
     #                              width=30, height=3)
-    # last_step_button.pack(pady=10)
+    # last_step_button.pack()
     # user_window.mainloop()
+
     pass
 # 修改密码
 def admin_modify_password():
