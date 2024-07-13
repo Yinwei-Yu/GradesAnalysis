@@ -5,11 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-<<<<<<< HEAD
-    <orderEntry type="jdk" jdkName="Python 3.12 (GradesAnalysis)" jdkType="Python SDK" />
-=======
     <orderEntry type="jdk" jdkName="Python 3.12" jdkType="Python SDK" />
->>>>>>> 73f0dab88e97648fe78d592501d76355bcc37178
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
