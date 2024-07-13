@@ -7,3 +7,5 @@ Code/Administrator_Window1.py
 *.iml
 *.xml
 *.pyc
+*.pyc
+/Code/__pycache__
