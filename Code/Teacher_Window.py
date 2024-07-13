@@ -23,6 +23,7 @@ by 廖雨龙
 """
 
 import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
 
 
@@ -96,18 +97,88 @@ def last_step(current_window, previous_window):
 
 # 实现查看成绩功能1 查看所有学生成绩 未实现
 # 预期目标,可以打印出来各科成绩,做成一个可以往下拉的东西
+# 还要在左上角做一个返回键
 def disp_all_grades(grade_window):
     grade_window.withdraw()
     choice1 = tk.Toplevel(grade_window)
-    choice1.title("查看所有学生成绩")
+    choice1.title("成绩表")
     choice1.geometry("600x400")
-    l1 = tk.Label(choice1, text='学生成绩', font=("楷体", 16))
-    l1.place(x=280,y=0)
-    choice1.focus_force()
-    last_step_button = tk.Button(choice1, text="返回", command=lambda: last_step(choice1, grade_window),
-                                 width=10, height=1)
-    last_step_button.place(x=0, y=0)
-    
+
+    # 创建一个Frame来包含Treeview和滚动条
+    frame = ttk.Frame(choice1)
+    frame.pack(fill="both", expand=True)
+
+    # 创建Treeview
+    columns = (
+        "姓名", "学号", "总成绩", "单科成绩1", "单科成绩2", "单科成绩3", "单科成绩4", "单科成绩5", "单科成绩6",
+        "总排名")
+    tree = ttk.Treeview(frame, columns=columns, show='headings')
+
+    # 定义每一列的标题和宽度
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, width=100)
+
+    # 拿到数据
+    # 通过调用后端的什么东西,得到所有的信息
+    # data = [(), (), ()]
+    # 测试数据
+    data = [
+        ("A", "004", 1, 1, 1, 1, 1, 1, 2, 3),
+        ("B", "005", 2, 2, 2, 2, 2, 4, 5, 6),
+        ("C", "006", 3, 3, 3, 3, 3, 7, 8, 9),
+        ("D", "007", 4, 4, 4, 4, 4, 10, 11, 12),
+        ("E", "008", 5, 5, 5, 5, 5, 13, 14, 15),
+        ("F", "009", 6, 6, 6, 6, 6, 16, 17, 18),
+        ("G", "010", 7, 7, 7, 7, 7, 19, 20, 21),
+        ("H", "011", 8, 8, 8, 8, 8, 22, 23, 24),
+        ("I", "012", 9, 9, 9, 9, 9, 25, 26, 27),
+        ("J", "013", 10, 10, 10, 10, 10, 28, 29, 30),
+        ("K", "014", 11, 11, 11, 11, 11, 31, 32, 33),
+        ("L", "015", 12, 12, 12, 12, 12, 34, 35, 36),
+        ("M", "016", 13, 13, 13, 13, 13, 37, 38, 39),
+        ("N", "017", 14, 14, 14, 14, 14, 40, 41, 42),
+        ("O", "018", 15, 15, 15, 15, 15, 43, 44, 45),
+        ("P", "019", 16, 16, 16, 16, 16, 46, 47, 48),
+        ("Q", "020", 17, 17, 17, 17, 17, 49, 50, 51),
+        ("R", "021", 18, 18, 18, 18, 18, 52, 53, 54),
+        ("S", "022", 19, 19, 19, 19, 19, 55, 56, 57),
+        ("T", "023", 20, 20, 20, 20, 20, 58, 59, 60),
+        ("U", "024", 21, 21, 21, 21, 21, 61, 62, 63),
+        ("V", "025", 22, 22, 22, 22, 22, 64, 65, 66),
+        ("W", "026", 23, 23, 23, 23, 23, 67, 68, 69),
+        ("X", "027", 24, 24, 24, 24, 24, 70, 71, 72),
+        ("Y", "028", 25, 25, 25, 25, 25, 73, 74, 75),
+        ("Z", "029", 26, 26, 26, 26, 26, 76, 77, 78),
+        ("AA", "030", 27, 27, 27, 27, 27, 79, 80, 81),
+        ("BB", "031", 28, 28, 28, 28, 28, 82, 83, 84),
+        ("CC", "032", 29, 29, 29, 29, 29, 85, 86, 87),
+        ("DD", "033", 30, 30, 30, 30, 30, 88, 89, 90)
+    ]
+    # 将得到的数据放到那个表里面去
+    for item in data:
+        tree.insert('', tk.END, values=item)
+
+    # 创建垂直和水平滚动条
+    scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+    scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
+
+    # 配置Treeview的滚动条
+    tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+
+    # 添加Treeview和滚动条到Frame中
+    tree.grid(row=0, column=0, sticky="nsew")
+    scrollbar_y.grid(row=0, column=1, sticky="ns")
+    scrollbar_x.grid(row=1, column=0, sticky="ew")
+
+    # 确保Treeview填充Frame
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
+
+    # 再做一个确认并返回的按钮
+    con_button = tk.Button(choice1, text='确认', command=lambda: last_step(choice1, grade_window), width=10, height=1,
+                           font=('楷体', 16))
+    con_button.pack(pady=10)
     choice1.mainloop()
 
 
