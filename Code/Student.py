@@ -32,6 +32,7 @@ class Student:
         self.stuGrades.generateGradesAnalysis(ranking, rankings)
         return True
 
+
 # 测试函数
 if __name__ == '__main__':
     # 创建 Subject 类的实例
@@ -59,4 +60,3 @@ if __name__ == '__main__':
     # 调用 generateGrades 方法
     student.generateGrades(ranking=1, rankings=[1, 2, 3, 4, 5, 6, 7, 8, 9])
     student.stuGrades.displayGradesAnalysis()
-

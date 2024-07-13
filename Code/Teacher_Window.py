@@ -150,7 +150,7 @@ def disp_single_grade(grade_window):
     # stuID里面放输入的内容
     stuID = stuID_entry.get()
     # 取消按钮
-    cancel_button = tk.Button(choice3, text="取消", command=lambda: last_step(choice3, grade_window), width=15,
+    cancel_button = tk.Button(choice3, text="取消", command=lambda: last_step(choice3, grade_window), width=10,
                               height=1, font=('楷体', 16))
     cancel_button.place(x=150, y=250)
     # 确认按钮
@@ -215,10 +215,10 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
                                          command=lambda: disp_single_grade(grade_window), font=('楷体', 18), width=20,
                                          height=1)
     disp_single_grade_button.place(x=180, y=200)
-    disp_single_analysis_button = tk.Button(grade_window, text='查看个人成绩分析',
-                                            command=lambda: disp_single_analysis(grade_window),
-                                            font=('楷体', 18), width=20, height=1)
-    disp_single_analysis_button.place(x=180, y=220)
+    # disp_single_analysis_button = tk.Button(grade_window, text='查看个人成绩分析',
+    #                                         command=lambda: disp_single_analysis(grade_window),
+    #                                         font=('楷体', 18), width=20, height=1)
+    # disp_single_analysis_button.place(x=180, y=220)
     last_step_button = tk.Button(grade_window, text='返回', command=lambda: last_step(grade_window, tea_window),
                                  font=('楷体', 18), width=20, height=1)
     last_step_button.place(x=180, y=260)
@@ -282,7 +282,7 @@ def app_review(tea_window):
 """
 
 
-def change_my_password(tea_window, var):
+def change_my_password(tea_window):
     var_old = tk.StringVar()
     var_new1 = tk.StringVar()
     var_new2 = tk.StringVar()
@@ -294,9 +294,9 @@ def change_my_password(tea_window, var):
     change_password_title = tk.Label(page4, text='修改密码', font=('华文行楷', 30, 'bold'), width=20, height=2)
     change_password_title.pack(side='top')
     # 原密码提示标签和文本框
-    tk.Label(page4, text='原密码:', font=('楷体', 15)).place(x=100, y=75)
-    tk.Label(page4, text='新的密码:', font=('楷体', 15)).place(x=100, y=150)
-    tk.Label(page4, text='确认密码:', font=('楷体', 15)).place(x=100, y=225)
+    tk.Label(page4, text='原密码:', font=('楷体', 15)).place(x=140, y=75)
+    tk.Label(page4, text='新的密码:', font=('楷体', 15)).place(x=120, y=150)
+    tk.Label(page4, text='确认密码:', font=('楷体', 15)).place(x=120, y=225)
     ori_pas_entry = tk.Entry(page4, textvariable=var_old, show='*', width=38)  # , width=50
     ori_pas_entry.place(x=220, y=80)
     new_pas_entry = tk.Entry(page4, textvariable=var_new1, show='*', width=38)  # , width=44
@@ -340,8 +340,6 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
     tea_window = tk.Toplevel(login_window)
     tea_window.title("Teacher Window")
     tea_window.geometry('600x400')
-    var = tk.StringVar()
-    var = None
     # 标题
     welcome_title = tk.Label(tea_window, text='你好!' + name, font=('楷体', 10), width=10, height=2)
     welcome_title.place(x=0, y=0)
@@ -356,7 +354,7 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
                                   height=2)
     app_review_button.place(x=180, y=120)
     # 修改自己的密码
-    cha_my_button = tk.Button(tea_window, text="修改我的密码", command=lambda: change_my_password(tea_window, var),
+    cha_my_button = tk.Button(tea_window, text="修改我的密码", command=lambda: change_my_password(tea_window),
                               font=('楷体', 18),
                               width=20, height=2)
     cha_my_button.place(x=180, y=200)
