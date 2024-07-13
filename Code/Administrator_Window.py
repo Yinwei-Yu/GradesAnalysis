@@ -3,13 +3,11 @@
     管理员窗口
 by 刘杨健
 """
-import multiprocessing
-import os
-import time
 from tkinter import filedialog, messagebox
 
-import ttkbootstrap
 from tinui.TinUI import *
+
+from AccountManager import accountManager, importedGrades
 
 """
 2024/7/12
@@ -26,18 +24,20 @@ def last_step(current_window, previous_window):
     current_window.destroy()
 
 
-def work_a():
-    for i in range(10):
-        print(i, 'a', os.getpid())
-        time.sleep(0.1)
-
-
 # 导入成绩函数
 def import_grades(admin_window):
     file_path = filedialog.askopenfilename()
     if file_path == '':
+        pass
+    else:
+
+        # def work_a():
+        #     for i in range(10):
+        #         print(i, 'a', os.getpid())
+        #         time.sleep(0.1)
         def check_condition():
-            if child.is_alive() is False:
+            # print(thread.is_alive())
+            if thread.is_alive() is False:
                 # finish()
                 # #top.after(1000,top.destroy())
                 # top.mainloop()
@@ -45,12 +45,11 @@ def import_grades(admin_window):
                 top.destroy()
                 tktop.destroy()
                 tktop1 = tk.Toplevel(admin_window)
-                # top = tk.Toplevel(admin_window)
                 tktop1.resizable(False, False)
                 tktop1.geometry('200x100+200+250')
                 top1 = TinUI(tktop1)
                 top1.pack(fill='both', expand=True)
-                top1.add_paragraph((50, 20), '导入成功！')
+                top1.add_paragraph((70, 20), '导入成功！')
                 # top.add_title('')
                 _, _, finish2, _ = top1.add_waitbar3((30, 50), width=150)
                 finish2()
@@ -58,46 +57,40 @@ def import_grades(admin_window):
                 top1.mainloop()
                 # tktop1.destroy()
             else:
-                top.after(100, check_condition)
+                top.after(1000, check_condition)
 
         def disable_close_button():
             def on_closing():
                 # 不执行任何操作，这样就禁用了关闭窗口的功能
                 pass
-
             # 绑定 WM_DELETE_WINDOW 协议到 on_closing 方法
             tktop.protocol("WM_DELETE_WINDOW", on_closing)
 
-        child = multiprocessing.Process(target=work_a)
-        child.start()
-        tktop = tk.Toplevel(admin_window)
-        # tktop.overrideredirect(True)
-        # top = tk.Toplevel(admin_window)
-        tktop.resizable(False, False)
-        tktop.geometry('200x100+200+250')
-        disable_close_button()
-        top = TinUI(tktop)
-        top.pack(fill='both', expand=True)
+        try:
+            thread = threading.Thread(target=accountManager.refreshAll, args=(file_path,))
+            thread.start()
+            tktop = tk.Toplevel(admin_window)
+            # tktop.overrideredirect(True)
+            # top = tk.Toplevel(admin_window)
+            tktop.resizable(False, False)
+            tktop.geometry('200x100+200+250')
+            disable_close_button()
+            top = TinUI(tktop)
+            top.pack(fill='both', expand=True)
+            # top.add_title('')
+            _, _, finish, _ = top.add_waitbar3((25, 50), width=150)
 
-        # top.add_title('')
-        _, _, finish, _ = top.add_waitbar3((25, 50), width=150)
+            top.add_paragraph((50, 10), '导入成绩中……')
+            check_condition()
 
-        top.add_paragraph((50, 10), '导入成绩中……')
-        check_condition()
-
-        # label = tk.Label(top, text="正在导入成绩……", font=('楷体', 15))
-        # label.pack()
-        top.mainloop()
-
-        return
-    try:
-
-        messagebox.showinfo("导入成绩", "正在导入成绩")
-        accountManager.inputGrades(file_path)
-        accountManager.refreshAll()
-        messagebox.showinfo("导入成绩", "导入成功！")
-    except Exception as e:
-        messagebox.showinfo("导入成绩", f"导入失败！{e}")
+            # label = tk.Label(top, text="正在导入成绩……", font=('楷体', 15))
+            # label.pack()
+            top.mainloop()
+            print('hello')
+            if importedGrades is False:
+                messagebox.showinfo("导入成绩", f"导入失败！")
+        except Exception as e:
+            messagebox.showinfo("导入成绩", f"导入失败！{e}")
 
 
 # 查看学生成绩函数

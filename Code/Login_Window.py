@@ -5,7 +5,7 @@ import ttkbootstrap
 from Administrator_Window import show_admin_window
 from Student_Window import show_student_window
 from Teacher_Window import show_teacher_window
-from main import *
+from AccountManager import accountManager
 
 """
 2024/7/9

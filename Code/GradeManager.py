@@ -70,14 +70,13 @@ by 李胤玮
 
 import os
 
+import CheckApplication
+import Grades as gr
+import Student as stu
 import matplotlib.pyplot as plt
 import mysql.connector  # pip install mysql-connector-python
 import numpy as np
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
-
-import CheckApplication
-import Grades as gr
-import Student as stu
 from MySQLInfo import *
 from Subject import *
 from createMySQLTable import *
@@ -154,7 +153,7 @@ class GradeManager:
                    database=database,  # 数据库名称
                    table=rankedGradesTable,  # 数据库表名
                    ):
-
+        self.student.clear()
         global mydb
         try:
             mydb = mysql.connector.connect(
@@ -169,7 +168,7 @@ class GradeManager:
         cursor = mydb.cursor(dictionary=True)
 
         # 执行SQL查询语句
-        query = f"SELECT * FROM {table}"
+        query = f"SELECT * FROM {table} ORDER BY 总分 DESC "
         cursor.execute(query)
         # 获取所有记录列表
         results = cursor.fetchall()
@@ -178,9 +177,9 @@ class GradeManager:
         print(df)
         for index, row in df.iterrows():
             grades = gr.Grades(
-                Chinese(int(row['语文'])), Math(int(row['数学'])), English(int(row['英语'])),
-                Physics(int(row['物理'])), Chemistry(int(row['化学'])), Biology(int(row['生物'])),
-                History(int(row['历史'])), Politics(int(row['政治'])), Geography(int(row['地理']))
+                Chinese(row['语文']), Math(row['数学']), English(row['英语']),
+                Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
+                History(row['历史']), Politics(row['政治']), Geography(row['地理'])
             )
             stuTemp = stu.Student(row['姓名'], row['学号'], grades)
             self.student.append(stuTemp)
@@ -464,7 +463,7 @@ class GradeManager:
             data.append(student_data)
         return data
 
-    def saveGradesToCSV(self, path='./excelFiles/student_grades.csv'):
+    def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
 
         # 将数据转换为 DataFrame
         df = pd.DataFrame(self.getGradesTable())
@@ -505,7 +504,7 @@ class GradeManager:
         #     mycursor.execute(sql)
         # except mysql.connector.errors.ProgrammingError as e:
         #     print("表格还未创建，正在创建表格……", e)
-        #     createRankedGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
+        #     createGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
         mycursor.close()
         mycursor = mydb.cursor()
@@ -515,7 +514,7 @@ class GradeManager:
                    f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "
                    f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
             val = row  # 插入的数据
-            print("正在插入数据至数据库{}:".format(database), val)  # 输出正在插入的数据
+            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
             mycursor.execute(sql, val)  # 执行SQL插入语句
 
         # 提交更改并关闭数据库连接
@@ -587,7 +586,7 @@ class GradeManager:
                    f"(申请老师,被申请学生姓名,学生学号,申请科目) "
                    f"VALUES (%s,%s,%s,%s)")
             val = row  # 插入的数据
-            print("正在插入数据至数据库{}:".format(database), val)  # 输出正在插入的数据
+            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
             mycursor.execute(sql, val)  # 执行SQL插入语句
 
         # 提交更改并关闭数据库连接
@@ -636,7 +635,8 @@ class GradeManager:
 
         return True
 
-
+gradeManager = GradeManager([], 0, [], 0)
+gradeManager.inputMore("./excelFiles/student_grades.xls")
 # gradeManager=GradeManager()
 
 # gradeManager.inputMySQL()

@@ -4,6 +4,6 @@ password = 'HM1620kJfibETKIE'  # 这里输入密码
 port = 3306  # 这里输入端口号
 charset = 'utf8mb4'
 database = 'orangeisland66'  # 这里选择数据库
-rankedGradesTable = 'rankedGrades'
+rankedGradesTable = 'grades'
 usersTable = 'users'
 checkApplicationsTable = 'checkApplications'

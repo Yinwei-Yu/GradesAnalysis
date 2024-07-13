@@ -1,5 +1,4 @@
 # 导入pymysql模块
-import pymysql
 
 '''
 2024/7/11：
@@ -8,7 +7,7 @@ by陈邱华
 '''
 
 
-def createRankedGradesTable(table_name, host, user, password, port, charset, database):
+def createGradesTable(table_name, host, user, password, port, charset, database):
     # 我们这里需要多一步选择数据库
     # print(port)
     db = pymysql.connect(host=host, user=user, password=password, port=port, charset=charset, database=database)
@@ -23,10 +22,10 @@ def createRankedGradesTable(table_name, host, user, password, port, charset, dat
     #        '语文 varchar(20) not null,数学 varchar(20) not null)').format(
     #     table_name)
     sql = (
-        f'create table if not exists {table_name} (姓名 varchar(20) not null, 学号 varchar(20) not null, 语文 varchar(20) not null,'
-        f'数学 varchar(20) not null, 英语 varchar(20) not null, 物理 varchar(20) not null, 化学 varchar(20) not null,'
-        f' 生物 varchar(20) not null, 历史 varchar(20) not null, 政治 varchar(20) not null, 地理 varchar(20) not null,'
-        f' 总分 varchar(20) not null,primary key (学号));')
+        f'create table if not exists {table_name} (姓名 varchar(20) not null, 学号 int not null, 语文 int not null,'
+        f'数学 int not null, 英语 int not null, 物理 int not null, 化学 int not null,'
+        f' 生物 int not null, 历史 int not null, 政治 int not null, 地理 int not null,'
+        f' 总分 int not null,primary key (学号));')
 
     try:
         cursor.execute(sql)
@@ -55,8 +54,8 @@ def createUsersTable(table_name, host, user, password, port, charset, database):
     cursor = db.cursor()
 
     sql = (
-        f'create table if not exists {table_name} (用户名 varchar(20) not null , 密码 varchar(20) not null , 学号或工号 varchar(20) not null,'
-        f' 类型 varchar(20) not null,primary key (学号或工号));')
+        f'create table if not exists {table_name} (用户名 varchar(20) not null , 密码 varchar(20) not null , 学号或工号 int not null,'
+        f' 类型 int not null,primary key (学号或工号));')
 
     try:
         cursor.execute(sql)
@@ -107,7 +106,9 @@ def createCheckApplicationsTable(table_name, host, user, password, port, charset
     cursor.close()
     db.close()  # 关闭数据库连接
 
+
 import pymysql
+
 
 def createCheckApplicationsTable1(table_name, host, user, password, port, charset, database):
     try:
@@ -144,11 +145,12 @@ def createCheckApplicationsTable1(table_name, host, user, password, port, charse
     finally:
         db.close()  # 确保总是关闭数据库连接
 
+
 # host = 'mysql.sqlpub.com'  # 这里输入主机名称一般来说都是localhost
 # user = 'orangeisland66'  # 这里输入mysql用户名
 # password = 'HM1620kJfibETKIE'  # 这里输入密码
 # port = 3306  # 这里输入端口号
 # charset = 'utf8mb4'
 # database = 'orangeisland66'  # 这里选择数据库
-# table_name = 'checkapplications'
-# createCheckApplicationsTable(table_name, host, user, password, port, charset, database)
+# table_name = 'users'
+# createUsersTable(table_name, host, user, password, port, charset, database)

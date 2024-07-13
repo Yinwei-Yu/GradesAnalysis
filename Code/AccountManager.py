@@ -1,9 +1,8 @@
 import mysql.connector  # pip install mysql-connector-python
-import pandas as pd
 
-from MySQLInfo import *
+from GradeManager import gradeManager
 from User import *
-from createMySQLTable import *
+from csvToSQL import *
 
 '''
 2024/7/8
@@ -26,6 +25,8 @@ AccountManager类
 by陈邱华
 '''
 
+importedGrades: bool = False
+
 
 class AccountManager:
     # 初始化，并从'./users.csv'读取文件信息
@@ -47,11 +48,11 @@ class AccountManager:
         for index, row in df.iterrows():
             flag = row['类型']
             if flag == 1:
-                user = User_Administrator(row['用户名'], str(row['密码']), row['学号或工号'], flag)
+                user = User_Administrator(row['用户名'], str(row['密码']), int(row['学号或工号']), flag)
             if flag == 2:
-                user = User_Teacher(row['用户名'], str(row['密码']), row['学号或工号'], flag)
+                user = User_Teacher(row['用户名'], str(row['密码']), int(row['学号或工号']), flag)
             if flag == 3:
-                user = User_Student(row['用户名'], str(row['密码']), row['学号或工号'], flag)
+                user = User_Student(row['用户名'], str(row['密码']), int(row['学号或工号']), flag)
 
             self.users.update({user.ID: user})
             # print(type(user))
@@ -150,7 +151,7 @@ class AccountManager:
     def saveUserInfoToCSV(self, path='./excelFiles/users.csv'):
         data = self.getUserInofoTable()
         df = pd.DataFrame(data)
-        df.to_csv(path, index=False, mode='w')
+        df.to_csv(path, index=False)
 
     def saveUserInfoToMySQL(self,
                             host=host,  # 主机地址
@@ -178,24 +179,20 @@ class AccountManager:
 
         # 创建一个游标对象
         mycursor = mydb.cursor()
-        # 先清空表格
-        sql = 'TRUNCATE TABLE {};'.format(table)
-        # mycursor.execute(sql)
-        try:
-            mycursor.execute(sql)
-        except mysql.connector.errors.ProgrammingError as e:
-            print("表格还未创建，正在创建表格……", e)
-            createCheckApplicationsTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
-        mycursor.close()
-        mycursor = mydb.cursor()
-        # 遍历Excel表格中的每一行，并将每一行插入到数据库中
+        # for row in df.itertuples(index=False, name=None):  # name=None 使得返回的namedtuple不包含额外的索引名
+        #     sql = (f'INSERT IGNORE INTO {table} '
+        #            f'(用户名,密码,学号或工号,类型) '
+        #            f'VALUES (%s,%s,%s,%s)')  # 注意这里全部使用%s作为占位符
+        #     values = (row.用户名, row.密码, row.学号或工号, row.类型)  # 使用属性名来访问列的值
+        #     print("正在插入数据至{}:".format(table), values)  # 输出正在插入的数据
+        #     mycursor.execute(sql, values)  # 执行SQL插入语句
         for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
             sql = (f'INSERT IGNORE INTO {table} '
                    f'(用户名,密码,学号或工号,类型) '
                    f'VALUES (%s,%s,%s,%s)')
             val = row  # 插入的数据
-            print("正在插入数据至数据库{}:".format(database), val)  # 输出正在插入的数据
+            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
             mycursor.execute(sql, val)  # 执行SQL插入语句
 
         # 提交更改并关闭数据库连接
@@ -230,16 +227,16 @@ class AccountManager:
         results = cursor.fetchall()
 
         df = pd.DataFrame(results)
-        print(df)
+        # print(df)
 
         for index, row in df.iterrows():
             flag = row['类型']
             if flag == 1:
-                user = User_Administrator(row['用户名'], str(row['密码']), row['学号或工号'], flag)
+                user = User_Administrator(row['用户名'], row['密码'], row['学号或工号'], flag)
             elif flag == 2:
-                user = User_Teacher(row['用户名'], str(row['密码']), row['学号或工号'], flag)
+                user = User_Teacher(row['用户名'], row['密码'], row['学号或工号'], flag)
             elif flag == 3:
-                user = User_Student(row['用户名'], str(row['密码']), row['学号或工号'], flag)
+                user = User_Student(row['用户名'], row['密码'], row['学号或工号'], flag)
             else:
                 continue
 
@@ -256,6 +253,7 @@ class AccountManager:
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
     def refreshUserInfo(self):
+        print(11)
         for student in gradeManager.student:
             if self.users.get(student.stuID) is None:
                 self.users.update(({student.stuID: User(student.name, '123456', student.stuID, 3)}))
@@ -263,7 +261,10 @@ class AccountManager:
                 self.users.update(
                     {student.stuID: User(self.users[student.stuID].userName, self.users[student.stuID].password,
                                          student.stuID, 3)})
-        self.saveUserInfoToCSV()
+        # i = 0
+        # for id in self.users.keys():
+        #     i = i + 1
+        #     print(i)
 
     # 获取成绩
     # mode==1时返回学生分析
@@ -293,14 +294,28 @@ class AccountManager:
         for check_application in gradeManager.checkApplication:
             check_application.printCheckApplication()
 
-    def refreshAll(self):
-        accountManager.saveGradesToMySQL()
-        gradeManager.inputMySQL()
-        gradeManager.saveGradesToCSV()
-        accountManager.refreshUserInfo()
-        accountManager.saveUserInfoToMySQL()
-        accountManager.getUserFromSql()
-        accountManager.saveUserInfoToCSV()
+    def refreshAll(self, file_path):
+        global importedGrades
+        try:
+            # self.inputGrades(file_path)
+            # self.saveGradesToMySQL()
+            if formationCheckAndInputToMySQL(file_path) is False:
+                importedGrades = False
+            gradeManager.inputMySQL()
+            print(1)
+            gradeManager.saveGradesToCSV()
+            print(2)
+            self.refreshUserInfo()
+            print(3)
+            self.saveUserInfoToMySQL()
+            print(4)
+            self.getUserFromSql()
+            print(5)
+            self.saveUserInfoToCSV()
+            importedGrades = True
+        except Exception as e:
+            print("出现错误", e)
+            importedGrades = False
 
     def inputGrades(self, path):
         gradeManager.inputGrades(2, path)
@@ -312,13 +327,14 @@ class AccountManager:
         gradeManager.saveGradesToCSV()
 
 
+accountManager = AccountManager()
 
 if __name__ == "__main__":
     # gradeManager = GradeManager([], 0, [])
     # gradeManager.inputCSV("./student.csv")
     # for x in gradeManager.student:
     #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
-    #accountManager = AccountManager()
+    # accountManager = AccountManager()
     while True:
         print('管理员账号：user1，密码：111111')
         print("请输入选项：1、登录，2、注册（仅限管理员和教师），3、退出系统：")

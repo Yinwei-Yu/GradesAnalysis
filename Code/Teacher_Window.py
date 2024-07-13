@@ -15,13 +15,19 @@ by 刘链凯
     优化了教师界面
 by 刘杨健
 """
+"""
+2024/7/13
+    Teacher_Window
+    完成相关按钮的布局,优化界面
+by 廖雨龙
+"""
 
 import tkinter as tk
 from tkinter import messagebox
 
 
 # 提交申请的确认函数
-def confirm_app(tea_name, stu_name, stuID, sub,current_window):
+def confirm_app(tea_name, stu_name, stuID, sub, current_window):
     # 隐藏当前窗口
     current_window.withdraw()
 
@@ -48,7 +54,7 @@ def confirm_app(tea_name, stu_name, stuID, sub,current_window):
 
 # 修改密码中的确认按钮  未完成
 # 参数 old:原来的密码 new1:第一次输入的新密码 new2:第二次输入的新的密码
-def confirm_password(old, new1, new2,password_window):
+def confirm_password(old, new1, new2, password_window):
     password_window.withdraw()
     # 创建一个新的窗口，标题，大小
     confirm_window = tk.Toplevel(password_window)
@@ -65,7 +71,8 @@ def confirm_password(old, new1, new2,password_window):
     l1.pack(pady=20)
 
     # 返回上一步的按钮
-    last_step_button = tk.Button(confirm_window, text='返回上一步', command=lambda: last_step(confirm_window, password_window),
+    last_step_button = tk.Button(confirm_window, text='返回上一步',
+                                 command=lambda: last_step(confirm_window, password_window),
                                  width=15, height=1)
     last_step_button.pack(pady=10)
 
@@ -73,11 +80,10 @@ def confirm_password(old, new1, new2,password_window):
     confirm_window.mainloop()
 
 
-
 # 成绩查询中的确认按钮
 # 点击之后会出现一个新的界面,显示是否找到和查找结果
 # 参数 stuID:学生的学号
-def confirm_grade(stuID,grade_window):
+def confirm_grade(stuID, grade_window):
     pass
 
 
@@ -89,6 +95,7 @@ def last_step(current_window, previous_window):
 
 
 # 实现查看成绩功能1 查看所有学生成绩 未实现
+# 预期目标,可以打印出来各科成绩,做成一个可以往下拉的东西
 def disp_all_grades(grade_window):
     grade_window.withdraw()
     choice1 = tk.Toplevel(grade_window)
@@ -98,12 +105,13 @@ def disp_all_grades(grade_window):
     l1.pack()
     choice1.focus_force()
     last_step_button = tk.Button(choice1, text='返回上一步', command=lambda: last_step(choice1, grade_window),
-                                 width=30, height=3)
+                                 width=15, height=1)
     last_step_button.pack(padx=0, pady=0)
     choice1.mainloop()
 
 
 # 实现查看成绩功能2 显示总体成绩的分析 未实现
+# 总体成绩分析界面
 def disp_all_analysis(grade_window):
     # 隐藏grade_window窗口
     grade_window.withdraw()
@@ -116,7 +124,7 @@ def disp_all_analysis(grade_window):
     choice2.focus_force()
     # 返回上一步的按钮
     last_step_button = tk.Button(choice2, text='返回上一步', command=lambda: last_step(choice2, grade_window),
-                                 width=30, height=3)
+                                 width=15, height=1)
     last_step_button.pack(padx=0, pady=0)
 
     choice2.mainloop()
@@ -126,85 +134,94 @@ def disp_all_analysis(grade_window):
 # 还要加一个确认和取消的按钮
 # stuID: 存放学生的ID,用于查找这个学生,得到它的成绩
 def disp_single_grade(grade_window):
+    stuID_var = tk.StringVar()
     # 隐藏grade_window窗口
     grade_window.withdraw()
     # 创建新的窗口 标题 大小 标签
     choice3 = tk.Toplevel(grade_window)
     choice3.title("查看单个学生成绩")
-    choice3.geometry("800x500")
-    stuID_label = tk.Label(choice3, text="学号:", font=('Arial', 10))
-    stuID_label.place(x=140, y=100)
+    choice3.geometry("600x400")
+    choice3.resizable(False, False)
+    stuID_label = tk.Label(choice3, text="学号:", font=('楷体', 16))
+    stuID_label.place(x=150, y=150)
     # 输入框
-    stuID_entry = tk.Entry(choice3, show=None, font=('Arial', 14))
-    stuID_entry.place(x=190, y=100)
+    stuID_entry = tk.Entry(choice3, show="", font=('楷体', 16), textvariable=stuID_var)
+    stuID_entry.place(x=210, y=150)
     # stuID里面放输入的内容
     stuID = stuID_entry.get()
     # 取消按钮
-    cancel_button = tk.Button(choice3, text="取消", command=lambda: last_step(choice3, grade_window), width=30,
-                              height=3)
-    cancel_button.pack(pady=10)
+    cancel_button = tk.Button(choice3, text="取消", command=lambda: last_step(choice3, grade_window), width=15,
+                              height=1, font=('楷体', 16))
+    cancel_button.place(x=150, y=250)
     # 确认按钮
-    confirm_button = tk.Button(choice3, text="确定", command=lambda: confirm_grade(stuID), width=30, height=3)
-    confirm_button.pack(pady=10)
+    confirm_button = tk.Button(choice3, text="确定", command=lambda: confirm_grade(stuID, grade_window), width=10,
+                               height=1,
+                               font=('楷体', 16))
+    confirm_button.place(x=330, y=250)
 
 
-# 实现查看成绩功能4 查看单个学生的成绩分析报告 未实现
+# 实现查看成绩功能 查看单个学生的成绩分析报告 未实现
+# 修改为查看单个学生成绩的附加功能
 def disp_single_analysis(grade_window):
     # 隐藏grade_window窗口
     grade_window.withdraw()
     # 创建新的窗口 标题 大小 标签
     choice4 = tk.Toplevel(grade_window)
     choice4.title("查看单个学生成绩报告")
-    choice4.geometry("800x500")
+    choice4.geometry("600x400")
+    choice4.resizable(False, False)
     stuID_label = tk.Label(choice4, text="学号:", font=('Arial', 10))
     stuID_label.place(x=140, y=100)
     # 输入框
-    stuID_entry = tk.Entry(choice4, show=None, font=('Arial', 14))
+    stuID_entry = tk.Entry(choice4, show="", font=('Arial', 14))
     stuID_entry.place(x=190, y=100)
     # stuID里面放输入的内容
     stuID = stuID_entry.get()
     # 取消按钮
     cancel_button = tk.Button(choice4, text="取消", command=lambda: last_step(choice4, grade_window), width=30,
                               height=3)
-    cancel_button.pack(pady=10)
+    cancel_button.place(x=140, y=160)
     # 确认按钮
-    confirm_button = tk.Button(choice4, text="确定", command=lambda: confirm_grade(stuID), width=30, height=3)
-    confirm_button.pack(pady=10)
+    confirm_button = tk.Button(choice4, text="确定", command=lambda: confirm_grade(stuID, grade_window), width=30,
+                               height=3)
+    confirm_button.place(x=140, y=220)
 
 
 # 有一个新的界面,里面提供其他的成绩查询选项 未完成
 # 成绩展示的内置其他选项
 # 1. 查看所有学生成绩
 # 2. 所有学生成绩分析
-# 3. 查找个人成绩
-# 4. 个人成绩分析
+# 3. 查找个人成绩 -> 个人成绩分析
 def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选择查看成绩后,原来的窗口无法隐藏 已解决
     grade_window = tk.Toplevel(tea_window)
     grade_window.title("查看成绩")
     grade_window.geometry('600x400')
-    grade_window.resizable(False,False)
+    grade_window.resizable(False, False)
     tea_window.withdraw()
 
-    #标题
+    # 标题
     welcome_title = tk.Label(grade_window, text='你好!' + name, font=('楷体', 10), width=10, height=2)
     welcome_title.place(x=0, y=0)
 
     disp_all_grades_button = tk.Button(grade_window, text='显示所有学生成绩',
-                                       command=lambda: disp_all_grades(grade_window), font=('楷体', 18),width=20,height=1)
-    disp_all_grades_button.place(x=180,y=40)
+                                       command=lambda: disp_all_grades(grade_window), font=('楷体', 18), width=20,
+                                       height=1)
+    disp_all_grades_button.place(x=180, y=80)
     disp_all_analysis_button = tk.Button(grade_window, text='总体成绩分析',
-                                         command=lambda: disp_all_analysis(grade_window), font=('楷体', 18),width=20,height=1)
-    disp_all_analysis_button.place(x=180,y=100)
+                                         command=lambda: disp_all_analysis(grade_window), font=('楷体', 18), width=20,
+                                         height=1)
+    disp_all_analysis_button.place(x=180, y=140)
     disp_single_grade_button = tk.Button(grade_window, text='查看个人成绩',
-                                         command=lambda: disp_single_grade(grade_window),font=('楷体', 18),width=20,height=1)
-    disp_single_grade_button.place(x=180,y=160)
+                                         command=lambda: disp_single_grade(grade_window), font=('楷体', 18), width=20,
+                                         height=1)
+    disp_single_grade_button.place(x=180, y=200)
     disp_single_analysis_button = tk.Button(grade_window, text='查看个人成绩分析',
                                             command=lambda: disp_single_analysis(grade_window),
-                                            font=('楷体', 18),width=20,height=1)
-    disp_single_analysis_button.place(x=180,y=220)
-    last_step_button = tk.Button(grade_window, text='返回上一步', command=lambda: last_step(grade_window, tea_window),
-                                 font=('楷体', 18),width=20,height=1)
-    last_step_button.place(x=180,y=280)
+                                            font=('楷体', 18), width=20, height=1)
+    disp_single_analysis_button.place(x=180, y=220)
+    last_step_button = tk.Button(grade_window, text='返回', command=lambda: last_step(grade_window, tea_window),
+                                 font=('楷体', 18), width=20, height=1)
+    last_step_button.place(x=180, y=260)
     grade_window.mainloop()
 
 
@@ -215,37 +232,40 @@ def app_review(tea_window):
     tea_window.withdraw()
     app_window = tk.Toplevel(tea_window)
     app_window.title("成绩复核申请")
-    app_window.geometry("800x500")
+    app_window.geometry("600x400")
+    app_window.resizable(False, False)
     # 提示标签
     tea_name_label = tk.Label(app_window, text="老师姓名:", font=('Arial', 10))
-    tea_name_label.place(x=140, y=100)
+    tea_name_label.place(x=120, y=100)
     stu_name_label = tk.Label(app_window, text="学生姓名:", font=('Arial', 10))
-    stu_name_label.place(x=140, y=140)
+    stu_name_label.place(x=120, y=140)
     stuID_label = tk.Label(app_window, text="学生学号:", font=('Arial', 10))
-    stuID_label.place(x=140, y=180)
+    stuID_label.place(x=120, y=180)
     sub_label = tk.Label(app_window, text="申请科目:", font=('Arial', 10))
-    sub_label.place(x=140, y=220)
+    sub_label.place(x=120, y=220)
+    # 创建Var变量
+    tea_name_var = tk.StringVar()
+    stu_name_var = tk.StringVar()
+    stuID_var = tk.StringVar()
+    sub_var = tk.StringVar()
     # 文本输入
-    tea_name_entry = tk.Entry(app_window, show=None, font=('Arial', 14))
-    tea_name_entry.place(x=190, y=100)
-    stu_name_entry = tk.Entry(app_window, show=None, font=('Arial', 14))
-    stu_name_entry.place(x=190, y=140)
-    stuID_entry = tk.Entry(app_window, show=None, font=('Arial', 14))
-    stuID_entry.place(x=190, y=180)
-    sub_entry = tk.Entry(app_window, show=None, font=('Arial', 14))
-    sub_entry.place(x=190, y=220)
-    # 将输入得到的东西放到变量里面去
-    tea_name = tea_name_entry.get()
-    stu_name = stu_name_entry.get()
-    stuID = stuID_entry.get()
-    sub = sub_entry.get()
+    tea_name_entry = tk.Entry(app_window, show="", font=('楷体', 14), textvariable=tea_name_var)
+    tea_name_entry.place(x=200, y=100)
+    stu_name_entry = tk.Entry(app_window, show="", font=('楷体', 14), textvariable=stu_name_var)
+    stu_name_entry.place(x=200, y=140)
+    stuID_entry = tk.Entry(app_window, show="", font=('楷体', 14), textvariable=stuID_var)
+    stuID_entry.place(x=200, y=180)
+    sub_entry = tk.Entry(app_window, show="", font=('楷体', 14), textvariable=sub_var)
+    sub_entry.place(x=200, y=220)
     # 全都输入完毕之后,点击确认或者取消
-    confirm_button = tk.Button(app_window, text="确认", command=lambda: confirm_app(tea_name, stu_name, stuID, sub),
-                               width=30, height=3)
-    confirm_button.pack()
-    cancel_button = tk.Button(app_window, text="取消", command=lambda: last_step(app_window, tea_window), width=30,
-                              height=3)
-    cancel_button.pack()
+    confirm_button = tk.Button(app_window, text="确认",
+                               command=lambda: confirm_app(tea_name_entry.get(), stu_name_entry.get(),
+                                                           stuID_entry.get(), sub_entry.get(), tea_window),
+                               width=15, height=1)
+    confirm_button.place(x=330, y=300)
+    cancel_button = tk.Button(app_window, text="取消", command=lambda: last_step(app_window, tea_window), width=15,
+                              height=1)
+    cancel_button.place(x=150, y=300)
     app_window.mainloop()
 
 
@@ -260,34 +280,42 @@ def app_review(tea_window):
 4、有新的密码和原来的密码
     提示‘请确认新的密码’
 """
+
+
 def change_my_password(tea_window, var):
+    var_old = tk.StringVar()
+    var_new1 = tk.StringVar()
+    var_new2 = tk.StringVar()
     tea_window.withdraw()
     page4 = tk.Toplevel(tea_window)
     page4.title('修改密码')
     page4.geometry("600x400")
     # 修改密码标题
-    change_password_title=tk.Label(page4, text='修改密码', font=('华文行楷', 30, 'bold'), width=20, height=2)
+    change_password_title = tk.Label(page4, text='修改密码', font=('华文行楷', 30, 'bold'), width=20, height=2)
     change_password_title.pack(side='top')
     # 原密码提示标签和文本框
     tk.Label(page4, text='原密码:', font=('楷体', 15)).place(x=100, y=75)
     tk.Label(page4, text='新的密码:', font=('楷体', 15)).place(x=100, y=150)
     tk.Label(page4, text='确认密码:', font=('楷体', 15)).place(x=100, y=225)
-    ori_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=38)     # , width=50
+    ori_pas_entry = tk.Entry(page4, textvariable=var_old, show='*', width=38)  # , width=50
     ori_pas_entry.place(x=220, y=80)
-    new_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=38)     # , width=44
+    new_pas_entry = tk.Entry(page4, textvariable=var_new1, show='*', width=38)  # , width=44
     new_pas_entry.place(x=220, y=155)
-    con_pas_entry = tk.Entry(page4, textvariable=var, show='*', width=38)     # , width=47
+    con_pas_entry = tk.Entry(page4, textvariable=var_new2, show='*', width=38)  # , width=47
     con_pas_entry.place(x=220, y=230)
     page4.focus_force()
 
-    original = ori_pas_entry.get()
-    new = new_pas_entry.get()
-    confirm = con_pas_entry.get()
-    confirm_button = tk.Button(page4, text="确认", command=lambda: confirm_password(original, new, confirm),
+    # original = ori_pas_entry.get()
+    # new = new_pas_entry.get()
+    # confirm = con_pas_entry.get()
+    confirm_button = tk.Button(page4, text="确认",
+                               command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
+                                                                con_pas_entry.get(), page4),
                                font=('楷体', 12), width=15, height=1)
-    confirm_button.place(x=150,y=300)
-    cancel_button = tk.Button(page4, text="取消", command=lambda: last_step(page4, tea_window), font=('楷体', 12), width=15, height=1)
-    cancel_button.place(x=300,y=300)
+    confirm_button.place(x=300, y=300)
+    cancel_button = tk.Button(page4, text="取消", command=lambda: last_step(page4, tea_window), font=('楷体', 12),
+                              width=15, height=1)
+    cancel_button.place(x=150, y=300)
     page4.mainloop()
 
 
@@ -315,25 +343,28 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
     var = tk.StringVar()
     var = None
     # 标题
-    welcome_title = tk.Label(tea_window, text='你好!'+name, font=('楷体', 10), width=10, height=2)
-    welcome_title.place(x=0,y=0)
+    welcome_title = tk.Label(tea_window, text='你好!' + name, font=('楷体', 10), width=10, height=2)
+    welcome_title.place(x=0, y=0)
     # 查看成绩->一个新的页面 包括各种成绩与分析
-    query_button = tk.Button(tea_window, text="查询成绩", command=lambda: disp_grades(tea_window, name), font=('楷体',18),
+    query_button = tk.Button(tea_window, text="查询成绩", command=lambda: disp_grades(tea_window, name),
+                             font=('楷体', 18),
                              width=20, height=2)
-    query_button.place(x=180,y=40)
+    query_button.place(x=180, y=40)
     # 申请复核成绩按钮
-    app_review_button = tk.Button(tea_window, text="申请复核成绩", command=lambda: app_review(tea_window), font=('楷体',18), width=20,
+    app_review_button = tk.Button(tea_window, text="申请复核成绩", command=lambda: app_review(tea_window),
+                                  font=('楷体', 18), width=20,
                                   height=2)
-    app_review_button.place(x=180,y=120)
+    app_review_button.place(x=180, y=120)
     # 修改自己的密码
-    cha_my_button = tk.Button(tea_window, text="修改我的密码", command=lambda: change_my_password(tea_window, var), font=('楷体',18),
+    cha_my_button = tk.Button(tea_window, text="修改我的密码", command=lambda: change_my_password(tea_window, var),
+                              font=('楷体', 18),
                               width=20, height=2)
-    cha_my_button.place(x=180,y=200)
+    cha_my_button.place(x=180, y=200)
     # 修改学生的密码
     # cha_stu_button = tk.Button(tea_window, text="修改学生密码", command=change_stu_password, width=30, height=3)
     # cha_stu_button.pack(pady=10)
     # 退出登录
     exit_button = tk.Button(tea_window, text="退出登录",
                             command=lambda: log_out(tea_window, login_window, userid_entry
-                                                    , password_entry), font=('楷体',18), width=20, height=2)
-    exit_button.place(x=180,y=280)
+                                                    , password_entry), font=('楷体', 18), width=20, height=2)
+    exit_button.place(x=180, y=280)
