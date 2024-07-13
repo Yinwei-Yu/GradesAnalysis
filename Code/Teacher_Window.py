@@ -100,18 +100,19 @@ def disp_all_grades(grade_window):
     grade_window.withdraw()
     choice1 = tk.Toplevel(grade_window)
     choice1.title("查看所有学生成绩")
-    choice1.geometry("800x500")
-    l1 = tk.Label(choice1, text='学生成绩', font=("Arial", 20))
-    l1.pack()
+    choice1.geometry("600x400")
+    l1 = tk.Label(choice1, text='学生成绩', font=("楷体", 16))
+    l1.place(x=280,y=0)
     choice1.focus_force()
-    last_step_button = tk.Button(choice1, text='返回上一步', command=lambda: last_step(choice1, grade_window),
-                                 width=15, height=1)
-    last_step_button.pack(padx=0, pady=0)
+    last_step_button = tk.Button(choice1, text="返回", command=lambda: last_step(choice1, grade_window),
+                                 width=10, height=1)
+    last_step_button.place(x=0, y=0)
+    
     choice1.mainloop()
 
 
 # 实现查看成绩功能2 显示总体成绩的分析 未实现
-# 总体成绩分析界面
+# 总体成绩分析界面 还不知道里面十是否要细分出其他小的选项
 def disp_all_analysis(grade_window):
     # 隐藏grade_window窗口
     grade_window.withdraw()
