@@ -5,6 +5,7 @@ by 刘杨健
 """
 from tkinter import filedialog, messagebox
 
+import ttkbootstrap as ttk
 from tinui.TinUI import *
 
 from AccountManager import accountManager, importedGrades
@@ -63,6 +64,7 @@ def import_grades(admin_window):
             def on_closing():
                 # 不执行任何操作，这样就禁用了关闭窗口的功能
                 pass
+
             # 绑定 WM_DELETE_WINDOW 协议到 on_closing 方法
             tktop.protocol("WM_DELETE_WINDOW", on_closing)
 
@@ -147,55 +149,63 @@ def admin_logout(admin_window, login_window, username_entry, password_entry):
     login_window.deiconify()
 
 
-def show_admin_window(login_window, username_entry, password_entry):
-    admin_window = tk.Toplevel()
+def show_admin_window(login_window, userid_entry, password_entry, res_name):
+    admin_window = ttk.Toplevel()
     admin_window.title('admin_window')
-    admin_window.geometry('600x400')
+    admin_window.geometry('800x1000+800+400')
+
     admin_window.resizable(False, False)
     # 标题
-    welcome_title = tk.Label(admin_window, text='你好！' + username_entry.get(), font=('楷体', 10), width=10, height=2,
-                             bg='red')
+    welcome_title = ttk.Label(admin_window, text='你好！' + res_name, font=('黑体', 15))
     # welcome_title.place_configure(anchor='nw')
     welcome_title.place(x=0, y=0)
-
+    padding = 15
+    pady = 20
+    bootstyle='info-outline'
+    blank_title = ttk.Label(admin_window,text='',font=('黑体', 10))
+    blank_title.pack(pady=20)
     # 导入学生成绩按钮
-    bt_import_grades = tk.Button(admin_window, text='导入学生成绩', command=lambda: import_grades(admin_window),
-                                 font=('楷体', 18), width=20,
-                                 height=1)
-    bt_import_grades.place(x=180, y=40)
+    bt_import_grades = ttk.Button(admin_window, text='导入学生成绩', command=lambda: import_grades(admin_window),
+                                  width=20, bootstyle= bootstyle, padding=padding)
+    bt_import_grades.pack(pady=pady)
+    # bt_import_grades.place(x=180, y=100)
 
     # 查看学生成绩按钮
-    bt_show_grades = tk.Button(admin_window, text='查看成绩', command=admin_disp_grads, font=('楷体', 18), width=20,
-                               height=1)
-    bt_show_grades.place(x=180, y=90)
+    bt_show_grades = ttk.Button(admin_window, text='查看成绩', command=admin_disp_grads, width=20,
+                                bootstyle= bootstyle, padding=padding)
+    bt_show_grades.pack(pady=pady)
+    # bt_show_grades.place(x=180, y=200)
 
     # 查看成绩复核申请表
 
-    bt_show_apps = tk.Button(admin_window, text='查看成绩复核申请表', command=lambda: admin_disp_apps(admin_window),
-                             font=('楷体', 18),
-                             width=20, height=1)
-    bt_show_apps.place(x=180, y=140)
+    bt_show_apps = ttk.Button(admin_window, text='查看成绩复核申请表', command=lambda: admin_disp_apps(admin_window),
+                              width=20, bootstyle= bootstyle, padding=padding)
+    bt_show_apps.pack(pady=pady)
+    # bt_show_apps.place(x=180, y=300)
 
     # 查看所有账户信息
 
-    bt_show_users = tk.Button(admin_window, text='查看账户信息', command=lambda: admin_disp_users(admin_window),
-                              font=('楷体', 18), width=20,
-                              height=1)
-    bt_show_users.place(x=180, y=190)
+    bt_show_users = ttk.Button(admin_window, text='查看账户信息', command=lambda: admin_disp_users(admin_window),
+                               width=20, bootstyle= bootstyle, padding=padding)
+    bt_show_users.pack(pady=pady)
+    # bt_show_users.place(x=180, y=400)
 
     # 修改密码（包括修改管理员的密码和重置用户的密码）
-    bt_modify_password = tk.Button(admin_window, text='修改密码', command=admin_modify_password, font=('楷体', 18),
-                                   width=20, height=1)
-    bt_modify_password.place(x=180, y=240)
+    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=admin_modify_password, width=20,
+                                    bootstyle= bootstyle, padding=padding)
+    bt_modify_password.pack(pady=pady)
+    # bt_modify_password.place(x=180, y=500)
 
     # 修改学生成绩
-    bt_modify_grades = tk.Button(admin_window, text='修改成绩', command=admin_modify_grades, font=('楷体', 18),
-                                 width=20, height=1)
-    bt_modify_grades.place(x=180, y=290)
+    bt_modify_grades = ttk.Button(admin_window, text='修改成绩', command=admin_modify_grades, width=20,
+                                  bootstyle= bootstyle, padding=padding)
+    bt_modify_grades.pack(pady=pady)
+    # bt_modify_grades.place(x=180, y=600)
 
     # 退出
-    bt_logout = tk.Button(admin_window, text='退出登录',
-                          command=lambda: admin_logout(admin_window, login_window, username_entry, password_entry),
-                          font=('楷体', 18), width=20, height=1)
+    bt_logout = ttk.Button(admin_window, text='退出登录',
+                           command=lambda: admin_logout(admin_window, login_window, userid_entry, password_entry),
+                           width=20, bootstyle= bootstyle, padding=padding)
+    bt_logout.pack(pady=pady)
 
-    bt_logout.place(x=180, y=340)
+    # .place(x=180, y=700)

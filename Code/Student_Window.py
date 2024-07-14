@@ -21,10 +21,12 @@ by 廖雨龙
 """
 import tkinter as tk
 from tkinter import messagebox
+
+import ttkbootstrap as ttk
+
 # 复用Teacher_Window中修改密码的方法
 from Teacher_Window import change_my_password
 # 复用Teacher_Window中的确认键
-from Teacher_Window import confirm_password
 # 复用Teacher_Window中返回上一步的方法
 from Teacher_Window import last_step
 
@@ -70,25 +72,30 @@ def log_out(stu_window, login_window, username_entry, password_entry):
 
 # 显示学生窗口的函数
 def show_student_window(login_window, userid_entry, password_entry, name):
-    stu_window = tk.Toplevel()
-    stu_window.title("Student Window")
-    stu_window.geometry('600x400')
+    stu_window = ttk.Toplevel()
+    stu_window.title('admin_window')
+    stu_window.geometry('800x1000+800+400')
+
     stu_window.resizable(False, False)
     # 标题
-    welcome_title = tk.Label(stu_window, text='你好!' + name, font=('楷体', 10), width=10, height=2)
+    welcome_title = ttk.Label(stu_window, text='你好!' + name, font=('楷体', 10))
     welcome_title.place(x=0, y=0)
+    padding = 15
+    pady = 20
+    bootstyle = 'info-outline'
+    blank_title = ttk.Label(stu_window, text='', font=('黑体', 10))
+    blank_title.pack(pady=20)
     # 成绩查询按钮 query_button = tk.Button(stu_window, text="查询成绩", command=query_scores, width=30, height=3)
-    query_button = tk.Button(stu_window, text="查询成绩", command=lambda: query_scores(userid_entry.get(), stu_window),
-                             width=20,
-                             height=2, font=('楷体', 18))
-    query_button.place(x=180, y=40)
+    query_button = ttk.Button(stu_window, text="查询成绩", command=lambda: query_scores(userid_entry.get(), stu_window),
+                              width=20, bootstyle=bootstyle, padding=padding)
+    query_button.pack(pady=pady)
     # 修改密码的按钮
-    modify_button = tk.Button(stu_window, text="修改密码", command=lambda: change_my_password(stu_window), width=20,
-                              height=2,
-                              font=('楷体', 18))
-    modify_button.place(x=180, y=120)
+    modify_button = ttk.Button(stu_window, text="修改密码", command=lambda: change_my_password(stu_window), width=20,
+                               bootstyle=bootstyle,
+                               padding=padding)
+    modify_button.pack(pady=pady)
     # 退出登陆按钮
-    exit_button = tk.Button(stu_window, text="退出登录",
-                            command=lambda: log_out(stu_window, login_window, userid_entry
-                                                    , password_entry), width=20, height=2, font=('楷体', 18))
-    exit_button.place(x=180, y=200)
+    exit_button = ttk.Button(stu_window, text="退出登录",
+                             command=lambda: log_out(stu_window, login_window, userid_entry
+                                                     , password_entry), width=20, bootstyle=bootstyle, padding=padding)
+    exit_button.pack(pady=pady)

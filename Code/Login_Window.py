@@ -83,47 +83,68 @@ def start():
                     login_var.set('')
                     fault_times = 0
                     login_window.withdraw()
-                    show_admin_window(login_window, userid_entry, password_entry)
+                    show_admin_window(login_window, userid_entry, password_entry, res_name)
             # login_var.set('成功登录')
 
         # 测试代码
         # print(userid_entry.get(),password_entry.get())
 
-    # 退出函数
+        # 退出函数
+
     def log_out():
         login_window.destroy()
 
+    def change_theme(style):
+        global flag
+        if flag == 0:
+            flag = 1
+            style.theme_use('darkly')
+            style.configure('TButton', font=('黑体', 20))
+            style.configure('TLabel', font=('黑体', 20))
+            # login_window.withdraw()
+        elif flag == 1:
+            flag = 0
+            style.theme_use('flatly')
+            style.configure('TButton', font=('黑体', 20))
+            style.configure('TLabel', font=('黑体', 20))
+            # login_window.withdraw()
+
     login_window = ttk.Window(themename='flatly')
-    login_window.geometry('1600x800')
-    style = (ttk.Style())
+    # style = ttkthemes.ThemedStyle(login_window)  # 设置需要设置主题的窗口
+    # style.set_theme("radiance")
+
+    login_window.geometry('1000x800+800+400')
+    style = ttk.Style()
+
     style.configure('TButton', font=('黑体', 20))
     style.configure('TLabel', font=('黑体', 20))
     # style.configure('Entry', font=('黑体', 20))
     # btn1 = ttk.Button(text='hello world', padding=30, bootstyle='success-outline')
     # btn1.pack()
+    # login_window.after(10000, change_theme(style))
     login_window.title('main window')
     login_window.resizable(False, False)
 
     # 显示标题，高考成绩管理系统
     first_title = ttk.Label(login_window, text='高考成绩管理系统',
-                            font=('黑体', 30))  # , font=('华文行楷', 30, 'bold'), width=20, height=2)
-    first_title.place(x=530, y=100)
+                            font=('黑体', 30))  # , font=('华文行楷', 12124DC30, 'bold'), width=20, height=2)
+    first_title.place(x=230, y=100)
     # first_title.pack(side='top')
     # 用和密码的提示标签
     userid_label = ttk.Label(login_window, text='学号/工号:')  # , font=('楷体', 15))
-    userid_label.place(x=420, y=300)
+    userid_label.place(x=120, y=300)
     password_label = ttk.Label(login_window, text='密码:')  # , font=('楷体', 15))
-    password_label.place(x=420, y=400)
+    password_label.place(x=120, y=400)
     # 设置两个var获取输入的学号和密码
     var_userid = ttk.StringVar()
     var_password = ttk.StringVar()
 
     # 学号和密码的输入框
     userid_entry = ttk.Entry(login_window, font=('楷体', 20), textvariable=var_userid, bootstyle='info')
-    userid_entry.place(x=670, y=300)
+    userid_entry.place(x=370, y=300)
 
     password_entry = ttk.Entry(login_window, show='*', font=('楷体', 20), textvariable=var_password, bootstyle='info')
-    password_entry.place(x=670, y=400)
+    password_entry.place(x=370, y=400)
 
     # 学号/工号和密码
     userid = ""
@@ -132,15 +153,28 @@ def start():
     # 登录提示标签
     login_var = ttk.StringVar()
     login_label = ttk.Label(login_window, textvariable=login_var, font=('黑体', 12), style='danger')
-    login_label.place(x=420, y=470)
+    login_label.place(x=120, y=470)
     # 添加command参数补充按钮功能
     # 注册、登录、退出按钮
-    bt_login = ttk.Button(login_window, text='登录', command=log_in, bootstyle='success-outline', width=12)
-    bt_login.place(x=420, y=600)
-    bt_logout = ttk.Button(login_window, text='退出', command=log_out, bootstyle='secondary-outline', width=12)
-    bt_logout.place(x=850, y=600)
+    bt_login = ttk.Button(login_window, text='登录', command=log_in, bootstyle='info-outline', width=12)
+    bt_login.place(x=120, y=600)
+    bt_logout = ttk.Button(login_window, text='退出', command=log_out, bootstyle='dark-outline', width=12)
+    bt_logout.place(x=550, y=600)
+    bt_change_theme = ttk.Button(login_window, text='切换主题', command=lambda: change_theme(style),
+                                 bootstyle="dark-toolbutton")
+    bt_change_theme.place(x=50, y=50)
+
+    # b = TinUI(login_window)
+    # b.pack(fill='both', expand=True)
+    # m = b.add_title((600, 0),
+    #                'TinUI is a modern way to show tkinter widget in your application, as they are drawn by tkinter canvas')
+    #
+    # bu2=b.add_button((700,250),'nothing button 2')[1]
 
     login_window.mainloop()
+
+
+# login_window.mainloop()
 
 
 # start()
@@ -153,3 +187,5 @@ is_exist = False
 
 # 记录密码错误次数
 fault_times = 0
+# 记录当前主题
+flag = 0
