@@ -1,11 +1,11 @@
 import tkinter as tk
 
-import tinui
-import ttkbootstrap
+import ttkbootstrap as ttk
+
+from AccountManager import accountManager
 from Administrator_Window import show_admin_window
 from Student_Window import show_student_window
 from Teacher_Window import show_teacher_window
-from AccountManager import accountManager
 
 """
 2024/7/9
@@ -80,49 +80,53 @@ def start():
     def log_out():
         login_window.destroy()
 
-    login_window = tk.Tk()
+    login_window = ttk.Window( themename='flatly')
+    login_window.geometry('1600x800')
+    style = (ttk.Style())
+    style.configure('TButton', font=('楷体', 20))
+    btn1 = ttk.Button(text='hello world', padding=30, bootstyle='success-outline')
+    btn1.pack()
     login_window.title('main window')
-    login_window.geometry('600x400')
     login_window.resizable(False, False)
 
     # 显示标题，高考成绩管理系统
-    first_title = tk.Label(login_window, text='高考成绩管理系统', font=('华文行楷', 30, 'bold'), width=20, height=2)
+    first_title = ttk.Label(login_window, text='高考成绩管理系统')  # , font=('华文行楷', 30, 'bold'), width=20, height=2)
     first_title.pack(side='top')
 
     # 用和密码的提示标签
-    userid_label = tk.Label(login_window, text='学号/工号:', font=('楷体', 15))
-    userid_label.place(x=120, y=170)
-    password_label = tk.Label(login_window, text='密码:', font=('楷体', 15))
-    password_label.place(x=170, y=210)
-
+    userid_label = ttk.Label(login_window, text='学号/工号:')  # , font=('楷体', 15))
+    userid_label.place(x=170, y=300)
+    password_label = ttk.Label(login_window, text='密码:')  # , font=('楷体', 15))
+    password_label.place(x=170, y=400)
     # 设置两个var获取输入的学号和密码
-    var_userid = tk.StringVar()
-    var_password = tk.StringVar()
+    var_userid = ttk.StringVar()
+    var_password = ttk.StringVar()
 
     # 学号和密码的输入框
-    userid_entry = tk.Entry(login_window, font=('楷体', 14), textvariable=var_userid)
-    userid_entry.place(x=230, y=170)
+    userid_entry = ttk.Entry(login_window)  # , font=('楷体', 14), textvariable=var_userid)
+    userid_entry.place(x=230, y=300)
 
-    password_entry = tk.Entry(login_window, show='*', font=('楷体', 14), textvariable=var_password)
-    password_entry.place(x=230, y=210)
+    password_entry = ttk.Entry(login_window, show='*')  # , font=('楷体', 14), textvariable=var_password)
+    password_entry.place(x=230, y=400)
 
     # 学号/工号和密码
     userid = ""
     password = ""
 
     # 登录提示标签
-    login_var = tk.StringVar()
-    login_label = tk.Label(login_window, textvariable=login_var, font=('楷体', 14))
+    login_var = ttk.StringVar()
+    login_label = ttk.Label(login_window, textvariable=login_var, font=('楷体', 14))
     login_label.place(x=250, y=250)
     login_label.pack(fill='x', padx=50, pady=20)
     # 添加command参数补充按钮功能
     # 注册、登录、退出按钮
-    bt_login = tk.Button(login_window, text='登录', font=('楷体', 12), width=15, height=1, command=log_in)
-    bt_login.place(x=150, y=300)
-    bt_logout = tk.Button(login_window, text='退出', font=('楷体', 12), width=15, height=1, command=log_out)
-    bt_logout.place(x=300, y=300)
+    bt_login = ttk.Button(login_window, text='登录',  command=log_in)
+    bt_login.place(x=150, y=600)
+    bt_logout = ttk.Button(login_window, text='退出', command=log_out)
+    bt_logout.place(x=300, y=600)
 
     login_window.mainloop()
+
 
 # start()
 

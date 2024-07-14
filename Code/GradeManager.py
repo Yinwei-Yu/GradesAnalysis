@@ -106,6 +106,7 @@ class GradeManager:
     # grades:Grades
     # 实现从输入导入
     def inputSingle(self, name, stuID, grade):
+
         self.student.append(stu.Student(name, stuID, grade))
         self.stuNum += 1
         return
