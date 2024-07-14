@@ -21,10 +21,40 @@ by 刘杨健
     完成相关按钮的布局,优化界面
 by 廖雨龙
 """
-
+"""
+2024/7/14
+    Teacher_Window
+    实现总成绩显示的前后端对接
+    继续细分查看总体成绩分析功能
+    使用TinUI来美化界面
+by 廖雨龙
+"""
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import tinui
+from AccountManager import accountManager
+
+
+# 显示成绩分布直方图的函数
+def disp_graph(choice2):
+    choice2.withdraw()
+    graph_window = tk.Toplevel()
+    pass
+
+
+# 显示主副科关系曲线的函数
+def disp_relation(choice2):
+    choice2.withdraw()
+    rel_window = tk.Toplevel()
+    pass
+
+
+# 显示单科成绩情况
+def dignose_single(choice2):
+    choice2.withdraw()
+    dig_window = tk.Toplevel()
+    pass
 
 
 # 提交申请的确认函数
@@ -68,7 +98,7 @@ def confirm_password(old, new1, new2, password_window):
     else:
         message = "密码修改失败，请检查输入！"
 
-    l1 = tk.Label(confirm_window, text=message, font=("Arial", 16))
+    l1 = tk.Label(confirm_window, text=message, font=("楷体", 16))
     l1.pack(pady=20)
 
     # 返回上一步的按钮
@@ -110,54 +140,26 @@ def disp_all_grades(grade_window):
 
     # 创建Treeview
     columns = (
-        "姓名", "学号", "总成绩", "单科成绩1", "单科成绩2", "单科成绩3", "单科成绩4", "单科成绩5", "单科成绩6",
-        "总排名")
+        "姓名", "学号", "单科成绩1", "单科成绩2", "单科成绩3", "单科成绩4", "单科成绩5", "单科成绩6", "单科成绩7",
+        "单科成绩8", "单科成绩9", "总分")
     tree = ttk.Treeview(frame, columns=columns, show='headings')
 
     # 定义每一列的标题和宽度
     for col in columns:
         tree.heading(col, text=col)
-        tree.column(col, width=100)
+        tree.column(col, width=100, anchor='center')
 
     # 拿到数据
     # 通过调用后端的什么东西,得到所有的信息
     # data = [(), (), ()]
     # 测试数据
-    data = [
-        ("A", "004", 1, 1, 1, 1, 1, 1, 2, 3),
-        ("B", "005", 2, 2, 2, 2, 2, 4, 5, 6),
-        ("C", "006", 3, 3, 3, 3, 3, 7, 8, 9),
-        ("D", "007", 4, 4, 4, 4, 4, 10, 11, 12),
-        ("E", "008", 5, 5, 5, 5, 5, 13, 14, 15),
-        ("F", "009", 6, 6, 6, 6, 6, 16, 17, 18),
-        ("G", "010", 7, 7, 7, 7, 7, 19, 20, 21),
-        ("H", "011", 8, 8, 8, 8, 8, 22, 23, 24),
-        ("I", "012", 9, 9, 9, 9, 9, 25, 26, 27),
-        ("J", "013", 10, 10, 10, 10, 10, 28, 29, 30),
-        ("K", "014", 11, 11, 11, 11, 11, 31, 32, 33),
-        ("L", "015", 12, 12, 12, 12, 12, 34, 35, 36),
-        ("M", "016", 13, 13, 13, 13, 13, 37, 38, 39),
-        ("N", "017", 14, 14, 14, 14, 14, 40, 41, 42),
-        ("O", "018", 15, 15, 15, 15, 15, 43, 44, 45),
-        ("P", "019", 16, 16, 16, 16, 16, 46, 47, 48),
-        ("Q", "020", 17, 17, 17, 17, 17, 49, 50, 51),
-        ("R", "021", 18, 18, 18, 18, 18, 52, 53, 54),
-        ("S", "022", 19, 19, 19, 19, 19, 55, 56, 57),
-        ("T", "023", 20, 20, 20, 20, 20, 58, 59, 60),
-        ("U", "024", 21, 21, 21, 21, 21, 61, 62, 63),
-        ("V", "025", 22, 22, 22, 22, 22, 64, 65, 66),
-        ("W", "026", 23, 23, 23, 23, 23, 67, 68, 69),
-        ("X", "027", 24, 24, 24, 24, 24, 70, 71, 72),
-        ("Y", "028", 25, 25, 25, 25, 25, 73, 74, 75),
-        ("Z", "029", 26, 26, 26, 26, 26, 76, 77, 78),
-        ("AA", "030", 27, 27, 27, 27, 27, 79, 80, 81),
-        ("BB", "031", 28, 28, 28, 28, 28, 82, 83, 84),
-        ("CC", "032", 29, 29, 29, 29, 29, 85, 86, 87),
-        ("DD", "033", 30, 30, 30, 30, 30, 88, 89, 90)
-    ]
+    # 总分降序
+    data = accountManager.getAllGrades(0, 0)
     # 将得到的数据放到那个表里面去
     for item in data:
-        tree.insert('', tk.END, values=item)
+        tree.insert('', tk.END, values=(
+            item['姓名'], item['学号'], item['语文'], item['数学'], item['英语'], item['物理'], item['化学'],
+            item['生物'], item['历史'], item['政治'], item['地理'], item['总分']))
 
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
@@ -189,16 +191,30 @@ def disp_all_analysis(grade_window):
     grade_window.withdraw()
     # 创建一个新的窗口 标题 大小 标签
     choice2 = tk.Toplevel(grade_window)
-    choice2.title("查看总体成绩分析报告")
-    choice2.geometry("800x500")
-    l2 = tk.Label(choice2, text='总体成绩报告', font=("Arial", 20))
-    l2.pack()
+    choice2.title("成绩分析")
+    choice2.geometry("600x400")
+    l2 = tk.Label(choice2, text='成绩分析功能', font=("楷体", 16))
+    l2.place()
     choice2.focus_force()
-    # 返回上一步的按钮
-    last_step_button = tk.Button(choice2, text='返回上一步', command=lambda: last_step(choice2, grade_window),
-                                 width=15, height=1)
-    last_step_button.pack(padx=0, pady=0)
-
+    # 显示成绩分布直方图
+    disp_all_grades_button = tk.Button(choice2, text='显示成绩分布直方图',
+                                       command=lambda: disp_graph(choice2), font=('楷体', 18), width=20,
+                                       height=1)
+    disp_all_grades_button.place(x=180, y=80)
+    # 主副科成绩关系曲线
+    disp_all_analysis_button = tk.Button(choice2, text='查看主副科关系曲线',
+                                         command=lambda: disp_relation(choice2), font=('楷体', 18), width=20,
+                                         height=1)
+    disp_all_analysis_button.place(x=180, y=140)
+    # 单科成绩情况
+    disp_single_grade_button = tk.Button(choice2, text='查看单科成绩情况',
+                                         command=lambda: dignose_single(choice2), font=('楷体', 18), width=20,
+                                         height=1)
+    disp_single_grade_button.place(x=180, y=200)
+    # 返回上一步
+    last_step_button = tk.Button(choice2, text='返回', command=lambda: last_step(choice2, grade_window),
+                                 font=('楷体', 18), width=20, height=1)
+    last_step_button.place(x=180, y=260)
     choice2.mainloop()
 
 
@@ -408,11 +424,12 @@ def log_out(tea_window, login_window, username_entry, password_entry):
 
 
 # 显示教师界面
+# 使用TinUI
 def show_teacher_window(login_window, userid_entry, password_entry, name):
     tea_window = tk.Toplevel(login_window)
     tea_window.title("Teacher Window")
     tea_window.geometry('600x400')
-    # 标题
+    # 欢迎标题
     welcome_title = tk.Label(tea_window, text='你好!' + name, font=('楷体', 10), width=10, height=2)
     welcome_title.place(x=0, y=0)
     # 查看成绩->一个新的页面 包括各种成绩与分析
