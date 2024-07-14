@@ -26,6 +26,15 @@ by 刘杨健
 def start():
     # 查询函数，应访问数据库，返回查询结果,密码错误，identity=0，否则返回相应的identity值
 
+    # 身份信号，初始为0，学生登录为3，教师登录为2，管理员登录为1
+    identity = 0
+
+    # 标记用户是否存在
+    is_exist = False
+
+    # 记录密码错误次数
+    fault_times = 0
+
     def find_user(userid, password):
         is_exist, identity, userName = accountManager.login(int(userid), password)
         return is_exist, identity, userName
@@ -62,13 +71,19 @@ def start():
                         password_entry.config(state='disabled')
                     else:
                         login_var.set(f'密码错误，你还可以输入{5 - fault_times}次')
-                elif res_identity == 3:
+                elif res_identity == 3:  # 跳转页面时，登录界面的提示标签清空，密码错误次数重置
+                    login_var.set('')
+                    fault_times = 0
                     login_window.withdraw()
                     show_student_window(login_window, userid_entry, password_entry, res_name)
                 elif res_identity == 2:
+                    login_var.set('')
+                    fault_times = 0
                     login_window.withdraw()
                     show_teacher_window(login_window, userid_entry, password_entry, res_name)
                 else:  # identity==1
+                    login_var.set('')
+                    fault_times = 0
                     login_window.withdraw()
                     show_admin_window(login_window, userid_entry, password_entry)
             # login_var.set('成功登录')
@@ -123,6 +138,7 @@ def start():
     bt_logout.place(x=300, y=300)
 
     login_window.mainloop()
+
 
 # start()
 
