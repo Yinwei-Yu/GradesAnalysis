@@ -23,6 +23,12 @@ AccountManager类
     refreshUserInfo()
     getGrades()
 by陈邱华
+
+2024/7/14
+AccountManagera
+    getAllGrades()
+by陈邱华
+
 '''
 
 importedGrades: bool = False
@@ -286,6 +292,14 @@ class AccountManager:
             gradeManager.generateGradesAnalysis(1, 'Biology')
             gradeManager.generateGradesAnalysis(2, 1)
             return gradeManager.student
+
+    # mode1==0总分排序
+    # mode1==1语文排序
+    # 以此类推
+    # mode2==0 降序，mode2==1升序
+    # 返回字典列表
+    def getAllGrades(self, mode1, mode2):
+        return gradeManager.getAllGrades(mode1, mode2)
 
     def dispAllGrades(self):
         gradeManager.dispAllGrades()

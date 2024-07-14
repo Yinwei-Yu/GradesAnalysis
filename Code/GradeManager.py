@@ -66,20 +66,25 @@ GradeManager
     getAppliFromSql()
 by 李胤玮
 
+2024/7/14
+GradeManager
+    getAllGrades()
+by陈邱华
+
 '''
 
 import os
 
-import CheckApplication
-import Grades as gr
-import Student as stu
 import matplotlib.pyplot as plt
 import mysql.connector  # pip install mysql-connector-python
 import numpy as np
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
+
+import CheckApplication
+import Grades as gr
+import Student as stu
 from MySQLInfo import *
 from Subject import *
-from createMySQLTable import *
 
 
 class GradeManager:
@@ -440,10 +445,10 @@ class GradeManager:
             stu.stuGrades.displayGradesAnalysis()
 
     # 获取dict类型学生成绩表格
-    def getGradesTable(self) -> list:
+    def getGradesTable(self, sortedStudent) -> list:
         # 创建一个字典列表存储每个学生的数据
         data = []
-        for student in self.student:
+        for student in sortedStudent:
             # 创建一个字典存储单个学生的信息
             student_data = {
                 '姓名': student.name,
@@ -461,7 +466,24 @@ class GradeManager:
             }
             # 将这个学生的信息字典添加到数据列表中
             data.append(student_data)
+        print(data)
         return data
+
+    # mode1==0总分排序
+    # mode1==1语文排序
+    # 以此类推
+    # mode2==0 降序，mode2==1升序
+    # 返回字典列表
+    def getAllGrades(self, mode1, mode2):
+        subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
+        temp = self
+        if mode1 == 0:
+            temp = sorted(self.student, key=lambda sub: sub.stuGrades.totalScores, reverse=1 - mode2)
+
+        else:
+            temp = self.calculateRanking(subjects[mode1 - 1], mode2 + 1)
+
+        return self.getGradesTable(temp)
 
     def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
 
@@ -481,7 +503,7 @@ class GradeManager:
                           ):
         # 将数据转换为 DataFrame
         df = pd.DataFrame(self.getGradesTable())
-        # print(df)
+        print(df)
         # 将dataframe保存至数据库
         global mydb
         try:
@@ -635,8 +657,13 @@ class GradeManager:
 
         return True
 
+
 gradeManager = GradeManager([], 0, [], 0)
 gradeManager.inputMore("./excelFiles/student_grades.xls")
+# for i in range(10):
+#     for j in range(2):
+#         gradeManager.getAllGrades(i, j)
+#         print('\n')
 # gradeManager=GradeManager()
 
 # gradeManager.inputMySQL()
