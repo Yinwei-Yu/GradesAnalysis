@@ -80,9 +80,7 @@ def show_student_window(login_window, userid_entry, password_entry, name):
     # 标题
     welcome_title = ttk.Label(stu_window, text='你好!' + name, font=('楷体', 10))
     welcome_title.place(x=0, y=0)
-    padding = 15
-    pady = 20
-    bootstyle = 'info-outline'
+
     blank_title = ttk.Label(stu_window, text='', font=('黑体', 10))
     blank_title.pack(pady=20)
     # 成绩查询按钮 query_button = tk.Button(stu_window, text="查询成绩", command=query_scores, width=30, height=3)
@@ -99,3 +97,9 @@ def show_student_window(login_window, userid_entry, password_entry, name):
                              command=lambda: log_out(stu_window, login_window, userid_entry
                                                      , password_entry), width=20, bootstyle=bootstyle, padding=padding)
     exit_button.pack(pady=pady)
+
+
+
+padding = 15
+pady = 20
+bootstyle = 'info-outline'
