@@ -242,17 +242,9 @@ class GradeManager:
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
-        self.student[num].stuGrades.totalGrades = (
-                self.student[num].stuGrades.grades[0].score +
-                self.student[num].stuGrades.grades[1].score +
-                self.student[num].stuGrades.grades[2].score +
-                self.student[num].stuGrades.grades[3].score +
-                self.student[num].stuGrades.grades[4].score +
-                self.student[num].stuGrades.grades[5].score +
-                self.student[num].stuGrades.grades[6].score +
-                self.student[num].stuGrades.grades[7].score +
-                self.student[num].stuGrades.grades[8].score
-        )
+        for i in range(9):
+            score = self.student[num].stuGrades.grades[i].score
+            self.student[num].stuGrades.totalGrades += self.student[num].stuGrades.grades[i].score if score != -1 else 0
 
     # 修改学生成绩，修改成功返回True，否则返回False
     # name：学生姓名 stuID：学生学号 sub:学科名，英文全称 grade:修改后的分数
@@ -682,7 +674,7 @@ class GradeManager:
 
 
 gradeManager = GradeManager([], 0, [], 0)
-gradeManager.inputMore("./excelFiles/student_grades.xls")
+gradeManager.inputMore("./excelFiles/rankedGrades.csv")
 gradeManager.inputCheckApplications("./excelFiles/checkApplications.csv")
 # for i in range(10):
 #     for j in range(2):

@@ -77,8 +77,13 @@ def insert_ranked_grades_to_mysql(path, host=host, user=user, password=password,
     df = pd.read_csv(path)
 
     for index, row in df.iterrows():  # 遍历DataFrame中的每一行
-        totalScore = row['语文'] + row['数学'] + row['英语'] + row['物理'] + row['化学'] + row['生物'] + row['历史'] + \
-                     row['政治'] + row['地理']
+        subjectList = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
+        totalScore = 0
+        for i in range(9):
+            score = row[subjectList[i]]
+            totalScore += score if score != -1 else 0
+        # totalScore = row['语文'] + row['数学'] + row['英语'] + row['物理'] + row['化学'] + row['生物'] + row['历史'] + \
+        #              row['政治'] + row['地理']
         data = f"'{row['姓名']}',{row['学号']},{row['语文']},{row['数学']},{row['英语']},{row['物理']},{row['化学']},{row['生物']},{row['历史']},{row['政治']},{row['地理']},{totalScore}"
         sql = (f"INSERT IGNORE INTO {table} "
                f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "

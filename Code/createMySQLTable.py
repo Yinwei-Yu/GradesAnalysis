@@ -146,11 +146,11 @@ def createCheckApplicationsTable1(table_name, host, user, password, port, charse
         db.close()  # 确保总是关闭数据库连接
 
 
-# host = 'mysql.sqlpub.com'  # 这里输入主机名称一般来说都是localhost
-# user = 'orangeisland66'  # 这里输入mysql用户名
-# password = 'HM1620kJfibETKIE'  # 这里输入密码
-# port = 3306  # 这里输入端口号
-# charset = 'utf8mb4'
-# database = 'orangeisland66'  # 这里选择数据库
-# table_name = 'users'
-# createUsersTable(table_name, host, user, password, port, charset, database)
+host = 'mysql.sqlpub.com'  # 这里输入主机名称一般来说都是localhost
+user = 'orangeisland66'  # 这里输入mysql用户名
+password = 'HM1620kJfibETKIE'  # 这里输入密码
+port = 3306  # 这里输入端口号
+charset = 'utf8mb4'
+database = 'orangeisland66'  # 这里选择数据库
+table_name = 'grades'
+createGradesTable(table_name, host, user, password, port, charset, database)
