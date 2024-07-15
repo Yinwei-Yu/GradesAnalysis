@@ -26,6 +26,7 @@ by 廖雨龙
 """
 import tkinter as tk
 from tkinter import messagebox
+import tkinter.ttk as tttk
 import csv
 import ttkbootstrap as ttk
 import AccountManager
@@ -57,23 +58,48 @@ def query_scores(userid, stu_window):
     grade_window.title("Grades")
     grade_window.resizable(False, False)
     # 下面打印学生的成绩
-    messagebox.showinfo("这里显示出学生的成绩")
-    accountManager = AccountManager()
-    student=accountManager.getGrades(1,userid)
+    #messagebox.showinfo("这里显示出学生的成绩")
+    def read_grades_from_csv(user_id):
+        path = './excelFiles/rankedGrades.csv'
+        grades = {}
+        with open(path, 'r', newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            headers = next(reader)[2:]  # 假设科目名称从第三列开始
+
+            # 找到对应用户ID的行
+            for row in reader:
+                if row[1] == str(user_id):
+                    # 将成绩添加到grades字典中，但忽略成绩为0的科目
+                    grades = {header: int(score) for header, score in zip(headers, row[2:]) if int(score) != 0}
+                    break
+
+            if not grades:
+                raise ValueError(f"No valid grades found for userid {user_id}")
+
+        return grades
+        # 获取特定用户的分数
+
+    try:
+        user_grades = read_grades_from_csv(userid)
+    except ValueError as e:
+        messagebox.showerror("Error", str(e))
+        grade_window.destroy()
+        stu_window.deiconify()
+        return
     # 在窗口中显示成绩
-    label = tk.Label(grade_window, text=f"学生ID: {userid}\n")
+    label = tk.Label(grade_window, text=f"学生ID: {userid}\n\n")
     label.pack()
-    for subject, score in student.stuGrades.items():
+    for subject, score in user_grades.items():
         label = tk.Label(grade_window, text=f"{subject}: {score}")
         label.pack()
     # 创建一个生成成绩分析报告的按钮
-    report_button = tk.Button(grade_window, text="一键生成成绩分析生成报告", width=10, height=1,
+    report_button = tk.Button(grade_window, text="成绩分析", width=10, height=2,
                               command=lambda: generate_grade_report())
-    report_button.place(x=180, y=0)  # 放置在确认按钮的正上方
+    report_button.place(x=250, y=250)  # 放置在确认按钮的正上方
     # 这里加一个确认键,返回上一步
-    confirm_button = tk.Button(grade_window, text="确认", width=10, height=1,
+    confirm_button = tk.Button(grade_window, text="确认", width=10, height=2,
                                command=lambda: last_step(grade_window, stu_window))
-    confirm_button.place(x=180, y=40)
+    confirm_button.place(x=250, y=300)
 
 
 # 实现用户的登出 回到主窗口 同时会清空原来输入的账号和密码
