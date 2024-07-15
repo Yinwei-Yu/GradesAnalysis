@@ -30,7 +30,7 @@ by 廖雨龙
 by 廖雨龙
 """
 import tkinter as tk
-
+from tkinter import messagebox
 import ttkbootstrap as ttk
 
 from AccountManager import accountManager
@@ -83,33 +83,46 @@ def confirm_app(tea_name, stu_name, stuID, sub, current_window):
     confirm_window.mainloop()
 
 
-# 修改密码中的确认按钮  未完成
-# 参数 old:原来的密码 new1:第一次输入的新密码 new2:第二次输入的新的密码
-def confirm_password(old, new1, new2, password_window):
-    password_window.withdraw()
+def confirm_password(old, new1, new2, password_window, password, tea_window):
+    # password_window.withdraw()
     # 创建一个新的窗口，标题，大小
-    confirm_window = tk.Toplevel(password_window)
-    confirm_window.title("密码修改确认")
-    confirm_window.geometry("400x200")
+    # confirm_window = tk.Toplevel(password_window)
+    # confirm_window.title("密码修改确认")
+    # confirm_window.geometry("400x200")
 
     # 检查密码修改状态并设置标签
-    if new1 == new2 and new1 != old:
-        message = "密码修改成功！"
+    # if new1 == new2 and new1 != old:
+    #     message = "密码修改成功！"
+    # else:
+    #     message = "密码修改失败，请检查输入！"
+
+    # l1 = tk.Label(confirm_window, text=message, font=("楷体", 16))
+    # l1.pack(pady=20)
+    if old == "":  # 原密码为空
+        messagebox.showinfo('提示', '请输入原密码')
+        # password_window.deiconify()
+    elif not old == password:  # 原密码错误
+        messagebox.showerror('错误', '原密码错误')
+    elif new1 == "":  # 新密码为空
+        messagebox.showinfo('提示', '请输入新密码')
+    elif new2 == "":  # 没有重复确认密码
+        messagebox.showinfo('提示', '请再次输入新密码')
+    elif not new1 == new2:  # 重复确认失败
+        messagebox.showerror('错误', '重复密码不一致')
     else:
-        message = "密码修改失败，请检查输入！"
-
-    l1 = tk.Label(confirm_window, text=message, font=("楷体", 16))
-    l1.pack(pady=20)
-
+        accountManager.changePassword()
+        messagebox.showinfo('提示','密码修改成功')
+        password_window.destroy()
+        tea_window.deiconify()
+    return
     # 返回上一步的按钮
-    last_step_button = tk.Button(confirm_window, text='返回上一步',
-                                 command=lambda: last_step(confirm_window, password_window),
-                                 width=15, height=1)
-    last_step_button.pack(pady=10)
-
-    confirm_window.focus_force()
-    confirm_window.mainloop()
-
+    # last_step_button = tk.Button(confirm_window, text='返回上一步',
+    #                              command=lambda: last_step(confirm_window, password_window),
+    #                              width=15, height=1)
+    # last_step_button.pack(pady=10)
+    #
+    # confirm_window.focus_force()
+    # confirm_window.mainloop()
 
 # 成绩查询中的确认按钮
 # 点击之后会出现一个新的界面,显示是否找到和查找结果
@@ -401,7 +414,7 @@ def change_my_password(tea_window, password):
 
     confirm_button = ttk.Button(page4, text="确认",
                                 command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
-                                                                 con_pas_entry.get(), page4), width=5,
+                                                                 con_pas_entry.get(), page4, password, tea_window), width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
     if password_flag:
