@@ -119,7 +119,7 @@ class User_Teacher(User):
 
     def getAllGrades(self, mode, *args):
         pass
-        # return self.gradeManager.inputGrades(mode, *args)
+        # return self.gradeManager.inputExcelGrades(mode, *args)
 
     def GradesCheck(self, name, stuID, subject):
         pass
@@ -150,7 +150,7 @@ class User_Student(User):
     def GradesCheck(self, name, stuID, subject) -> bool:
         pass
         # gradeManager = GradeManager.GradeManager(self.userName, self.ID, [])
-        # return gradeManager.inputGrades(1, name, stuID, subject)
+        # return gradeManager.inputExcelGrades(1, name, stuID, subject)
 
 
 # 测试函数

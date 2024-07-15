@@ -5,7 +5,6 @@ by 刘杨健
 """
 from tkinter import filedialog, messagebox
 
-import ttkbootstrap as ttk
 from tinui.TinUI import *
 
 from AccountManager import accountManager
@@ -66,27 +65,59 @@ def update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic
             subject3_menu["menu"].add_command(label=subject, command=lambda value=subject: selected_subject3.set(value))
 
 
-# 在导入单科成绩中点击确认键
-# 这里会传入 姓名:name 学号:ID 语文:chinese 数学:math 英语:english
-# 科目一名称:sub1 科目二名称:sub2 科目三名称:sub3 科目一成绩:grade1 科目二成绩:grade2 科目三成绩:grade3
-def submit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
-    # 测试
-    print(name)
-    print(ID)
-    print(chinese)
-    print(Math)
-    print(english)
-    print(sub1)
-    print(sub2)
-    print(sub3)
-    print(grade1)
-    print(grade2)
-    print(grade3)
-    pass
-
-
 # 导入单个成绩的函数
 def import_single(admin_window):
+    def preSubmit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+        nonlocal warning_text
+        warning_text.set('正在导入……')
+        # 创建子线程
+        thread = threading.Thread(target=submit,
+                                  args=[single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1,
+                                        grade2, grade3, ])
+        thread.start()
+        # single_window.mainloop()
+
+    def submit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+        # 测试
+        nonlocal flag, warning_text
+        # warning_text.set('正在导入……')
+        # print(name)
+        # print(ID)
+        # print(type(chinese))
+        # print(Math)
+        # print(english)
+        # print(sub1)
+        # print(sub2)
+        # print(sub3)
+        # print(type(grade1))
+        # print(grade2)
+        # print(grade3)
+        if (sub1 in ['选科一', ''] or sub2 in ['选科一', ''] or sub3 in ['选科一', '']
+                or name == '' or ID == '' or chinese == '' or Math == '' or english == ''):
+            flag = 2
+            warning_text.set(options[flag])
+            print(warning_text)
+            return
+        try:
+            ID = int(ID)
+            chinese = int(chinese)
+            Math = int(Math)
+            english = int(english)
+            grade1 = int(grade1)
+            grade2 = int(grade2)
+            grade3 = int(grade3)
+        except Exception as e:
+            print("格式错误{}".format(e))
+            flag = 1
+            warning_text.set(options[flag])
+            print(warning_text)
+        # 注明flag变量为非本地变量
+
+        flag = accountManager.inputSingleGrades(name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2,
+                                                grade3)
+        warning_text.set(options[flag])
+        print(options[flag])
+
     single_window = tk.Toplevel(admin_window)
     admin_window.withdraw()
     single_window.geometry("800x600+800+400")
@@ -110,19 +141,20 @@ def import_single(admin_window):
     # 这些固定不变的输入的标签提示语
     labels = ["姓名", "学号", "语文", "数学", "英语"]
     for i, label in enumerate(labels):
-        ttk.Label(single_window, text=f"{label}:", font=('黑体', 14)).place(x=100, y=50 + 60 * i)
+        ttk.Label(single_window, text=f"{label}:", font=('黑体', 14)).place(x=100, y=25 + 60 * i)
     # 创建下拉菜单
-    subject1_menu = ttk.OptionMenu(single_window, selected_subject1, "选择科目一", "历史", "物理",
+    subject1_menu = ttk.OptionMenu(single_window, selected_subject1, "选科一", "历史", "物理",
                                    command=lambda value: update_subject2(value, selected_subject2, selected_subject3,
                                                                          subject2_menu, subject3_menu,
-                                                                         dynamic_subjects))
-    subject1_menu.place(x=100, y=350)
-    subject2_menu = ttk.OptionMenu(single_window, selected_subject2, "选择科目二",
+                                                                         dynamic_subjects), bootstyle=bootstyle)
+    subject1_menu.place(x=100, y=325)
+    subject2_menu = ttk.OptionMenu(single_window, selected_subject2, "选科二",
                                    command=lambda *args: update_subject3(selected_subject2, selected_subject3,
-                                                                         subject3_menu, dynamic_subjects))
-    subject2_menu.place(x=100, y=410)
-    subject3_menu = ttk.OptionMenu(single_window, selected_subject3, "选择科目三")
-    subject3_menu.place(x=100, y=470)
+                                                                         subject3_menu, dynamic_subjects),
+                                   bootstyle=bootstyle)
+    subject2_menu.place(x=100, y=385)
+    subject3_menu = ttk.OptionMenu(single_window, selected_subject3, "选科三", bootstyle=bootstyle)
+    subject3_menu.place(x=100, y=445)
     # 创建各个数据的文本输入框
     name_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_name)
     id_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_id)
@@ -135,13 +167,14 @@ def import_single(admin_window):
     # 放输入框
     entries = [name_entry, id_entry, chinese_entry, math_entry, english_entry, sub1_entry, sub2_entry, sub3_entry]
     for i, entry in enumerate(entries):
-        entry.place(x=200, y=50 + 60 * i)
+        entry.place(x=250, y=25 + 60 * i)
     # 下面再有两个按钮,一个是确认,一个是返回
     confirm_button = ttk.Button(single_window, text="确认",
-                                command=lambda: submit(single_window, var_name.get(), var_id.get(), var_chinese.get(),
-                                                       var_math.get(), var_english.get(), selected_subject1.get(),
-                                                       selected_subject2.get(), selected_subject3.get(),
-                                                       var_sub1.get(), var_sub2.get(), var_sub3.get()),
+                                command=lambda: preSubmit(single_window, var_name.get(), var_id.get(),
+                                                          var_chinese.get(),
+                                                          var_math.get(), var_english.get(), selected_subject1.get(),
+                                                          selected_subject2.get(), selected_subject3.get(),
+                                                          var_sub1.get(), var_sub2.get(), var_sub3.get()),
                                 width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=400, y=530)
@@ -149,7 +182,19 @@ def import_single(admin_window):
                                width=5,
                                bootstyle='darkly')
     cancel_button.place(x=170, y=530)
-    pass
+
+    flag = 0
+    options = ['', '请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
+               '导入成功！']
+
+    warning_text = ttk.StringVar()
+    warning_label = ttk.Label(single_window, textvariable=warning_text, font=('黑体', 10), style="danger")
+    warning_label.place(x=100, y=500)
+    single_window.mainloop()
+
+    # 在导入单科成绩中点击确认键
+    # 这里会传入 姓名:name 学号:ID 语文:chinese 数学:math 英语:english
+    # 科目一名称:sub1 科目二名称:sub2 科目三名称:sub3 科目一成绩:grade1 科目二成绩:grade2 科目三成绩:grade3
 
 
 # 导入成绩函数
@@ -174,7 +219,7 @@ def import_grades(admin_window):
                 tktop1.geometry('200x100+200+250')
                 top1 = TinUI(tktop1)
                 top1.pack(fill='both', expand=True)
-                importedGrades=accountManager.getImportedGrades()
+                importedGrades = accountManager.getImportedGrades()
                 top1.add_paragraph((70, 20), '导入成功！' if importedGrades is True else '导入失败！')
                 # top.add_title('')
                 if importedGrades is True:
@@ -234,7 +279,7 @@ def admin_disp_apps(admin_window):
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, width=100, anchor='center')
-    #得到数据
+    # 得到数据
     data = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
     # 将得到的数据放到那个表里面去
     for item in data:
@@ -276,7 +321,7 @@ def admin_disp_users(admin_window):
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, width=100, anchor='center')
-    #得到数据
+    # 得到数据
     data = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
     # 将得到的数据放到那个表里面去
     for item in data:
@@ -361,7 +406,8 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
     # bt_show_users.place(x=180, y=400)
 
     # 修改密码（包括修改管理员的密码和重置用户的密码） # 复用教师的修改密码
-    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=lambda: change_my_password(admin_window,password_entry.get()),
+    bt_modify_password = ttk.Button(admin_window, text='修改密码',
+                                    command=lambda: change_my_password(admin_window, password_entry.get()),
                                     width=20,
                                     bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)

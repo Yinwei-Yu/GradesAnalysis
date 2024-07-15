@@ -346,7 +346,7 @@ class AccountManager:
         global importedGrades
         try:
             importedGrades = True
-            # self.inputGrades(file_path)
+            # self.inputExcelGrades(file_path)
             # self.saveGradesToMySQL()
             print(importedGrades)
             importedGrades = formationCheckAndInputToMySQL(file_path)
@@ -384,7 +384,28 @@ class AccountManager:
     def getImportedGrades(self):
         return importedGrades
 
-    def inputGrades(self, path):
+    # 返回值：
+    # 2，未选完科目就点击提交了
+    # 3  学号重复
+    # 4  分数越界
+    # 5  导入数据库时出现错误
+    # 6 导入成功
+    def inputSingleGrades(self, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+
+        if gradeManager.hasRepeated(ID) is False:
+            return 3
+        elif 0 <= chinese <= 150 and 0 <= Math <= 150 and 0 <= english <= 150 and 0 <= grade1 <= 100 and 0 <= grade2 <= 100 and 0 <= grade3 <= 100:
+            gradesDict = {'语文': chinese, '数学': Math, '英语': english, sub1: grade1, sub2: grade2, sub3: grade3}
+            temp = gradeManager.inputGrades(1, name, ID, gradesDict)
+            if temp == 6:
+                self.refreshUserInfo()
+                self.saveUserInfoToCSV()
+                self.saveUserInfoToMySQL()
+            return temp
+        else:
+            return 4
+
+    def inputExcelGrades(self, path):
         gradeManager.inputGrades(2, path)
 
     def saveGradesToMySQL(self):

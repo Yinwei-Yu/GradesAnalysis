@@ -47,7 +47,7 @@ class Grades:
             self.gradesAnalysis = "OK"
         return self.gradesAnalysis
 
-    def displayGradesAnalysis(self):
+    def displayGradesAnalysis(self,):
         grades_str = (
             f'总分：{self.totalScores}排名：{self.totalRanking}语文：{self.grades[0].score}数学：{self.grades[1].score}英语：{self.grades[2].score}'
             f'物理：{self.grades[3].score}化学：{self.grades[4].score}生物：{self.grades[5].score}'

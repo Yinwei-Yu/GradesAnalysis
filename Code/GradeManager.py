@@ -6,7 +6,7 @@ GradeManager：
    - student:包含学生信息的列表，可以传入空列表[]
    - stuNum：传入初始值为0
    - checkApplication：接收申请修改成绩的列表，初始值为空列表
-2. inputGrades(self, mode, *args)
+2. inputExcelGrades(self, mode, *args)
    - 输入成绩
    - mode：
      - mode==1时传入单个学生成绩
@@ -71,6 +71,10 @@ GradeManager
     getAllGrades()
 by陈邱华
 
+2024/7/15
+GradeManager
+    修改了inputSingle()
+by陈邱华
 '''
 
 import os
@@ -105,11 +109,62 @@ class GradeManager:
     # stuID:int
     # grades:Grades
     # 实现从输入导入
-    def inputSingle(self, name, stuID, grade):
+    def inputSingle(self, name,
+                    stuID,
+                    gradeDict,
+                    host=host,  # 主机地址
+                    user=user,  # 数据库用户名
+                    password=password,  # 密码
+                    database=database,  # 数据库名称
+                    table=rankedGradesTable,  # 数据库表名
 
-        self.student.append(stu.Student(name, stuID, grade))
+                    ):
+        # 将数据转换为 DataFrame
+        val = [name, stuID, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0]
+        ind = {'语文': 2, '数学': 3, '英语': 4, '物理': 5, '化学': 6, '生物': 7, '历史': 8, '政治': 9, '地理': 10}
+        for key in gradeDict:
+            val[ind[key]] = gradeDict[key]
+        print(val)
+        # 将dataframe保存至数据库
+        for i in range(2, 11):
+            val[11] += val[i] if val[i] != -1 else 0
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        try:
+            sql = (f"INSERT IGNORE INTO {table} "
+                   f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "
+                   f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
+            mycursor.execute(sql, val)  # 执行SQL插入语句
+        except Exception as e:
+            print('插入数据时出现错误：{}'.format(e))
+            mycursor.close()
+            mydb.rollback()
+            return 5
+        # 提交更改并关闭数据库连接
+        mydb.commit()  # 提交更改
+        mycursor.close()  # 关闭游标对象
+        mydb.close()  # 关闭数据库连接
+        self.student.append(stu.Student(name, stuID,
+                                        gr.Grades(Chinese(val[2]), Math(val[3]), English(val[4]), Physics(val[5]),
+                                                  Chemistry(val[6]), Biology(val[7]), History(val[8]), Politics(val[9]),
+                                                  Geography(val[10]))))
+        self.sortGrades()
+        self.saveGradesToCSV()
         self.stuNum += 1
-        return
+        return 6
 
     # 将传入的excel文件转换为csv文件
     def excelToCsv(self, excelFilePath, sheetName, csvFilePath):
@@ -207,7 +262,7 @@ class GradeManager:
     # mode==3时通过sql数据库导入
     def inputGrades(self, mode, *args):
         if mode == 1:
-            self.inputSingle(*args)
+            return self.inputSingle(*args)
         elif mode == 2:
             self.inputMore(*args)
         elif mode == 3:
@@ -300,6 +355,13 @@ class GradeManager:
             return []
         tempStuList = sorted(self.student, key=lambda sub: sub.stuGrades.grades[num].score, reverse=isReverse)
         return tempStuList
+
+    # 检测学号是否重复
+    def hasRepeated(self, ID):
+        for stu in self.student:
+            if stu.stuID == ID:
+                return False
+        return True
 
     '''
     计算单科排名
@@ -706,7 +768,7 @@ if __name__ == '__main__':
        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
    grade3 = gr.Grades(Chinese(139), Math(100), English(149),
                       Physics(0), Chemistry(0), Biology(0), History(100), Politics(100), Geography(100))
-   manager.inputGrades(1, "夏洛", 3, grade3)
+   manager.inputExcelGrades(1, "夏洛", 3, grade3)
    for x in manager.student:
        print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试添加功能
    print("张三：", manager.student[0].stuGrades.grades[0].score)
@@ -727,7 +789,7 @@ if __name__ == '__main__':
     # gradeManager.inputCSV("./excelFiles/student.csv")
     # gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
     # manager = GradeManager([], 0, [],0)
-    # manager.inputGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
+    # manager.inputExcelGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
 
     # for x in manager.student:
     #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
