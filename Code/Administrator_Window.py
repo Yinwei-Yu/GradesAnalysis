@@ -5,10 +5,9 @@ by 刘杨健
 """
 from tkinter import filedialog, messagebox
 
-import ttkbootstrap as ttk
 from tinui.TinUI import *
 
-from AccountManager import accountManager, importedGrades
+from AccountManager import accountManager
 
 """
 2024/7/12
@@ -191,9 +190,6 @@ def import_grades(admin_window):
         def check_condition():
             # print(thread.is_alive())
             if thread.is_alive() is False:
-                # finish()
-                # #top.after(1000,top.destroy())
-                # top.mainloop()
                 time.sleep(0.5)
                 top.destroy()
                 tktop.destroy()
@@ -202,10 +198,13 @@ def import_grades(admin_window):
                 tktop1.geometry('200x100+200+250')
                 top1 = TinUI(tktop1)
                 top1.pack(fill='both', expand=True)
-                top1.add_paragraph((70, 20), '导入成功！')
+                importedGrades=accountManager.getImportedGrades()
+                top1.add_paragraph((70, 20), '导入成功！' if importedGrades is True else '导入失败！')
                 # top.add_title('')
-                _, _, finish2, _ = top1.add_waitbar3((30, 50), width=150)
-                finish2()
+                if importedGrades is True:
+                    _, _, finish2, _ = top1.add_waitbar3((30, 50), width=150)
+                    finish2()
+
                 # top1.after(2000, top1.destroy())
                 top1.mainloop()
                 # tktop1.destroy()
@@ -236,13 +235,8 @@ def import_grades(admin_window):
 
             top.add_paragraph((50, 10), '导入成绩中……')
             check_condition()
-
-            # label = tk.Label(top, text="正在导入成绩……", font=('楷体', 15))
-            # label.pack()
             top.mainloop()
-            print('hello')
-            if importedGrades is False:
-                messagebox.showinfo("导入成绩", f"导入失败！")
+
         except Exception as e:
             messagebox.showinfo("导入成绩", f"导入失败！{e}")
 
@@ -305,7 +299,7 @@ def admin_logout(admin_window, login_window, username_entry, password_entry):
 def show_admin_window(login_window, userid_entry, password_entry, res_name):
     admin_window = ttk.Toplevel()
     admin_window.title('admin_window')
-    admin_window.geometry('800x1200+800+400')
+    admin_window.geometry('800x1100+800+400')
     admin_window.resizable(False, False)
 
     # 标题
@@ -349,7 +343,8 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
     # bt_show_users.place(x=180, y=400)
 
     # 修改密码（包括修改管理员的密码和重置用户的密码） # 复用教师的修改密码
-    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=lambda: change_my_password(admin_window, password_entry.get()),
+    bt_modify_password = ttk.Button(admin_window, text='修改密码',
+                                    command=lambda: change_my_password(admin_window, password_entry.get()),
                                     width=20,
                                     bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)

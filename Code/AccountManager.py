@@ -36,8 +36,6 @@ AccountManager
 by陈邱华
 '''
 
-importedGrades: bool = False
-
 
 class AccountManager:
     # 初始化，并从'./users.csv'读取文件信息
@@ -160,9 +158,14 @@ class AccountManager:
 
     # 保存用户信息，便于下次系统启动时获取信息
     def saveUserInfoToCSV(self, path='./excelFiles/users.csv'):
-        data = self.getUserInofoTable()
-        df = pd.DataFrame(data)
-        df.to_csv(path, index=False)
+        try:
+            data = self.getUserInofoTable()
+            df = pd.DataFrame(data)
+            df.to_csv(path, index=False)
+            return True
+        except Exception as e:
+            print("保存用户信息至csv文件时出现错误：{}".format(e))
+            return False
 
     def saveUserInfoToMySQL(self,
                             host=host,  # 主机地址
@@ -187,29 +190,35 @@ class AccountManager:
         except Exception as e:
             print('无法连接至数据库{}'.format(database), e)
             mydb.close()
-
         # 创建一个游标对象
         mycursor = mydb.cursor()
+        try:
 
-        # for row in df.itertuples(index=False, name=None):  # name=None 使得返回的namedtuple不包含额外的索引名
-        #     sql = (f'INSERT IGNORE INTO {table} '
-        #            f'(用户名,密码,学号或工号,类型) '
-        #            f'VALUES (%s,%s,%s,%s)')  # 注意这里全部使用%s作为占位符
-        #     values = (row.用户名, row.密码, row.学号或工号, row.类型)  # 使用属性名来访问列的值
-        #     print("正在插入数据至{}:".format(table), values)  # 输出正在插入的数据
-        #     mycursor.execute(sql, values)  # 执行SQL插入语句
-        for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
-            sql = (f'INSERT IGNORE INTO {table} '
-                   f'(用户名,密码,学号或工号,类型) '
-                   f'VALUES (%s,%s,%s,%s)')
-            val = row  # 插入的数据
-            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
-            mycursor.execute(sql, val)  # 执行SQL插入语句
+            # for row in df.itertuples(index=False, name=None):  # name=None 使得返回的namedtuple不包含额外的索引名
+            #     sql = (f'INSERT IGNORE INTO {table} '
+            #            f'(用户名,密码,学号或工号,类型) '
+            #            f'VALUES (%s,%s,%s,%s)')  # 注意这里全部使用%s作为占位符
+            #     values = (row.用户名, row.密码, row.学号或工号, row.类型)  # 使用属性名来访问列的值
+            #     print("正在插入数据至{}:".format(table), values)  # 输出正在插入的数据
+            #     mycursor.execute(sql, values)  # 执行SQL插入语句
+            for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
+                sql = (f'INSERT IGNORE INTO {table} '
+                       f'(用户名,密码,学号或工号,类型) '
+                       f'VALUES (%s,%s,%s,%s)')
+                val = row  # 插入的数据
+                print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
+                mycursor.execute(sql, val)  # 执行SQL插入语句
+        except Exception as e:
+            print("插入数据时出现错误：{}".format(e))
+            mycursor.close()
+            mydb.rollback()
+            return False
 
         # 提交更改并关闭数据库连接
         mydb.commit()  # 提交更改
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
+        return True
 
     # 从数据库中读取用户信息
     def getUserFromSql(self,
@@ -233,27 +242,34 @@ class AccountManager:
 
         cursor = mydb.cursor(dictionary=True)
 
-        query = f"SELECT * FROM {table}"
-        cursor.execute(query)
-        results = cursor.fetchall()
+        try:
+            query = f"SELECT * FROM {table}"
+            cursor.execute(query)
+            results = cursor.fetchall()
 
-        df = pd.DataFrame(results)
-        # print(df)
+            df = pd.DataFrame(results)
+            # print(df)
 
-        for index, row in df.iterrows():
-            flag = row['类型']
-            if flag == 1:
-                user = User_Administrator(row['用户名'], row['密码'], row['学号或工号'], flag)
-            elif flag == 2:
-                user = User_Teacher(row['用户名'], row['密码'], row['学号或工号'], flag)
-            elif flag == 3:
-                user = User_Student(row['用户名'], row['密码'], row['学号或工号'], flag)
-            else:
-                continue
+            for index, row in df.iterrows():
+                flag = row['类型']
+                if flag == 1:
+                    user = User_Administrator(row['用户名'], row['密码'], row['学号或工号'], flag)
+                elif flag == 2:
+                    user = User_Teacher(row['用户名'], row['密码'], row['学号或工号'], flag)
+                elif flag == 3:
+                    user = User_Student(row['用户名'], row['密码'], row['学号或工号'], flag)
+                else:
+                    continue
 
-            self.users.update({user.ID: user})
+                self.users.update({user.ID: user})
 
-        self.userNum = len(self.users)
+            self.userNum = len(self.users)
+
+        except Exception as e:
+            cursor.close()
+            mydb.rollback()
+            print("从数据库获取用户数据时出现错误！{}".format(e))
+            return False
 
         if mydb.is_connected():
             cursor.close()
@@ -264,7 +280,6 @@ class AccountManager:
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
     def refreshUserInfo(self):
-        print(11)
         for student in gradeManager.student:
             if self.users.get(student.stuID) is None:
                 self.users.update(({student.stuID: User(student.name, '123456', student.stuID, 3)}))
@@ -330,25 +345,44 @@ class AccountManager:
     def refreshAll(self, file_path):
         global importedGrades
         try:
+            importedGrades = True
             # self.inputGrades(file_path)
             # self.saveGradesToMySQL()
-            if formationCheckAndInputToMySQL(file_path) is False:
-                importedGrades = False
-            gradeManager.inputMySQL()
-            print(1)
-            gradeManager.saveGradesToCSV()
-            print(2)
+            print(importedGrades)
+            importedGrades = formationCheckAndInputToMySQL(file_path)
+            print(importedGrades)
+            if importedGrades is False:
+                return
+            importedGrades = gradeManager.inputMySQL()
+            print(importedGrades)
+            if importedGrades is False:
+                return
+            importedGrades = gradeManager.saveGradesToCSV()
+            print(1, importedGrades)
+            if importedGrades is False:
+                return
+            print(2, importedGrades)
             self.refreshUserInfo()
-            print(3)
-            self.saveUserInfoToMySQL()
-            print(4)
-            self.getUserFromSql()
-            print(5)
-            self.saveUserInfoToCSV()
-            importedGrades = True
+            if importedGrades is False:
+                return
+            print(3, importedGrades)
+            importedGrades = self.saveUserInfoToMySQL()
+            if importedGrades is False:
+                return
+            print(4, importedGrades)
+            importedGrades = self.getUserFromSql()
+            if importedGrades is False:
+                return
+            print(5, importedGrades)
+            importedGrades = self.saveUserInfoToCSV()
+            if importedGrades is False:
+                return
         except Exception as e:
             print("出现错误", e)
             importedGrades = False
+
+    def getImportedGrades(self):
+        return importedGrades
 
     def inputGrades(self, path):
         gradeManager.inputGrades(2, path)
