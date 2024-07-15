@@ -226,37 +226,84 @@ def import_grades(admin_window):
 # 只做了查看功能,还没有添加确认按钮
 def admin_disp_apps(admin_window):
     admin_window.withdraw()
-    page2 = tk.Toplevel(admin_window)
-    page2.title('申请表信息')
-    page2.geometry("600x400+100+150")
-    l2 = tk.Label(page2, text='申请表信息', font=("楷体", 20))
-    l2.pack()
-    page2.focus_force()
-    last_step_button = tk.Button(page2, text='返回上一步', command=lambda: last_step(page2, admin_window),
-                                 width=30, height=3)
-    last_step_button.pack()
-    page2.mainloop()
+    apps_window = ttk.Toplevel(admin_window)
+    apps_window.title("处理成绩申请")
+    apps_window.attributes('-fullscreen', True)
+    # 创建一个Frame来包含Treeview和滚动条
+    frame = ttk.Frame(apps_window)
+    frame.pack(fill="both", expand=True)
+    # 创建Treeview
+    columns = ("栏目一", "栏目二", "栏目三")
+    tree = ttk.Treeview(frame, columns=columns, show='headings')
+    # 定义每一列的标题和宽度
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, width=100, anchor='center')
+    #得到数据
+    data = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
+    # 将得到的数据放到那个表里面去
+    for item in data:
+        tree.insert('', tk.END, values=item)
+    # 创建垂直和水平滚动条
+    scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+    scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
+    # 配置Treeview的滚动条
+    tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+    # 添加Treeview和滚动条到Frame中
+    tree.grid(row=0, column=0, sticky="nsew")
+    scrollbar_y.grid(row=0, column=1, sticky="ns")
+    scrollbar_x.grid(row=1, column=0, sticky="ew")
+    # 确保Treeview填充Frame
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
+
+    # 再做一个确认并返回的按钮
+    con_button = ttk.Button(apps_window, text='确认', command=lambda: last_step(apps_window, admin_window), width=10,
+                            bootstyle=bootstyle)
+    con_button.pack(pady=10)
+    apps_window.mainloop()
 
 
 # 查看所有用户
+# 做一张表查看所有的用户
 def admin_disp_users(admin_window):
     admin_window.withdraw()
-    user_window = tk.Toplevel(admin_window)
-    user_window.title('账号信息')
-    user_window.geometry("600x400")
-    l1 = tk.Label(user_window, text='账号信息', font=("楷体", 20))
-    l1.pack()
-    user_window.focus_force()
-    last_step_button = tk.Button(user_window, text='返回上一步', command=lambda: last_step(user_window, admin_window),
-                                 width=30, height=3)
-    last_step_button.pack()
-    user_window.mainloop()
-    pass
+    users_window = ttk.Toplevel(admin_window)
+    users_window.title("处理成绩申请")
+    users_window.attributes('-fullscreen', True)
+    # 创建一个Frame来包含Treeview和滚动条
+    frame = ttk.Frame(users_window)
+    frame.pack(fill="both", expand=True)
+    # 创建Treeview
+    columns = ("栏目一", "栏目二", "栏目三")
+    tree = ttk.Treeview(frame, columns=columns, show='headings')
+    # 定义每一列的标题和宽度
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, width=100, anchor='center')
+    #得到数据
+    data = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
+    # 将得到的数据放到那个表里面去
+    for item in data:
+        tree.insert('', tk.END, values=item)
+    # 创建垂直和水平滚动条
+    scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+    scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
+    # 配置Treeview的滚动条
+    tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+    # 添加Treeview和滚动条到Frame中
+    tree.grid(row=0, column=0, sticky="nsew")
+    scrollbar_y.grid(row=0, column=1, sticky="ns")
+    scrollbar_x.grid(row=1, column=0, sticky="ew")
+    # 确保Treeview填充Frame
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
 
-
-# 修改密码
-def admin_modify_password():
-    pass
+    # 再做一个确认并返回的按钮
+    con_button = ttk.Button(users_window, text='确认', command=lambda: last_step(users_window, admin_window), width=10,
+                            bootstyle=bootstyle)
+    con_button.pack(pady=10)
+    users_window.mainloop()
 
 
 # 修改成绩
@@ -344,4 +391,3 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
 padding = 15
 pady = 20
 bootstyle = 'info-outline'
-
