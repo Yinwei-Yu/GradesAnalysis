@@ -170,30 +170,37 @@ class GradeManager:
             )
         except Exception as e:
             print('无法连接至数据库{}'.format(database), e)
+
         # 创建游标
         cursor = mydb.cursor(dictionary=True)
-
-        # 执行SQL查询语句
-        query = f"SELECT * FROM {table} ORDER BY 总分 DESC "
-        cursor.execute(query)
-        # 获取所有记录列表
-        results = cursor.fetchall()
-        # 将结果转换为DataFrame
-        df = pd.DataFrame(results)
-        print(df)
-        for index, row in df.iterrows():
-            grades = gr.Grades(
-                Chinese(row['语文']), Math(row['数学']), English(row['英语']),
-                Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
-                History(row['历史']), Politics(row['政治']), Geography(row['地理'])
-            )
-            stuTemp = stu.Student(row['姓名'], row['学号'], grades)
-            self.student.append(stuTemp)
-        self.stuNum = len(self.student)
+        try:
+            # 执行SQL查询语句
+            query = f"SELECT * FROM {table} ORDER BY 总分 DESC "
+            cursor.execute(query)
+            # 获取所有记录列表
+            results = cursor.fetchall()
+            # 将结果转换为DataFrame
+            df = pd.DataFrame(results)
+            print(df)
+            for index, row in df.iterrows():
+                grades = gr.Grades(
+                    Chinese(row['语文']), Math(row['数学']), English(row['英语']),
+                    Physics(row['物理']), Chemistry(row['化学']), Biology(row['生物']),
+                    History(row['历史']), Politics(row['政治']), Geography(row['地理'])
+                )
+                stuTemp = stu.Student(row['姓名'], row['学号'], grades)
+                self.student.append(stuTemp)
+            self.stuNum = len(self.student)
+        except Exception as e:
+            cursor.close()
+            mydb.rollback()
+            print("从数据库获取成绩信息时出现错误:{}".format(e))
+            return False
 
         if mydb.is_connected():
             cursor.close()
             mydb.close()
+        return True
 
     # 导入学生成绩 mode==1单个导入，arg接收学生姓名学号和成绩信息
     # mode==2时接受文件路径
@@ -486,12 +493,15 @@ class GradeManager:
         return self.getGradesTable(temp)
 
     def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
-
-        # 将数据转换为 DataFrame
-        df = pd.DataFrame(self.getGradesTable())
-        # 将 DataFrame 保存到 CSV 文件中
-        df.to_csv(path, index=False)
-        print(f"学生数据已成功保存到 {path}")
+        try:
+            # 将数据转换为 DataFrame
+            df = pd.DataFrame(self.getGradesTable(self.student))
+            # 将 DataFrame 保存到 CSV 文件中
+            df.to_csv(path, index=False)
+            print(f"学生数据已成功保存到 {path}")
+            return True
+        except Exception as e:
+            return False
 
     # 将学生成绩数据保存到数据库中
     def saveGradesToMySQL(self,
@@ -502,7 +512,7 @@ class GradeManager:
                           table=rankedGradesTable,  # 数据库表名
                           ):
         # 将数据转换为 DataFrame
-        df = pd.DataFrame(self.getGradesTable())
+        df = pd.DataFrame(self.getGradesTable(self.student))
         print(df)
         # 将dataframe保存至数据库
         global mydb
@@ -527,22 +537,25 @@ class GradeManager:
         # except mysql.connector.errors.ProgrammingError as e:
         #     print("表格还未创建，正在创建表格……", e)
         #     createGradesTable(table, host, user, password, 3306, 'utf8mb4', database=database)
-
-        mycursor.close()
-        mycursor = mydb.cursor()
-        # 遍历Excel表格中的每一行，并将每一行插入到数据库中
-        for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
-            sql = (f"INSERT IGNORE INTO {table} "
-                   f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "
-                   f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-            val = row  # 插入的数据
-            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
-            mycursor.execute(sql, val)  # 执行SQL插入语句
-
+        try:
+            # 遍历Excel表格中的每一行，并将每一行插入到数据库中
+            for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
+                sql = (f"INSERT IGNORE INTO {table} "
+                       f"(姓名,学号,语文,数学,英语,物理,化学,生物,历史,政治,地理,总分) "
+                       f"VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+                val = row  # 插入的数据
+                print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
+                mycursor.execute(sql, val)  # 执行SQL插入语句
+        except Exception as e:
+            print('插入数据时出现错误：{}'.format(e))
+            mycursor.close()
+            mydb.rollback()
+            return False
         # 提交更改并关闭数据库连接
         mydb.commit()  # 提交更改
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
+        return True
 
     def getCheckApplicaionsTable(self):
         teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
@@ -588,9 +601,9 @@ class GradeManager:
         except Exception as e:
             print('无法连接至数据库{}'.format(database), e)
             mydb.close()
+            return False
 
         # 创建一个游标对象
-        mycursor = mydb.cursor()
         # 先清空表格
         # sql = 'TRUNCATE TABLE {};'.format(table)
         # # mycursor.execute(sql)
@@ -600,18 +613,22 @@ class GradeManager:
         #     print("表格还未创建，正在创建表格……", e)
         #     createCheckApplicationsTable(table, host, user, password, 3306, 'utf8mb4', database=database)
 
-        mycursor.close()
         mycursor = mydb.cursor()
-        # 遍历Excel表格中的每一行，并将每一行插入到数据库中
-        for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
-            sql = (f"INSERT IGNORE INTO {table} "
-                   f"(申请老师,被申请学生姓名,学生学号,申请科目) "
-                   f"VALUES (%s,%s,%s,%s)")
-            val = row  # 插入的数据
-            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
-            mycursor.execute(sql, val)  # 执行SQL插入语句
-
-        # 提交更改并关闭数据库连接
+        try:
+            # 遍历Excel表格中的每一行，并将每一行插入到数据库中
+            for row in df.itertuples(index=False):  # 遍历DataFrame中的每一行
+                sql = (f"INSERT IGNORE INTO {table} "
+                       f"(申请老师,被申请学生姓名,学生学号,申请科目) "
+                       f"VALUES (%s,%s,%s,%s)")
+                val = row  # 插入的数据
+                print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
+                mycursor.execute(sql, val)  # 执行SQL插入语句
+        except Exception as e:
+            print('插入数据时出现错误{}'.format(e), e)
+            mydb.rollback()
+            mycursor.close()
+            return False
+            # 提交更改并关闭数据库连接
         mydb.commit()  # 提交更改
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
@@ -637,19 +654,25 @@ class GradeManager:
             return False
 
         cursor = mydb.cursor(dictionary=True)
+        try:
+            query = f"SELECT * FROM {table}"
+            cursor.execute(query)
+            results = cursor.fetchall()
 
-        query = f"SELECT * FROM {table}"
-        cursor.execute(query)
-        results = cursor.fetchall()
+            df = pd.DataFrame(results)
+            print(df)
 
-        df = pd.DataFrame(results)
-        print(df)
+            for index, row in df.iterrows():
+                check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'],
+                                                                      row['学生学号'], row['申请科目'])
+                self.checkApplication.append(check_application)
+            self.checkApplicationNum = len(self.checkApplication)
 
-        for index, row in df.iterrows():
-            check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'],
-                                                                  row['学生学号'], row['申请科目'])
-            self.checkApplication.append(check_application)
-        self.checkApplicationNum = len(self.checkApplication)
+        except Exception as e:
+            cursor.close()
+            mydb.rollback()
+            print('从服务器获取申请表信息时出现错误{}'.format(e))
+            return False
 
         if mydb.is_connected():
             cursor.close()

@@ -27,16 +27,19 @@ def excelToCsv(excelFilePath, sheetName, csvFilePath):
 
 
 def formationCheckAndInputToMySQL(path, sheetName=None, outputPath=None):
-    fileExtension = os.path.splitext(path)[1].lower()
-    csvFilePath = r"tempPath.csv"
-    # 如果是excel文件
-    if fileExtension in ['.xls', '.xlsx']:
-        # 转化为csv文件
-        excelToCsv(path, sheetName, csvFilePath)
-        return insert_ranked_grades_to_mysql(csvFilePath)
-    elif fileExtension == '.csv':
-        return insert_ranked_grades_to_mysql(path)
-    else:
+    try:
+        fileExtension = os.path.splitext(path)[1].lower()
+        csvFilePath = r"tempPath.csv"
+        # 如果是excel文件
+        if fileExtension in ['.xls', '.xlsx']:
+            # 转化为csv文件
+            excelToCsv(path, sheetName, csvFilePath)
+            return insert_ranked_grades_to_mysql(csvFilePath)
+        elif fileExtension == '.csv':
+            return insert_ranked_grades_to_mysql(path)
+        else:
+            return False
+    except Exception as e:
         return False
 
 
