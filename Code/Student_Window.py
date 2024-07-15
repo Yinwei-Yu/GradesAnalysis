@@ -19,11 +19,17 @@ by 廖雨龙
     根据Teacher_Window的做法,修改Student_Window
     by 廖雨龙
 """
+"""
+2024/7/15
+   query_scores
+   by 刘链凯
+"""
 import tkinter as tk
 from tkinter import messagebox
-
+import tkinter.ttk as tttk
+import csv
 import ttkbootstrap as ttk
-
+import AccountManager
 # 复用Teacher_Window中修改密码的方法
 from Teacher_Window import change_my_password
 # 复用Teacher_Window中的确认键
@@ -37,6 +43,9 @@ from Teacher_Window import last_step
 #    stu_window.title('学生窗口')
 #    stu_window.geometry('600x400')
 
+def generate_grade_report():
+    # 这里写生成和显示成绩报告的代码
+    pass
 
 # 成绩查询的函数 未完成
 # 参数 userid: 学生的学号
@@ -49,12 +58,48 @@ def query_scores(userid, stu_window):
     grade_window.title("Grades")
     grade_window.resizable(False, False)
     # 下面打印学生的成绩
-    messagebox.showinfo("这里显示出学生的成绩")
+    #messagebox.showinfo("这里显示出学生的成绩")
+    def read_grades_from_csv(user_id):
+        path = './excelFiles/rankedGrades.csv'
+        grades = {}
+        with open(path, 'r', newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            headers = next(reader)[2:]  # 假设科目名称从第三列开始
 
+            # 找到对应用户ID的行
+            for row in reader:
+                if row[1] == str(user_id):
+                    # 将成绩添加到grades字典中，但忽略成绩为0的科目
+                    grades = {header: int(score) for header, score in zip(headers, row[2:]) if int(score) != 0}
+                    break
+
+            if not grades:
+                raise ValueError(f"No valid grades found for userid {user_id}")
+
+        return grades
+        # 获取特定用户的分数
+
+    try:
+        user_grades = read_grades_from_csv(userid)
+    except ValueError as e:
+        messagebox.showerror("Error", str(e))
+        grade_window.destroy()
+        stu_window.deiconify()
+        return
+    # 在窗口中显示成绩
+    label = tk.Label(grade_window, text=f"学生ID: {userid}\n\n")
+    label.pack()
+    for subject, score in user_grades.items():
+        label = tk.Label(grade_window, text=f"{subject}: {score}")
+        label.pack()
+    # 创建一个生成成绩分析报告的按钮
+    report_button = tk.Button(grade_window, text="成绩分析", width=10, height=2,
+                              command=lambda: generate_grade_report())
+    report_button.place(x=250, y=250)  # 放置在确认按钮的正上方
     # 这里加一个确认键,返回上一步
-    confirm_button = tk.Button(grade_window, text="确认", width=10, height=1,
+    confirm_button = tk.Button(grade_window, text="确认", width=10, height=2,
                                command=lambda: last_step(grade_window, stu_window))
-    confirm_button.place(x=180, y=40)
+    confirm_button.place(x=250, y=300)
 
 
 # 实现用户的登出 回到主窗口 同时会清空原来输入的账号和密码
@@ -88,7 +133,7 @@ def show_student_window(login_window, userid_entry, password_entry, name):
                               width=20, bootstyle=bootstyle, padding=padding)
     query_button.pack(pady=pady)
     # 修改密码的按钮
-    modify_button = ttk.Button(stu_window, text="修改密码", command=lambda: change_my_password(stu_window), width=20,
+    modify_button = ttk.Button(stu_window, text="修改密码", command=lambda: change_my_password(stu_window, password_entry.get()), width=20,
                                bootstyle=bootstyle,
                                padding=padding)
     modify_button.pack(pady=pady)
