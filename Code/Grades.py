@@ -19,12 +19,16 @@ class Grades:
     def __init__(self, chinese: Chinese, math: Math, english: English, physics: Physics,
                  chemistry: Chemistry, biology: Biology, history: History, politics: Politics,
                  geography: Geography):
-        self.totalScores = (
-                chinese.score + math.score + english.score + physics.score + chemistry.score + biology.score + history.score +
-                politics.score + geography.score)
         # print(self.totalScores)
         self.grades = [chinese, math, english, physics, chemistry, biology,
                        history, politics, geography]
+        self.totalScores = 0
+        for i in range(9):
+            # if self.grades[i].score == 0:
+            #     self.grades[i].score = -1
+            self.totalScores += self.grades[i].score if self.grades[i].score != -1 else 0
+
+        print(self.totalScores)
         self.gradesAnalysis: str = ""
         self.totalRanking: int = 0
         self.rankings = []
