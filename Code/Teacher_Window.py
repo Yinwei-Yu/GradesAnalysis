@@ -435,20 +435,7 @@ def app_review(tea_window):
     app_window.mainloop()
 
 
-# 修改自己密码的函数  (复用沈智恺的函数) # 未完成,缺少输入完之后的确认按钮
-"""
-1、没有输入
-    提示‘请输入密码’
-2、没有新的密码
-    提示‘请输入新的密码’
-3、只有新的密码没有原来的密码
-    提示‘请输入原来的密码’
-4、有新的密码和原来的密码
-    提示‘请确认新的密码’
-"""
-
-
-def change_my_password(tea_window):
+def change_my_password(tea_window, password):
     var_old = tk.StringVar()
     var_new1 = tk.StringVar()
     var_new2 = tk.StringVar()
@@ -471,20 +458,12 @@ def change_my_password(tea_window):
     con_pas_entry.place(x=290, y=340)
     page4.focus_force()
 
-    # original = ori_pas_entry.get()
-    # new = new_pas_entry.get()
-    # confirm = con_pas_entry.get()
-    # 标志密码是否修改成功
-    password_flag = False
-
     confirm_button = ttk.Button(page4, text="确认",
                                 command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
                                                                  con_pas_entry.get(), page4, password, tea_window),
                                 width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
-    if password_flag:
-        print(new_pas_entry.get())
     cancel_button = ttk.Button(page4, text="取消", command=lambda: last_step(page4, tea_window),
                                width=5, bootstyle='darkly')
     cancel_button.place(x=160, y=450)

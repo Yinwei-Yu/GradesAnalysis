@@ -305,9 +305,9 @@ def admin_logout(admin_window, login_window, username_entry, password_entry):
 def show_admin_window(login_window, userid_entry, password_entry, res_name):
     admin_window = ttk.Toplevel()
     admin_window.title('admin_window')
-    admin_window.geometry('800x1000+800+400')
-
+    admin_window.geometry('800x1200+800+400')
     admin_window.resizable(False, False)
+
     # 标题
     welcome_title = ttk.Label(admin_window, text='你好！' + res_name, font=('黑体', 15))
     # welcome_title.place_configure(anchor='nw')
@@ -349,7 +349,7 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
     # bt_show_users.place(x=180, y=400)
 
     # 修改密码（包括修改管理员的密码和重置用户的密码） # 复用教师的修改密码
-    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=lambda: change_my_password(admin_window),
+    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=lambda: change_my_password(admin_window, password_entry.get()),
                                     width=20,
                                     bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)
