@@ -25,10 +25,15 @@ AccountManager类
 by陈邱华
 
 2024/7/14
-AccountManagera
+AccountManager
     getAllGrades()
 by陈邱华
 
+2024/7/15
+AccountManager
+    getAllUsers()
+    getAllApplications()
+by陈邱华
 '''
 
 importedGrades: bool = False
@@ -301,6 +306,20 @@ class AccountManager:
     def getAllGrades(self, mode1, mode2):
         return gradeManager.getAllGrades(mode1, mode2)
 
+    # 获得所有用户的字典列表
+    def getAllUsers(self):
+        data = []
+        for id in self.users:
+            user_data = {'姓名': self.users[id].userName,
+                         '密码': self.users[id].password,
+                         '学号或工号': self.users[id].ID,
+                         '类型': self.users[id].flag}
+            data.append(user_data)
+        return data
+
+    def getAllApplications(self):
+        return gradeManager.getCheckApplicaionsTable()
+
     def dispAllGrades(self):
         gradeManager.dispAllGrades()
 
@@ -344,6 +363,8 @@ class AccountManager:
 accountManager = AccountManager()
 
 if __name__ == "__main__":
+    print(accountManager.getAllUsers())
+    print(accountManager.getAllApplications())
     # gradeManager = GradeManager([], 0, [])
     # gradeManager.inputCSV("./student.csv")
     # for x in gradeManager.student:

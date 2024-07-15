@@ -477,7 +477,6 @@ class GradeManager:
     # 返回字典列表
     def getAllGrades(self, mode1, mode2):
         subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
-        temp = self
         if mode1 == 0:
             temp = sorted(self.student, key=lambda sub: sub.stuGrades.totalScores, reverse=1 - mode2)
 
@@ -661,6 +660,7 @@ class GradeManager:
 
 gradeManager = GradeManager([], 0, [], 0)
 gradeManager.inputMore("./excelFiles/student_grades.xls")
+gradeManager.inputCheckApplications("./excelFiles/checkApplications.csv")
 # for i in range(10):
 #     for j in range(2):
 #         gradeManager.getAllGrades(i, j)
