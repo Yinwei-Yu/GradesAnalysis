@@ -64,8 +64,20 @@ def update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic
 
 # 在导入单科成绩中点击确认键
 # 这里会传入 姓名:name 学号:ID 语文:chinese 数学:math 英语:english
-# 科目一代号:num1 科目二代号:num2 科目三代号:num3 科目一成绩:grade1 科目二成绩:grade2 科目三成绩:grade3
-def submit(single_window):
+# 科目一名称:sub1 科目二名称:sub2 科目三名称:sub3 科目一成绩:grade1 科目二成绩:grade2 科目三成绩:grade3
+def submit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+    # 测试
+    print(name)
+    print(ID)
+    print(chinese)
+    print(Math)
+    print(english)
+    print(sub1)
+    print(sub2)
+    print(sub3)
+    print(grade1)
+    print(grade2)
+    print(grade3)
     pass
 
 
@@ -145,11 +157,17 @@ def import_single(admin_window):
     # sub1_entry.place(x=200, y=350)
     # sub2_entry.place(x=200, y=410)
     # sub3_entry.place(x=200, y=470)
+    # 放输入框
     entries = [name_entry, id_entry, chinese_entry, math_entry, english_entry, sub1_entry, sub2_entry, sub3_entry]
     for i, entry in enumerate(entries):
         entry.place(x=200, y=50 + 60 * i)
     # 下面再有两个按钮,一个是确认,一个是返回
-    confirm_button = ttk.Button(single_window, text="确认", command=lambda: submit(single_window), width=5,
+    confirm_button = ttk.Button(single_window, text="确认",
+                                command=lambda: submit(single_window, var_name.get(), var_id.get(), var_chinese.get(),
+                                                       var_math.get(), var_english.get(), selected_subject1.get(),
+                                                       selected_subject2.get(), selected_subject3.get(),
+                                                       var_sub1.get(), var_sub2.get(), var_sub3.get()),
+                                width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=400, y=530)
     cancel_button = ttk.Button(single_window, text="取消", command=lambda: last_step(single_window, admin_window),
