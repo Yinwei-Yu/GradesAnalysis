@@ -60,7 +60,7 @@ def query_scores(userid, stu_window):
     # 下面打印学生的成绩
     #messagebox.showinfo("这里显示出学生的成绩")
     def read_grades_from_csv(user_id):
-        path = './excelFiles/rankedGrades.csv'
+        path = './excelFiles/student_grades.csv'
         grades = {}
         with open(path, 'r', newline='', encoding='utf-8') as file:
             reader = csv.reader(file)
