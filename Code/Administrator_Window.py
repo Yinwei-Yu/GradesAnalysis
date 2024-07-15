@@ -16,13 +16,165 @@ from AccountManager import accountManager, importedGrades
     加入查看申请表与查看账户信息功能
 by  沈智恺
 """
+"""
+2024/7/15
+    
+"""
 
 import tkinter as tk
+
+import ttkbootstrap as ttk
+# 复用Teacher查看成绩的窗口
+from Teacher_Window import disp_grades
+# 复用Teacher修改密码的函数
+from Teacher_Window import change_my_password
 
 
 def last_step(current_window, previous_window):
     previous_window.deiconify()
     current_window.destroy()
+
+
+def update_subject2(selected_subject1, selected_subject2, selected_subject3, subject2_menu, subject3_menu,
+                    dynamic_subjects):
+    # 更新科目二的选项
+    selected_subject2.set("")
+    subject2_menu["menu"].delete(0, "end")
+    for subject in dynamic_subjects:
+        subject2_menu["menu"].add_command(label=subject,
+                                          command=lambda value=subject: set_subject2(value, selected_subject2,
+                                                                                     selected_subject3, subject3_menu,
+                                                                                     dynamic_subjects))
+    update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic_subjects)
+
+
+def set_subject2(value, selected_subject2, selected_subject3, subject3_menu, dynamic_subjects):
+    selected_subject2.set(value)
+    update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic_subjects)
+
+
+def update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic_subjects):
+    selected_subject2_value = selected_subject2.get()
+    selected_subject3.set("")
+    subject3_menu["menu"].delete(0, "end")
+    for subject in dynamic_subjects:
+        if subject != selected_subject2_value:
+            subject3_menu["menu"].add_command(label=subject, command=lambda value=subject: selected_subject3.set(value))
+
+
+# 在导入单科成绩中点击确认键
+# 这里会传入 姓名:name 学号:ID 语文:chinese 数学:math 英语:english
+# 科目一名称:sub1 科目二名称:sub2 科目三名称:sub3 科目一成绩:grade1 科目二成绩:grade2 科目三成绩:grade3
+def submit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+    # 测试
+    print(name)
+    print(ID)
+    print(chinese)
+    print(Math)
+    print(english)
+    print(sub1)
+    print(sub2)
+    print(sub3)
+    print(grade1)
+    print(grade2)
+    print(grade3)
+    pass
+
+
+# 导入单个成绩的函数
+def import_single(admin_window):
+    single_window = tk.Toplevel(admin_window)
+    admin_window.withdraw()
+    single_window.geometry("800x600+800+400")
+    single_window.resizable(False, False)
+    # 姓名 学号 语文 数学 外语 物理/历史 四选二 输入框的文字变量
+    var_name = tk.StringVar()
+    var_id = tk.StringVar()
+    var_chinese = tk.StringVar()
+    var_math = tk.StringVar()
+    var_english = tk.StringVar()
+    var_sub1 = tk.StringVar()
+    var_sub2 = tk.StringVar()
+    var_sub3 = tk.StringVar()
+    # 这三个标记选择了哪个科目
+    selected_subject1 = tk.StringVar()
+    selected_subject2 = tk.StringVar()
+    selected_subject3 = tk.StringVar()
+    # 科目的选项
+    all_subjects = ["物理", "化学", "生物", "地理", "历史", "政治"]
+    dynamic_subjects = ["化学", "生物", "地理", "政治"]  # 去掉物理和历史后的选项
+
+    # 创建文本提示标签 使用loop简化一下
+    # name_lab = ttk.Label(single_window, text="姓名:", font=('黑体', 14))
+    # name_lab.place(x=100, y=50)
+    # id_lab = ttk.Label(single_window, text="学号:", font=('黑体', 14))
+    # id_lab.place(x=100, y=110)
+    # chinese_lab = ttk.Label(single_window, text="语文:", font=('黑体', 14))
+    # chinese_lab.place(x=100, y=170)
+    # math_lab = ttk.Label(single_window, text="数学:", font=('黑体', 14))
+    # math_lab.place(x=100, y=230)
+    # english_lab = ttk.Label(single_window, text="外语:", font=('黑体', 14))
+    # english_lab.place(x=100, y=290)
+
+    # 这些固定不变的输入的标签提示语
+    labels = ["姓名", "学号", "语文", "数学", "英语"]
+    for i, label in enumerate(labels):
+        ttk.Label(single_window, text=f"{label}:", font=('黑体', 14)).place(x=100, y=50 + 60 * i)
+    # 剩下的三个放三个下拉菜单
+    # sub1_lab = ttk.Label(single_window, text="科目一:", font=('黑体', 14))
+    # sub1_lab.place(x=100, y=350)
+    # sub2_lab = ttk.Label(single_window, text="科目二:", font=('黑体', 14))
+    # sub2_lab.place(x=100, y=410)
+    # sub3_lab = ttk.Label(single_window, text="科目三:", font=('黑体', 14))
+    # sub3_lab.place(x=100, y=470)
+    # 创建下拉菜单
+    subject1_menu = ttk.OptionMenu(single_window, selected_subject1, "选择科目一", "历史", "物理",
+                                   command=lambda value: update_subject2(value, selected_subject2, selected_subject3,
+                                                                         subject2_menu, subject3_menu,
+                                                                         dynamic_subjects))
+    subject1_menu.place(x=100, y=350)
+    subject2_menu = ttk.OptionMenu(single_window, selected_subject2, "选择科目二",
+                                   command=lambda *args: update_subject3(selected_subject2, selected_subject3,
+                                                                         subject3_menu, dynamic_subjects))
+    subject2_menu.place(x=100, y=410)
+    subject3_menu = ttk.OptionMenu(single_window, selected_subject3, "选择科目三")
+    subject3_menu.place(x=100, y=470)
+    # 创建各个数据的文本输入框
+    name_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_name)
+    id_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_id)
+    chinese_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_chinese)
+    math_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_math)
+    english_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_english)
+    sub1_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_sub1)
+    sub2_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_sub2)
+    sub3_entry = ttk.Entry(single_window, show="", font=("黑体", 16), textvariable=var_sub3)
+    # 各个文本框放置的位置
+    # name_entry.place(x=200, y=50)
+    # id_entry.place(x=200, y=110)
+    # chinese_entry.place(x=200, y=170)
+    # math_entry.place(x=200, y=230)
+    # english_entry.place(x=200, y=290)
+    # sub1_entry.place(x=200, y=350)
+    # sub2_entry.place(x=200, y=410)
+    # sub3_entry.place(x=200, y=470)
+    # 放输入框
+    entries = [name_entry, id_entry, chinese_entry, math_entry, english_entry, sub1_entry, sub2_entry, sub3_entry]
+    for i, entry in enumerate(entries):
+        entry.place(x=200, y=50 + 60 * i)
+    # 下面再有两个按钮,一个是确认,一个是返回
+    confirm_button = ttk.Button(single_window, text="确认",
+                                command=lambda: submit(single_window, var_name.get(), var_id.get(), var_chinese.get(),
+                                                       var_math.get(), var_english.get(), selected_subject1.get(),
+                                                       selected_subject2.get(), selected_subject3.get(),
+                                                       var_sub1.get(), var_sub2.get(), var_sub3.get()),
+                                width=5,
+                                bootstyle=bootstyle)
+    confirm_button.place(x=400, y=530)
+    cancel_button = ttk.Button(single_window, text="取消", command=lambda: last_step(single_window, admin_window),
+                               width=5,
+                               bootstyle='darkly')
+    cancel_button.place(x=170, y=530)
+    pass
 
 
 # 导入成绩函数
@@ -96,6 +248,7 @@ def import_grades(admin_window):
 
 
 # 查看学生成绩函数
+# 复用 Teacher的函数
 def admin_disp_grads():
     pass
 
@@ -161,51 +314,63 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
     welcome_title.place(x=0, y=0)
     padding = 15
     pady = 20
-    bootstyle='info-outline'
-    blank_title = ttk.Label(admin_window,text='',font=('黑体', 10))
+    bootstyle = 'info-outline'
+    blank_title = ttk.Label(admin_window, text='', font=('黑体', 10))
     blank_title.pack(pady=20)
+    # 单个添加学生成绩按钮
+    bt_import_single = ttk.Button(admin_window, text='导入单个学生成绩', command=lambda: import_single(admin_window),
+                                  width=20, bootstyle=bootstyle, padding=padding)
+    bt_import_single.pack(pady=pady)
     # 导入学生成绩按钮
     bt_import_grades = ttk.Button(admin_window, text='导入学生成绩', command=lambda: import_grades(admin_window),
-                                  width=20, bootstyle= bootstyle, padding=padding)
+                                  width=20, bootstyle=bootstyle, padding=padding)
     bt_import_grades.pack(pady=pady)
     # bt_import_grades.place(x=180, y=100)
 
-    # 查看学生成绩按钮
-    bt_show_grades = ttk.Button(admin_window, text='查看成绩', command=admin_disp_grads, width=20,
-                                bootstyle= bootstyle, padding=padding)
+    # 查看学生成绩按钮 # 复用教师的查看成绩窗口
+    bt_show_grades = ttk.Button(admin_window, text='查看成绩', command=lambda: disp_grades(admin_window, res_name),
+                                width=20,
+                                bootstyle=bootstyle, padding=padding)
     bt_show_grades.pack(pady=pady)
     # bt_show_grades.place(x=180, y=200)
 
     # 查看成绩复核申请表
 
     bt_show_apps = ttk.Button(admin_window, text='查看成绩复核申请表', command=lambda: admin_disp_apps(admin_window),
-                              width=20, bootstyle= bootstyle, padding=padding)
+                              width=20, bootstyle=bootstyle, padding=padding)
     bt_show_apps.pack(pady=pady)
     # bt_show_apps.place(x=180, y=300)
 
     # 查看所有账户信息
 
     bt_show_users = ttk.Button(admin_window, text='查看账户信息', command=lambda: admin_disp_users(admin_window),
-                               width=20, bootstyle= bootstyle, padding=padding)
+                               width=20, bootstyle=bootstyle, padding=padding)
     bt_show_users.pack(pady=pady)
     # bt_show_users.place(x=180, y=400)
 
-    # 修改密码（包括修改管理员的密码和重置用户的密码）
-    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=admin_modify_password, width=20,
-                                    bootstyle= bootstyle, padding=padding)
+    # 修改密码（包括修改管理员的密码和重置用户的密码） # 复用教师的修改密码
+    bt_modify_password = ttk.Button(admin_window, text='修改密码', command=lambda: change_my_password(admin_window),
+                                    width=20,
+                                    bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)
     # bt_modify_password.place(x=180, y=500)
 
     # 修改学生成绩
     bt_modify_grades = ttk.Button(admin_window, text='修改成绩', command=admin_modify_grades, width=20,
-                                  bootstyle= bootstyle, padding=padding)
+                                  bootstyle=bootstyle, padding=padding)
     bt_modify_grades.pack(pady=pady)
     # bt_modify_grades.place(x=180, y=600)
 
     # 退出
     bt_logout = ttk.Button(admin_window, text='退出登录',
                            command=lambda: admin_logout(admin_window, login_window, userid_entry, password_entry),
-                           width=20, bootstyle= bootstyle, padding=padding)
+                           width=20, bootstyle=bootstyle, padding=padding)
     bt_logout.pack(pady=pady)
 
     # .place(x=180, y=700)
+
+
+# 使用teacher里面的配置
+padding = 15
+pady = 20
+bootstyle = 'info-outline'

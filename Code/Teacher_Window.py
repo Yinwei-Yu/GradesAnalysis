@@ -383,7 +383,7 @@ def app_review(tea_window):
 """
 
 
-def change_my_password(tea_window, password):
+def change_my_password(tea_window):
     var_old = tk.StringVar()
     var_new1 = tk.StringVar()
     var_new2 = tk.StringVar()
