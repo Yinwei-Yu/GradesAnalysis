@@ -166,9 +166,6 @@ def import_grades(admin_window):
         def check_condition():
             # print(thread.is_alive())
             if thread.is_alive() is False:
-                # finish()
-                # #top.after(1000,top.destroy())
-                # top.mainloop()
                 time.sleep(0.5)
                 top.destroy()
                 tktop.destroy()
@@ -177,10 +174,13 @@ def import_grades(admin_window):
                 tktop1.geometry('200x100+200+250')
                 top1 = TinUI(tktop1)
                 top1.pack(fill='both', expand=True)
-                top1.add_paragraph((70, 20), '导入成功！')
+                importedGrades=accountManager.getImportedGrades()
+                top1.add_paragraph((70, 20), '导入成功！' if importedGrades is True else '导入失败！')
                 # top.add_title('')
-                _, _, finish2, _ = top1.add_waitbar3((30, 50), width=150)
-                finish2()
+                if importedGrades is True:
+                    _, _, finish2, _ = top1.add_waitbar3((30, 50), width=150)
+                    finish2()
+
                 # top1.after(2000, top1.destroy())
                 top1.mainloop()
                 # tktop1.destroy()
@@ -211,13 +211,8 @@ def import_grades(admin_window):
 
             top.add_paragraph((50, 10), '导入成绩中……')
             check_condition()
-
-            # label = tk.Label(top, text="正在导入成绩……", font=('楷体', 15))
-            # label.pack()
             top.mainloop()
-            print('hello')
-            if importedGrades is False:
-                messagebox.showinfo("导入成绩", f"导入失败！")
+
         except Exception as e:
             messagebox.showinfo("导入成绩", f"导入失败！{e}")
 
