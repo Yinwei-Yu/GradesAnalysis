@@ -1,3 +1,11 @@
+import tkinter as tk
+from tkinter import messagebox
+import ttkbootstrap as ttk
+from ttkbootstrap.widgets import Combobox
+from GradeManager import gradeManager
+import matplotlib.pyplot as plt
+from AccountManager import accountManager
+
 """
 2024/7/10
     Teacher_Window
@@ -29,13 +37,13 @@ by 廖雨龙
     使用TinUI来美化界面
 by 廖雨龙
 """
-import tkinter as tk
-from tkinter import messagebox
-import ttkbootstrap as ttk
-from ttkbootstrap.widgets import Combobox
-from GradeManager import gradeManager
-import matplotlib.pyplot as plt
-from AccountManager import accountManager
+"""
+2024/7/15
+    app_review()
+    完善了提交了申请表的功能
+by刘杨健
+"""
+
 
 def generate_histogram(scores):
     # 使用matplotlib生成直方图
@@ -45,6 +53,8 @@ def generate_histogram(scores):
     plt.ylabel('Frequency')
     plt.grid(True)
     plt.show()
+
+
 # 显示成绩分布直方图的函数
 def disp_graph(choice2):
     choice2.withdraw()
@@ -120,7 +130,7 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
         messagebox.showerror('错误', '重复密码不一致')
     else:
         accountManager.changePassword()
-        messagebox.showinfo('提示','密码修改成功')
+        messagebox.showinfo('提示', '密码修改成功')
         password_window.destroy()
         tea_window.deiconify()
     return
@@ -132,6 +142,7 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
     #
     # confirm_window.focus_force()
     # confirm_window.mainloop()
+
 
 # 成绩查询中的确认按钮
 # 点击之后会出现一个新的界面,显示是否找到和查找结果
@@ -441,7 +452,8 @@ def change_my_password(tea_window, password):
 
     confirm_button = ttk.Button(page4, text="确认",
                                 command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
-                                                                 con_pas_entry.get(), page4, password, tea_window), width=5,
+                                                                 con_pas_entry.get(), page4, password, tea_window),
+                                width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
     if password_flag:
