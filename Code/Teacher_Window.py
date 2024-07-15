@@ -32,23 +32,87 @@ by 廖雨龙
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
-
 from ttkbootstrap.widgets import Combobox
+from GradeManager import gradeManager
 from AccountManager import accountManager
+
+
+# 设置窗口居中
+def center_window(window, width, height):
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    x = (screen_width // 2) - (width // 2)
+    y = (screen_height // 2) - (height // 2)
+    window.geometry(f'{width}x{height}+{x}+{y}')
 
 
 # 显示成绩分布直方图的函数
 def disp_graph(choice2):
     choice2.withdraw()
     graph_window = tk.Toplevel()
-    pass
+    graph_window.title("直方图分析")
+    graph_window.geometry("1600x900")  # 设置窗口大小
+    center_window(graph_window, 400, 300)  # 将窗口居中
+    graph_window.configure(bg="lightblue")  # 设置背景颜色
+
+    label = ttk.Label(graph_window, text="选择学科进行直方图分析：", background="lightblue")
+    label.pack(pady=10)
+
+    subjects = ['Chinese', 'Math', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Politics', 'Geography']
+    subject_var = tk.StringVar(graph_window)
+    subject_var.set(subjects[0])
+
+    subject_menu = ttk.OptionMenu(graph_window, subject_var, *subjects)
+    subject_menu.pack(pady=10)
+
+    def analyze_subject():
+        selected_subject = subject_var.get()
+        gradeManager.generateGradesAnalysis(1, selected_subject)
+
+    analyze_button = ttk.Button(graph_window, text="分析", command=analyze_subject)
+    analyze_button.pack(pady=10)
+
+    def on_close():
+        graph_window.destroy()
+        choice2.deiconify()
+
+    graph_window.protocol("WM_DELETE_WINDOW", on_close)
 
 
 # 显示主副科关系曲线的函数
 def disp_relation(choice2):
     choice2.withdraw()
     rel_window = tk.Toplevel()
-    pass
+    rel_window.title("折线图分析")
+    rel_window.geometry("400x300")  # 设置窗口大小
+    center_window(rel_window, 400, 300)  # 将窗口居中
+    rel_window.configure(bg="lightblue")  # 设置背景颜色
+
+    label = ttk.Label(rel_window, text="选择分析方式：", background="lightgreen")
+    label.pack(pady=10)
+
+    analysis_methods = ['物化生', '史政地']
+    method_var = tk.StringVar(rel_window)
+    method_var.set(analysis_methods[0])
+
+    method_menu = ttk.OptionMenu(rel_window, method_var, *analysis_methods)
+    method_menu.pack(pady=10)
+
+    def analyze_method():
+        selected_method = method_var.get()
+        if selected_method == '物化生':
+            way = 1
+        elif selected_method == '史政地':
+            way = 2
+        gradeManager.generateGradesAnalysis(2, way)
+
+    analyze_button = ttk.Button(rel_window, text="分析", command=analyze_method)
+    analyze_button.pack(pady=10)
+    def on_close():
+        rel_window.destroy()
+        choice2.deiconify()
+
+    rel_window.protocol("WM_DELETE_WINDOW", on_close)
 
 
 # 显示单科成绩情况
