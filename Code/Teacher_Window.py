@@ -32,10 +32,17 @@ by 廖雨龙
 import tkinter as tk
 from tkinter import messagebox
 import ttkbootstrap as ttk
-
+import matplotlib.pyplot as plt
 from AccountManager import accountManager
 
-
+def generate_histogram(scores):
+    # 使用matplotlib生成直方图
+    plt.hist(scores, bins=10, color='blue', edgecolor='black')
+    plt.title('Scores Histogram')
+    plt.xlabel('Score')
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    plt.show()
 # 显示成绩分布直方图的函数
 def disp_graph(choice2):
     choice2.withdraw()

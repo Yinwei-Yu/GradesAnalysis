@@ -19,11 +19,16 @@ by 廖雨龙
     根据Teacher_Window的做法,修改Student_Window
     by 廖雨龙
 """
+"""
+2024/7/15
+   query_scores
+   by 刘链凯
+"""
 import tkinter as tk
 from tkinter import messagebox
-
+import csv
 import ttkbootstrap as ttk
-
+import AccountManager
 # 复用Teacher_Window中修改密码的方法
 from Teacher_Window import change_my_password
 # 复用Teacher_Window中的确认键
@@ -37,6 +42,9 @@ from Teacher_Window import last_step
 #    stu_window.title('学生窗口')
 #    stu_window.geometry('600x400')
 
+def generate_grade_report():
+    # 这里写生成和显示成绩报告的代码
+    pass
 
 # 成绩查询的函数 未完成
 # 参数 userid: 学生的学号
@@ -50,7 +58,18 @@ def query_scores(userid, stu_window):
     grade_window.resizable(False, False)
     # 下面打印学生的成绩
     messagebox.showinfo("这里显示出学生的成绩")
-
+    accountManager = AccountManager()
+    student=accountManager.getGrades(1,userid)
+    # 在窗口中显示成绩
+    label = tk.Label(grade_window, text=f"学生ID: {userid}\n")
+    label.pack()
+    for subject, score in student.stuGrades.items():
+        label = tk.Label(grade_window, text=f"{subject}: {score}")
+        label.pack()
+    # 创建一个生成成绩分析报告的按钮
+    report_button = tk.Button(grade_window, text="一键生成成绩分析生成报告", width=10, height=1,
+                              command=lambda: generate_grade_report())
+    report_button.place(x=180, y=0)  # 放置在确认按钮的正上方
     # 这里加一个确认键,返回上一步
     confirm_button = tk.Button(grade_window, text="确认", width=10, height=1,
                                command=lambda: last_step(grade_window, stu_window))
