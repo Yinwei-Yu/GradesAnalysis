@@ -133,7 +133,7 @@ def show_student_window(login_window, userid_entry, password_entry, name):
                               width=20, bootstyle=bootstyle, padding=padding)
     query_button.pack(pady=pady)
     # 修改密码的按钮
-    modify_button = ttk.Button(stu_window, text="修改密码", command=lambda: change_my_password(stu_window), width=20,
+    modify_button = ttk.Button(stu_window, text="修改密码", command=lambda: change_my_password(stu_window, password_entry.get()), width=20,
                                bootstyle=bootstyle,
                                padding=padding)
     modify_button.pack(pady=pady)

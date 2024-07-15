@@ -1,3 +1,11 @@
+import tkinter as tk
+from tkinter import messagebox
+import ttkbootstrap as ttk
+from ttkbootstrap.widgets import Combobox
+from GradeManager import gradeManager
+import matplotlib.pyplot as plt
+from AccountManager import accountManager
+
 """
 2024/7/10
     Teacher_Window
@@ -29,11 +37,13 @@ by 廖雨龙
     使用TinUI来美化界面
 by 廖雨龙
 """
-import tkinter as tk
-from tkinter import messagebox
-import ttkbootstrap as ttk
-import matplotlib.pyplot as plt
-from AccountManager import accountManager
+"""
+2024/7/15
+    app_review()
+    完善了提交了申请表的功能
+by刘杨健
+"""
+
 
 def generate_histogram(scores):
     # 使用matplotlib生成直方图
@@ -43,6 +53,8 @@ def generate_histogram(scores):
     plt.ylabel('Frequency')
     plt.grid(True)
     plt.show()
+
+
 # 显示成绩分布直方图的函数
 def disp_graph(choice2):
     choice2.withdraw()
@@ -118,7 +130,7 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
         messagebox.showerror('错误', '重复密码不一致')
     else:
         accountManager.changePassword()
-        messagebox.showinfo('提示','密码修改成功')
+        messagebox.showinfo('提示', '密码修改成功')
         password_window.destroy()
         tea_window.deiconify()
     return
@@ -130,6 +142,7 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
     #
     # confirm_window.focus_force()
     # confirm_window.mainloop()
+
 
 # 成绩查询中的确认按钮
 # 点击之后会出现一个新的界面,显示是否找到和查找结果
@@ -343,33 +356,51 @@ def app_review(tea_window):
     app_window.geometry("800x600+800+400")
     app_window.resizable(False, False)
     # 提示标签
-    tea_name_label = ttk.Label(app_window, text="老师姓名:", font=('黑体', 14))
-    tea_name_label.place(x=100, y=100)
-    stu_name_label = ttk.Label(app_window, text="学生姓名:", font=('黑体', 14))
-    stu_name_label.place(x=100, y=180)
     stuID_label = ttk.Label(app_window, text="学生学号:", font=('黑体', 14))
-    stuID_label.place(x=100, y=260)
+    stuID_label.place(x=100, y=100)
     sub_label = ttk.Label(app_window, text="申请科目:", font=('黑体', 14))
-    sub_label.place(x=100, y=340)
-    # 创建Var变量
-    tea_name_var = ttk.StringVar()
-    stu_name_var = ttk.StringVar()
+    sub_label.place(x=100, y=220)
+
+    def on_text_change(*args):
+        # 获取文本框中的内容
+        content = stuID_var.get()
+        print(content)
+
     stuID_var = ttk.StringVar()
-    sub_var = ttk.StringVar()
-    # 文本输入
-    tea_name_entry = ttk.Entry(app_window, show="", font=('黑体', 16), textvariable=tea_name_var)
-    tea_name_entry.place(x=270, y=100)
-    stu_name_entry = ttk.Entry(app_window, show="", font=('黑体', 16), textvariable=stu_name_var)
-    stu_name_entry.place(x=270, y=180)
+    # 绑定文本变化事件
+    stuID_var.trace_add("write", on_text_change)
+    # 学号文本框
     stuID_entry = ttk.Entry(app_window, show="", font=('黑体', 16), textvariable=stuID_var)
-    stuID_entry.place(x=270, y=260)
-    sub_entry = ttk.Entry(app_window, show="", font=('黑体', 16), textvariable=sub_var)
-    sub_entry.place(x=270, y=340)
+    stuID_entry.place(x=270, y=100)
+    # 申请科目下拉框
+    sub_combobox = Combobox(app_window, values=[], state="readonly")
+    sub_combobox.place(x=270, y=220)
+
+    # 绑定下拉框事件
+    def update_combobox(event):
+        student_id = stuID_entry.get()
+        if student_id == '20501039':
+            options = ["语文", "数学", "英语", "物理", "化学", "生物"]
+        else:
+            options = ["语文", "数学", "英语"]
+
+        sub_combobox['values'] = options
+        if options:
+            sub_combobox.set("")  # 设置默认为空
+
+    stuID_entry.bind("<KeyRelease>", update_combobox)
+
+    # 获取选中的科目
+    def on_select(event):
+        selected_sub = sub_combobox.get()
+
+    sub_combobox.bind("<<ComboboxSelected>>", on_select)
+
+    # command=lambda: confirm_app(tea_name_entry.get(), stu_name_entry.get(),
+    #                                                             stuID_entry.get(), sub_entry.get(), tea_window),
+
     # 全都输入完毕之后,点击确认或者取消
-    confirm_button = ttk.Button(app_window, text="确认",
-                                command=lambda: confirm_app(tea_name_entry.get(), stu_name_entry.get(),
-                                                            stuID_entry.get(), sub_entry.get(), tea_window),
-                                width=5, bootstyle=bootstyle)
+    confirm_button = ttk.Button(app_window, text="确认", width=5, bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
     cancel_button = ttk.Button(app_window, text="取消", command=lambda: last_step(app_window, tea_window), width=5,
                                bootstyle='darkly')
@@ -421,7 +452,8 @@ def change_my_password(tea_window, password):
 
     confirm_button = ttk.Button(page4, text="确认",
                                 command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
-                                                                 con_pas_entry.get(), page4, password, tea_window), width=5,
+                                                                 con_pas_entry.get(), page4, password, tea_window),
+                                width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
     if password_flag:
