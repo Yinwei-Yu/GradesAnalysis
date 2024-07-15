@@ -418,14 +418,8 @@ class GradeManager:
         plt.scatter(x, y, marker='o', label='Data points')
         plt.plot(x, y_fit, color='red', label='Fit line')
 
-        # 添加线性回归系数文本注释
-        slope = coefficients[0]
-        intercept = coefficients[1]
-        plt.text(0.05, 0.95, f'Equation: y = {slope:.2f}x + {intercept:.2f}', transform=plt.gca().transAxes,
-                 fontsize=12, verticalalignment='top')
-
-        plt.title('Linear Fit of PCB and CME Scores' if way == 1 else 'Linear Fit of HPG and CME Scores')
-        plt.xlabel('Physics Chemistry Biology Total Scores' if way == 1 else 'History Politics Geography Total Scores')
+        plt.title('Linear Fit of PCB and CME Scores')
+        plt.xlabel('Physics Chemistry Biology Total Scores')
         plt.ylabel('Chinese Math English Total Scores')
         plt.legend()
         plt.grid(True)
