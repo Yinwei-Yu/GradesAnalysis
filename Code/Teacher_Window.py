@@ -208,20 +208,6 @@ def confirm_app(tea_name, stu_name, stuID, sub, current_window):
 
 
 def confirm_password(old, new1, new2, password_window, password, tea_window):
-    # password_window.withdraw()
-    # 创建一个新的窗口，标题，大小
-    # confirm_window = tk.Toplevel(password_window)
-    # confirm_window.title("密码修改确认")
-    # confirm_window.geometry("400x200")
-
-    # 检查密码修改状态并设置标签
-    # if new1 == new2 and new1 != old:
-    #     message = "密码修改成功！"
-    # else:
-    #     message = "密码修改失败，请检查输入！"
-
-    # l1 = tk.Label(confirm_window, text=message, font=("楷体", 16))
-    # l1.pack(pady=20)
     if old == "":  # 原密码为空
         messagebox.showinfo('提示', '请输入原密码')
         # password_window.deiconify()
@@ -238,16 +224,6 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
         messagebox.showinfo('提示', '密码修改成功')
         password_window.destroy()
         tea_window.deiconify()
-    return
-    # 返回上一步的按钮
-    # last_step_button = tk.Button(confirm_window, text='返回上一步',
-    #                              command=lambda: last_step(confirm_window, password_window),
-    #                              width=15, height=1)
-    # last_step_button.pack(pady=10)
-    #
-    # confirm_window.focus_force()
-    # confirm_window.mainloop()
-
 
 # 成绩查询中的确认按钮
 # 点击之后会出现一个新的界面,显示是否找到和查找结果
