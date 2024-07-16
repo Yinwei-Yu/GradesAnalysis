@@ -55,7 +55,7 @@ def start():
         elif password_entry.get() == "":
             login_var.set('请输入密码')
         else:
-            userid = userid_entry.get()
+            userid =userid_entry.get()
             password = password_entry.get()
             # 调用查找函数
             res_is_exist, res_identity, res_name = find_user(userid, password)

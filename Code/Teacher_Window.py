@@ -173,46 +173,14 @@ def confirm_app(tea_name, stu_name, stuID, sub, current_window):
     confirm_window.mainloop()
 
 
-def confirm_password(old, new1, new2, password_window, password, tea_window):
-    # password_window.withdraw()
-    # 创建一个新的窗口，标题，大小
-    # confirm_window = tk.Toplevel(password_window)
-    # confirm_window.title("密码修改确认")
-    # confirm_window.geometry("400x200")
-
-    # 检查密码修改状态并设置标签
-    # if new1 == new2 and new1 != old:
-    #     message = "密码修改成功！"
-    # else:
-    #     message = "密码修改失败，请检查输入！"
-
-    # l1 = tk.Label(confirm_window, text=message, font=("楷体", 16))
-    # l1.pack(pady=20)
-    if old == "":  # 原密码为空
-        messagebox.showinfo('提示', '请输入原密码')
-        # password_window.deiconify()
-    elif not old == password:  # 原密码错误
-        messagebox.showerror('错误', '原密码错误')
-    elif new1 == "":  # 新密码为空
-        messagebox.showinfo('提示', '请输入新密码')
-    elif new2 == "":  # 没有重复确认密码
-        messagebox.showinfo('提示', '请再次输入新密码')
-    elif not new1 == new2:  # 重复确认失败
-        messagebox.showerror('错误', '重复密码不一致')
-    else:
-        accountManager.changePassword()
+def confirm_password(old, new1, new2, password_window, tea_window,user_id):
+    if accountManager.changePassword(old, new1, new2,user_id):
         messagebox.showinfo('提示', '密码修改成功')
         password_window.destroy()
         tea_window.deiconify()
+    #else:
+        #messagebox.showerror('错误', '密码修改失败，请检查输入的信息')
     return
-    # 返回上一步的按钮
-    # last_step_button = tk.Button(confirm_window, text='返回上一步',
-    #                              command=lambda: last_step(confirm_window, password_window),
-    #                              width=15, height=1)
-    # last_step_button.pack(pady=10)
-    #
-    # confirm_window.focus_force()
-    # confirm_window.mainloop()
 
 
 # 成绩查询中的确认按钮
@@ -492,7 +460,7 @@ def app_review(tea_window):
 """
 
 
-def change_my_password(tea_window, password):
+def change_my_password(tea_window, password,user_id):
     var_old = tk.StringVar()
     var_new1 = tk.StringVar()
     var_new2 = tk.StringVar()
@@ -520,10 +488,10 @@ def change_my_password(tea_window, password):
     # confirm = con_pas_entry.get()
     # 标志密码是否修改成功
     password_flag = False
-
+    user_id=user_id.get()
     confirm_button = ttk.Button(page4, text="确认",
                                 command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
-                                                                 con_pas_entry.get(), page4, password, tea_window),
+                                                                 con_pas_entry.get(), page4, tea_window,int(user_id)),
                                 width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
@@ -573,8 +541,9 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
                                    width=20, bootstyle=bootstyle, padding=padding)
     app_review_button.pack(pady=pady)
     # 修改自己的密码
+    user_id=userid_entry.get()
     cha_my_button = ttk.Button(tea_window, text="修改我的密码",
-                               command=lambda: change_my_password(tea_window, password_entry.get()),
+                               command=lambda: change_my_password(tea_window, password_entry.get(),int(user_id)),
                                width=20, bootstyle=bootstyle, padding=padding)
     cha_my_button.pack(pady=pady)
     # 修改学生的密码

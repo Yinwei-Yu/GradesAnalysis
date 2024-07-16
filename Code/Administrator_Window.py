@@ -477,7 +477,7 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
 
     # 修改密码（包括修改管理员的密码和重置用户的密码） # 复用教师的修改密码
     bt_modify_password = ttk.Button(admin_window, text='修改密码',
-                                    command=lambda: change_my_password(admin_window, password_entry.get()),
+                                    command=lambda: change_my_password(admin_window, password_entry.get(),userid_entry),
                                     width=20,
                                     bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)

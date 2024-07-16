@@ -3,6 +3,7 @@ import mysql.connector  # pip install mysql-connector-python
 from GradeManager import gradeManager
 from User import *
 from csvToSQL import *
+from tkinter import messagebox
 
 '''
 2024/7/8
@@ -95,14 +96,62 @@ class AccountManager:
     # 修改密码
     # originPassword:str 前端获取的原密码
     # newPassword:str 前端获取的新密码
-    def changePassword(self, originPassword: str, newPassword: str) -> bool:
-
-        if self.users[self.ID].setPassword(newPassword) is False or self.password != originPassword:
+    def changePassword(self, originPassword: str, newPassword_first: str, newPassword_second: str, user_id) -> bool:
+        # 错误检测
+        if originPassword == "":
+            messagebox.showinfo('提示', "原密码为空")
             return False
-        else:
-            self.password = newPassword
-            self.saveUserInfoToCSV()
-            return True
+        if originPassword != self.users[user_id].password:
+            messagebox.showinfo('提示', "原密码错误")
+            return False
+        if newPassword_first == "":
+            messagebox.showinfo('提示', "新密码为空")
+            return False
+        if newPassword_second == "":
+            messagebox.showinfo('提示', "请再次输入新密码")
+            return False
+        if newPassword_first != newPassword_second:
+            messagebox.showinfo('提示', "重复密码不一致")
+            return False
+
+            # 修改密码
+        self.users[user_id].password = newPassword_first
+        self.saveUserInfoToCSV()
+        self.updateUserInfoToMySQL(user_id)  # 保存信息到数据库
+        return True
+
+
+    def updateUserInfoToMySQL(self,user_id,
+                            host=host,  # 主机地址
+                            user=user,  # 数据库用户名
+                            password=password,  # 密码
+                            database=database,  # 数据库名称
+                            table=usersTable,  # 数据库表名
+                            ):
+
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        sqlUpdate="""UPDATE users SET `密码` = %s WHERE `学号或工号` = %s"""
+        data=(self.users[user_id].password,user_id)
+        #更新
+        mycursor.execute(sqlUpdate,data)
+        # 提交更改并关闭数据库连接
+        mydb.commit()  # 提交更改
+        mycursor.close()  # 关闭游标对象
+        mydb.close()  # 关闭数据库连接
+        return True
+
 
     # 创建新用户名
     '''
