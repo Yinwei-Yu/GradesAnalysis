@@ -296,13 +296,15 @@ class AccountManager:
     # mode==1时返回学生分析
     # mode==2时返回全班分析
     # 待完成
-    def getGrades(self, mode, stuID=0) -> list:
+    def getGrades(self, mode, stuID=0):
         if mode == 1:
-            for temp in gradeManager.student:
-
-                if temp.stuID == stuID:
-                    print(temp.stuID)
-                    return temp
+            for stu in gradeManager.student:
+                if stu.stuID == stuID:
+                    print(1)
+                    stuName = stu.name
+                    gradeList = [subject.score for subject in stu.stuGrades.grades]
+                    return stuName, gradeList
+            return False, []
         if mode == 2:
             gradeManager.generateGradesAnalysis(1, 'Chinese')
             gradeManager.generateGradesAnalysis(1, 'Math')

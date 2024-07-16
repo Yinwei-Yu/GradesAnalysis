@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
+
+import matplotlib.pyplot as plt
 import ttkbootstrap as ttk
 from ttkbootstrap.widgets import Combobox
-from GradeManager import gradeManager
-import matplotlib.pyplot as plt
+
 from AccountManager import accountManager
+from GradeManager import gradeManager
 
 """
 2024/7/10
@@ -215,13 +217,6 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
     # confirm_window.mainloop()
 
 
-# 成绩查询中的确认按钮
-# 点击之后会出现一个新的界面,显示是否找到和查找结果
-# 参数 stuID:学生的学号
-def confirm_grade(stuID, grade_window):
-    pass
-
-
 # 实现返回上一步的操作/也可以当作取消按钮来用
 # 参数: 现在的窗口 之前的窗口
 def last_step(current_window, previous_window):
@@ -322,59 +317,86 @@ def disp_all_analysis(grade_window):
 # 还要加一个确认和取消的按钮
 # stuID: 存放学生的ID,用于查找这个学生,得到它的成绩
 def disp_single_grade(grade_window):
+    # 成绩查询中的确认按钮
+    # 点击之后会出现一个新的界面,显示是否找到和查找结果
+    # 参数 stuID:学生的学号
+    def confirm_grade(stuID, grade_window):
+        nonlocal grades_var, warning_var
+        stuName, gradeList = accountManager.getGrades(1, int(stuID))
+        if stuName is False:
+            warning_var.set("学号不存在！")
+            return
+        subjects = [' \n\n语文：', '\n数学：', '\n英语：', ' \n\n物理：', '\n化学：', '\n生物：', ' \n\n历史：', '\n政治：',
+                    '\n地理：']
+        temp = stuName
+        for i in range(9):
+            temp += (subjects[i] + str(gradeList[i])) if gradeList[i] != -1 else ''
+        print(temp)
+        grades_var.set(temp)
+        warning_var.set('')
+        seperator.pack(side="right", padx=30, pady=100, fill='y')
+
+    grades_var = ttk.StringVar()
     stuID_var = ttk.StringVar()
+    warning_var=ttk.StringVar()
     # 隐藏grade_window窗口
     grade_window.withdraw()
     # 创建新的窗口 标题 大小 标签
     choice3 = ttk.Toplevel(grade_window)
     choice3.title("查看单个学生成绩")
-    choice3.geometry("600x400+900+600")
+    choice3.geometry("800x600+800+400")
     choice3.resizable(False, False)
-    style = ttk.Style()
-    style.configure('TButton', font=('黑体', 16))
-    stuID_label = ttk.Label(choice3, text="请输入学号:", font=('黑体', 12))
-    stuID_label.place(x=100, y=60)
+    stuID_label = ttk.Label(choice3, text="请输入学号:", font=('黑体', 16))
+    stuID_label.place(x=100, y=100)
     # 输入框
     stuID_entry = ttk.Entry(choice3, show="", font=('楷体', 16), textvariable=stuID_var)
-    stuID_entry.place(x=100, y=120)
+    stuID_entry.place(x=100, y=220)
     # stuID里面放输入的内容
-    stuID = stuID_entry.get()
+    # stuID = stuID_entry.get()
     # 取消按钮
     cancel_button = ttk.Button(choice3, text="取消", command=lambda: last_step(choice3, grade_window), width=5,
                                bootstyle='darkly')
-    cancel_button.place(x=100, y=250)
+    cancel_button.place(x=100, y=400)
     # 确认按钮
-    confirm_button = ttk.Button(choice3, text="确定", command=lambda: confirm_grade(stuID, grade_window), width=5,
+    confirm_button = ttk.Button(choice3, text="确定", command=lambda: confirm_grade(stuID_var.get(), choice3),
+                                width=5,
                                 bootstyle=bootstyle)
-    confirm_button.place(x=350, y=250)
-    style.configure('TButton', font=('黑体', 20))
+    confirm_button.place(x=360, y=400)
+    warning_label = ttk.Label(choice3, textvariable=warning_var, font=('黑体', 12),style='danger')
+    warning_label.place(x=100, y=280)
+    #myStr.set(('     '))
+    grades_label = ttk.Label(choice3, textvariable=grades_var, font=('黑体', 16))
+    grades_label.pack(padx=20, pady=100, side='right')
+    seperator = ttk.Separator(choice3, orient=tk.VERTICAL)
+
+    choice3.mainloop()
 
 
 # 实现查看成绩功能 查看单个学生的成绩分析报告 未实现
 # 修改为查看单个学生成绩的附加功能
-def disp_single_analysis(grade_window):
-    # 隐藏grade_window窗口
-    grade_window.withdraw()
-    # 创建新的窗口 标题 大小 标签
-    choice4 = tk.Toplevel(grade_window)
-    choice4.title("查看单个学生成绩报告")
-    choice4.geometry("600x400")
-    choice4.resizable(False, False)
-    stuID_label = tk.Label(choice4, text="学号:", font=('Arial', 10))
-    stuID_label.place(x=140, y=100)
-    # 输入框
-    stuID_entry = tk.Entry(choice4, show="", font=('Arial', 14))
-    stuID_entry.place(x=190, y=100)
-    # stuID里面放输入的内容
-    stuID = stuID_entry.get()
-    # 取消按钮
-    cancel_button = tk.Button(choice4, text="取消", command=lambda: last_step(choice4, grade_window), width=30,
-                              height=3)
-    cancel_button.place(x=140, y=160)
-    # 确认按钮
-    confirm_button = tk.Button(choice4, text="确定", command=lambda: confirm_grade(stuID, grade_window), width=30,
-                               height=3)
-    confirm_button.place(x=140, y=220)
+# def disp_single_analysis(grade_window):
+#     #     # 隐藏grade_window窗口
+#     grade_window.withdraw()
+#     # 创建新的窗口 标题 大小 标签
+#     choice4 = tk.Toplevel(grade_window)
+#     choice4.title("查看单个学生成绩报告")
+#     choice4.geometry("600x400")
+#     choice4.resizable(False, False)
+#     stuID_label = tk.Label(choice4, text="学号:", font=('Arial', 10))
+#     stuID_label.place(x=140, y=100)
+#     # 输入框
+#     stuID_entry = tk.Entry(choice4, show="", font=('Arial', 14))
+#     stuID_entry.place(x=190, y=100)
+#     # stuID里面放输入的内容
+#     stuID = stuID_entry.get()
+#     # 取消按钮
+#     cancel_button = tk.Button(choice4, text="取消", command=lambda: last_step(choice4, grade_window), width=30,
+#                               height=3)
+#     cancel_button.place(x=140, y=160)
+#     # 确认按钮
+#     confirm_button = tk.Button(choice4, text="确定", command=lambda: confirm_grade(stuID, grade_window), width=30,
+#                                height=3)
+#     confirm_button.place(x=140, y=220)
 
 
 # 有一个新的界面,里面提供其他的成绩查询选项 未完成
