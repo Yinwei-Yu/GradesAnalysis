@@ -345,13 +345,15 @@ class AccountManager:
     # mode==1时返回学生分析
     # mode==2时返回全班分析
     # 待完成
-    def getGrades(self, mode, stuID=0) -> list:
+    def getGrades(self, mode, stuID=0):
         if mode == 1:
-            for temp in gradeManager.student:
-
-                if temp.stuID == stuID:
-                    print(temp.stuID)
-                    return temp
+            for stu in gradeManager.student:
+                if stu.stuID == stuID:
+                    print(1)
+                    stuName = stu.name
+                    gradeList = [subject.score for subject in stu.stuGrades.grades]
+                    return stuName, gradeList
+            return False, []
         if mode == 2:
             gradeManager.generateGradesAnalysis(1, 'Chinese')
             gradeManager.generateGradesAnalysis(1, 'Math')
@@ -440,16 +442,33 @@ class AccountManager:
     # 5  导入数据库时出现错误
     # 6 导入成功
     def inputSingleGrades(self, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
-
+        if (sub1 in ['选科一', ''] or sub2 in ['选科一', ''] or sub3 in ['选科一', '']
+                or name == '' or ID == '' or chinese == '' or Math == '' or english == ''):
+            return 2
+        try:
+            ID = int(ID)
+            chinese = int(chinese)
+            Math = int(Math)
+            english = int(english)
+            grade1 = int(grade1)
+            grade2 = int(grade2)
+            grade3 = int(grade3)
+        except Exception as e:
+            print("格式错误{}".format(e))
+            return 1
+        # 注明flag变量为非本地变量
         if gradeManager.hasRepeated(ID) is False:
             return 3
         elif 0 <= chinese <= 150 and 0 <= Math <= 150 and 0 <= english <= 150 and 0 <= grade1 <= 100 and 0 <= grade2 <= 100 and 0 <= grade3 <= 100:
             gradesDict = {'语文': chinese, '数学': Math, '英语': english, sub1: grade1, sub2: grade2, sub3: grade3}
             temp = gradeManager.inputGrades(1, name, ID, gradesDict)
             if temp == 6:
-                self.refreshUserInfo()
-                self.saveUserInfoToCSV()
-                self.saveUserInfoToMySQL()
+                try:
+                    self.refreshUserInfo()
+                    self.saveUserInfoToCSV()
+                    self.saveUserInfoToMySQL()
+                except:
+                    return 5
             return temp
         else:
             return 4
