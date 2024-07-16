@@ -9,6 +9,8 @@ from tinui.TinUI import *
 
 from AccountManager import accountManager
 
+from ttkbootstrap.widgets import Combobox
+
 """
 2024/7/12
     添加：
@@ -38,6 +40,27 @@ from Teacher_Window import disp_grades
 # 复用Teacher修改密码的函数
 from Teacher_Window import change_my_password
 
+# 暂时的数据,之后再找后端的函数
+# 示例数据
+student_courses = {
+    1: ['语文', '数学'],
+    2: ['英语', '物理'],
+    3: ['历史', '化学']
+}
+
+student_info = {
+    1: {"name": "学生一"},
+    2: {"name": "学生二"},
+    3: {"name": "学生三"}
+}
+
+# 示例申请数据
+applications = [
+    ("老师一", "学生一", 1, "语文"),
+    ("老师二", "学生二", 2, "英语"),
+    ("老师三", "学生三", 3, "历史")
+]
+
 
 def last_step(current_window, previous_window):
     previous_window.deiconify()
@@ -45,7 +68,7 @@ def last_step(current_window, previous_window):
 
 
 # 获取Treeview中选中的选项,并将其值填入右侧的输入字段
-def view_application(tree, entry_id, entry_course, label_original_grade):
+def view_application(tree, entry_id, combobox_course, label_student_name):
     # 看是否有选中什么东西
     selected_item = tree.selection()
     # 如果有选中东西的话,就会填入它的学号和科目和初始成绩 # 待修改
@@ -55,9 +78,9 @@ def view_application(tree, entry_id, entry_course, label_original_grade):
         # 自动填入学号
         entry_id.delete(0, tk.END)
         entry_id.insert(0, item_values[2])
-        # 自动填入科目
-        entry_course.delete(0, tk.END)
-        entry_course.insert(0, item_values[3])
+        # 自动得到姓名
+        label_student_name.config(text=item_values[1])
+        combobox_course.set(item_values[3])
 
 
 # 完成成绩申请处理 删除Treeview中选中的项
@@ -69,15 +92,37 @@ def finish_application(tree):
 
 # 确认修改 确认并保存修改后的成绩
 # 还存在小问题,就是如果是自己输入的话会认为你没有输入
-def confirm_modification(entry_id, entry_new_grade):
+def confirm_modification(entry_id, combobox_course, entry_new_grade):
     # 拿到输入的学号
     student_id = entry_id.get()
     # 拿到输入的新成绩
     new_grade = entry_new_grade.get()
-    if student_id and new_grade:  # 这里调用实际的函数
+    # 拿到修改的课程
+    new_corse = combobox_course.get()
+    if student_id and new_grade and new_corse:  # 这里调用实际的函数
         messagebox.showinfo("成功")
     else:
         messagebox.showinfo("失败")
+
+
+# 不仅会更新下拉框中的选项,还会在学号无效或不在数据中的情况下清楚下拉框的当前值
+def update_course_options(event, entry_id, combobox_course, label_student_name):
+    student_id = entry_id.get()
+    if student_id.isdigit():
+        student_id = int(student_id)
+        if student_id in student_courses:
+            combobox_course['values'] = student_courses[student_id]
+            if combobox_course.get() not in student_courses[student_id]:
+                combobox_course.set('')  # 清除不在新选项中的值
+            label_student_name.config(text=student_info[student_id]["name"])
+        else:
+            combobox_course['values'] = []
+            combobox_course.set('')
+            label_student_name.config(text="")
+    else:
+        combobox_course['values'] = []
+        combobox_course.set('')
+        label_student_name.config(text="")
 
 
 def update_subject2(selected_subject1, selected_subject2, selected_subject3, subject2_menu, subject3_menu,
@@ -295,7 +340,6 @@ def admin_disp_apps(admin_window):
     # 创建左边的框架(查看申请)
     left_frame = ttk.Frame(apps_window, padding=10)
     left_frame.pack(side="left", fill="both", expand=True)
-
     # 创建Treeview
     columns = ("教师姓名", "学生姓名", "学生学号", "申请科目")
     tree = ttk.Treeview(left_frame, columns=columns, show='headings')
@@ -314,31 +358,33 @@ def admin_disp_apps(admin_window):
     scrollbar_y.pack(side="right", fill="y")
     # 创建"查看"和"完成"按钮
     view_button = ttk.Button(left_frame, text="查看",
-                             command=lambda: view_application(tree, entry_id, entry_course, label_original_grade))
+                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name))
     view_button.pack(pady=5)
     finish_button = ttk.Button(left_frame, text="完成", command=lambda: finish_application(tree))
     finish_button.pack(pady=5)
     # 创建右边的框架(成绩修改)
     right_frame = ttk.Frame(apps_window, padding=10)
     right_frame.pack(side="right", fill="both", expand=True)
-    # 创建修改成绩的输入框和标签
-    # 学号以及学号的输入框
+    # 创建修改成绩的输入字段和标签
+    # 显示学号
     ttk.Label(right_frame, text="学号:").grid(row=0, column=0, pady=5, sticky="e")
     entry_id = ttk.Entry(right_frame)
     entry_id.grid(row=0, column=1, pady=5)
+    entry_id.bind('<KeyRelease>',
+                  lambda event: update_course_options(event, entry_id, combobox_course, label_student_name))
+    # 科目的下拉框
+    ttk.Label(right_frame, text="科目:").grid(row=1, column=0, pady=5, sticky="e")
+    combobox_course = ttk.Combobox(right_frame, state="readonly")
+    combobox_course.grid(row=1, column=1, pady=5)
     # 显示姓名
-    ttk.Label(right_frame, text="姓名:").grid(row=1, column=0, pady=5, sticky="e")
-    label_name = ttk.Label(right_frame, text="这里显示学生的姓名")
-    label_name.grid(row=1, column=1, pady=5)
-    # 科目以及科目的输入框
-    ttk.Label(right_frame, text="科目:").grid(row=2, column=0, pady=5, sticky="e")
-    entry_course = ttk.Entry(right_frame)
-    entry_course.grid(row=2, column=1, pady=5)
+    ttk.Label(right_frame, text="姓名:").grid(row=2, column=0, pady=5, sticky="e")
+    label_student_name = ttk.Label(right_frame, text="这里显示学生的姓名")
+    label_student_name.grid(row=2, column=1, pady=5)
     # 显示原来的成绩
     ttk.Label(right_frame, text="原成绩:").grid(row=3, column=0, pady=5, sticky="e")
     label_original_grade = ttk.Label(right_frame, text="这里显示原来的成绩")
     label_original_grade.grid(row=3, column=1, pady=5)
-    # 修改后成绩以及修改后成绩的输入框
+    # 修改成绩及其文本输入框
     ttk.Label(right_frame, text="修改成绩:").grid(row=4, column=0, pady=5, sticky="e")
     entry_new_grade = ttk.Entry(right_frame)
     entry_new_grade.grid(row=4, column=1, pady=5)
@@ -347,9 +393,9 @@ def admin_disp_apps(admin_window):
                                 command=lambda: confirm_modification(entry_id, entry_new_grade))
     confirm_button.grid(row=5, column=1, pady=10, sticky="e")
     # 之后再在这里加个退出的按钮返回
-    quit_button = ttk.Button(right_frame,text="退出",
-                             command=lambda:last_step(apps_window,admin_window))
-    quit_button.grid(row=5,column=4,pady=10,sticky="e")
+    quit_button = ttk.Button(right_frame, text="退出",
+                             command=lambda: last_step(apps_window, admin_window))
+    quit_button.grid(row=5, column=4, pady=10, sticky="e")
     apps_window.mainloop()
 
 
@@ -457,7 +503,8 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
 
     # 修改密码（包括修改管理员的密码和重置用户的密码） # 复用教师的修改密码
     bt_modify_password = ttk.Button(admin_window, text='修改密码',
-                                    command=lambda: change_my_password(admin_window, password_entry.get(),userid_entry),
+                                    command=lambda: change_my_password(admin_window, password_entry.get(),
+                                                                       userid_entry),
                                     width=20,
                                     bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)
