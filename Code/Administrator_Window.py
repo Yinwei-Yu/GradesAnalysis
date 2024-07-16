@@ -134,26 +134,6 @@ def import_single(admin_window):
         # print(type(grade1))
         # print(grade2)
         # print(grade3)
-        if (sub1 in ['选科一', ''] or sub2 in ['选科一', ''] or sub3 in ['选科一', '']
-                or name == '' or ID == '' or chinese == '' or Math == '' or english == ''):
-            flag = 2
-            warning_text.set(options[flag])
-            print(warning_text)
-            return
-        try:
-            ID = int(ID)
-            chinese = int(chinese)
-            Math = int(Math)
-            english = int(english)
-            grade1 = int(grade1)
-            grade2 = int(grade2)
-            grade3 = int(grade3)
-        except Exception as e:
-            print("格式错误{}".format(e))
-            flag = 1
-            warning_text.set(options[flag])
-            print(warning_text)
-        # 注明flag变量为非本地变量
 
         flag = accountManager.inputSingleGrades(name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2,
                                                 grade3)
