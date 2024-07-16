@@ -47,9 +47,43 @@ by刘杨健
 
 # 点击之后实现排序的函数,在显示总成绩界面,点击之后就会按照单科进行排序
 # 传入点击的标题的名称
-def click_sort(sub):
-    pass
+def click_sort(sub,tree):
+    # 这个函数传两个参数 mod1=0 总分 1 语文 mod2=0 降序
+    # 维护一个字典,使得每个科目的名称有对应的mod1
+    subject_mapping = {
+        '总分': 0,
+        '语文': 1,
+        '数学': 2,
+        '外语': 3,
+        '物理': 4,
+        '化学': 5,
+        '生物': 6,
+        '历史': 7,
+        '地理': 8,
+        '政治': 9
+    }
+    mod1 = subject_mapping.get(sub, -1)
+    if mod1 != -1:
+        # 拿到新的排序方式得到的成绩
+        data1 = accountManager.getAllGrades(mod1, 0)
+        update_treeview(data1, tree)
 
+
+# 加一个函数用于更新treeview
+def update_treeview(data2, tree):
+    # 清空Treeview
+    for item2 in tree.get_children():
+        tree.delete(item2)
+    # 重新插入数据
+    for item2 in data2:
+        values2 = []
+        for key2 in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理',
+                     '总分']:
+            if item2[key2] == -1:
+                values2.append('/')
+            else:
+                values2.append(item2[key2])
+        tree.insert('', tk.END, values=tuple(values2))
 
 def generate_histogram(scores):
     # 使用matplotlib生成直方图
@@ -243,13 +277,13 @@ def disp_all_grades(grade_window):
 
     # 创建Treeview
     columns = (
-        "姓名", "学号", "单科成绩1", "单科成绩2", "单科成绩3", "单科成绩4", "单科成绩5", "单科成绩6", "单科成绩7",
-        "单科成绩8", "单科成绩9", "总分")
+        "姓名", "学号", "语文", "数学", "外语", "物理", "化学", "生物", "历史",
+        "地理", "政治", "总分")
     tree = ttk.Treeview(frame, columns=columns, show='headings')
 
     # 定义每一列的标题和宽度
     for col in columns:
-        tree.heading(col, text=col, command=lambda sub=col: click_sort(sub))
+        tree.heading(col, text=col, command=lambda sub=col: click_sort(sub,tree))
         tree.column(col, width=100, anchor='center')
 
     # 拿到数据
@@ -258,11 +292,18 @@ def disp_all_grades(grade_window):
     # 测试数据
     # 总分降序
     data = accountManager.getAllGrades(0, 0)
+    print("hello2")
     # 将得到的数据放到那个表里面去
     for item in data:
-        tree.insert('', tk.END, values=(
-            item['姓名'], item['学号'], item['语文'], item['数学'], item['英语'], item['物理'], item['化学'],
-            item['生物'], item['历史'], item['政治'], item['地理'], item['总分']))
+        # 将 -1 转换为斜杠
+        values = []
+        for key in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理', '总分']:
+            if item[key] == -1:
+                values.append('/')
+            else:
+                values.append(item[key])
+
+        tree.insert('', tk.END, values=tuple(values))
 
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
