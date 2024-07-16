@@ -49,9 +49,43 @@ by刘杨健
 
 # 点击之后实现排序的函数,在显示总成绩界面,点击之后就会按照单科进行排序
 # 传入点击的标题的名称
-def click_sort(sub):
-    pass
+def click_sort(sub,tree):
+    # 这个函数传两个参数 mod1=0 总分 1 语文 mod2=0 降序
+    # 维护一个字典,使得每个科目的名称有对应的mod1
+    subject_mapping = {
+        '总分': 0,
+        '语文': 1,
+        '数学': 2,
+        '外语': 3,
+        '物理': 4,
+        '化学': 5,
+        '生物': 6,
+        '历史': 7,
+        '地理': 8,
+        '政治': 9
+    }
+    mod1 = subject_mapping.get(sub, -1)
+    if mod1 != -1:
+        # 拿到新的排序方式得到的成绩
+        data1 = accountManager.getAllGrades(mod1, 0)
+        update_treeview(data1, tree)
 
+
+# 加一个函数用于更新treeview
+def update_treeview(data2, tree):
+    # 清空Treeview
+    for item2 in tree.get_children():
+        tree.delete(item2)
+    # 重新插入数据
+    for item2 in data2:
+        values2 = []
+        for key2 in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理',
+                     '总分']:
+            if item2[key2] == -1:
+                values2.append('/')
+            else:
+                values2.append(item2[key2])
+        tree.insert('', tk.END, values=tuple(values2))
 
 def generate_histogram(scores):
     # 使用matplotlib生成直方图
@@ -176,20 +210,6 @@ def confirm_app(tea_name, stu_name, stuID, sub, current_window):
 
 
 def confirm_password(old, new1, new2, password_window, password, tea_window):
-    # password_window.withdraw()
-    # 创建一个新的窗口，标题，大小
-    # confirm_window = tk.Toplevel(password_window)
-    # confirm_window.title("密码修改确认")
-    # confirm_window.geometry("400x200")
-
-    # 检查密码修改状态并设置标签
-    # if new1 == new2 and new1 != old:
-    #     message = "密码修改成功！"
-    # else:
-    #     message = "密码修改失败，请检查输入！"
-
-    # l1 = tk.Label(confirm_window, text=message, font=("楷体", 16))
-    # l1.pack(pady=20)
     if old == "":  # 原密码为空
         messagebox.showinfo('提示', '请输入原密码')
         # password_window.deiconify()
@@ -206,16 +226,6 @@ def confirm_password(old, new1, new2, password_window, password, tea_window):
         messagebox.showinfo('提示', '密码修改成功')
         password_window.destroy()
         tea_window.deiconify()
-    return
-    # 返回上一步的按钮
-    # last_step_button = tk.Button(confirm_window, text='返回上一步',
-    #                              command=lambda: last_step(confirm_window, password_window),
-    #                              width=15, height=1)
-    # last_step_button.pack(pady=10)
-    #
-    # confirm_window.focus_force()
-    # confirm_window.mainloop()
-
 
 # 实现返回上一步的操作/也可以当作取消按钮来用
 # 参数: 现在的窗口 之前的窗口
@@ -238,13 +248,13 @@ def disp_all_grades(grade_window):
 
     # 创建Treeview
     columns = (
-        "姓名", "学号", "单科成绩1", "单科成绩2", "单科成绩3", "单科成绩4", "单科成绩5", "单科成绩6", "单科成绩7",
-        "单科成绩8", "单科成绩9", "总分")
+        "姓名", "学号", "语文", "数学", "外语", "物理", "化学", "生物", "历史",
+        "地理", "政治", "总分")
     tree = ttk.Treeview(frame, columns=columns, show='headings')
 
     # 定义每一列的标题和宽度
     for col in columns:
-        tree.heading(col, text=col, command=lambda sub=col: click_sort(sub))
+        tree.heading(col, text=col, command=lambda sub=col: click_sort(sub,tree))
         tree.column(col, width=100, anchor='center')
 
     # 拿到数据
@@ -253,11 +263,18 @@ def disp_all_grades(grade_window):
     # 测试数据
     # 总分降序
     data = accountManager.getAllGrades(0, 0)
+    print("hello2")
     # 将得到的数据放到那个表里面去
     for item in data:
-        tree.insert('', tk.END, values=(
-            item['姓名'], item['学号'], item['语文'], item['数学'], item['英语'], item['物理'], item['化学'],
-            item['生物'], item['历史'], item['政治'], item['地理'], item['总分']))
+        # 将 -1 转换为斜杠
+        values = []
+        for key in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理', '总分']:
+            if item[key] == -1:
+                values.append('/')
+            else:
+                values.append(item[key])
+
+        tree.insert('', tk.END, values=tuple(values))
 
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)

@@ -16,18 +16,18 @@ from Subject import *
 
 
 class Student:
-    #name : 学生姓名 类型 string
-    #stuID: 学生学号 类型 int
-    #stuGrades: 学生成绩 类型 Grades
+    # name : 学生姓名 类型 string
+    # stuID: 学生学号 类型 int
+    # stuGrades: 学生成绩 类型 Grades
     def __init__(self, name: str, stuID: int, stuGrades: Grades):
         self.name = name
         self.stuID = stuID
         self.stuGrades = stuGrades
 
-    #ranking : 总排名 类型 int
-    #rankings: 六科排名 类型 int[]
-    #gradeAnalysis: 成绩分析 类型 str
-    #函数功能: 生成学生成绩
+    # ranking : 总排名 类型 int
+    # rankings: 六科排名 类型 int[]
+    # gradeAnalysis: 成绩分析 类型 str
+    # 函数功能: 生成学生成绩
     def generateGrades(self, ranking: int, rankings: list[int]) -> bool:
         self.stuGrades.generateGradesAnalysis(ranking, rankings)
         return True
