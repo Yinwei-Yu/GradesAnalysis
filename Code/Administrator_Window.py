@@ -23,6 +23,12 @@ by  沈智恺
     处理申请表的框架搭建
     by 廖雨龙
 """
+"""
+2024/7/16
+    完成管理员的修改成绩功能
+    将修改成绩和处理申请合并
+    by 廖雨龙
+"""
 
 import tkinter as tk
 
@@ -36,6 +42,42 @@ from Teacher_Window import change_my_password
 def last_step(current_window, previous_window):
     previous_window.deiconify()
     current_window.destroy()
+
+
+# 获取Treeview中选中的选项,并将其值填入右侧的输入字段
+def view_application(tree, entry_id, entry_course, label_original_grade):
+    # 看是否有选中什么东西
+    selected_item = tree.selection()
+    # 如果有选中东西的话,就会填入它的学号和科目和初始成绩 # 待修改
+    if selected_item:
+        # item_values获取选中的第一行的所有列值(因为可以一次选中很多行)
+        item_values = tree.item(selected_item[0], "values")
+        # 自动填入学号
+        entry_id.delete(0, tk.END)
+        entry_id.insert(0, item_values[2])
+        # 自动填入科目
+        entry_course.delete(0, tk.END)
+        entry_course.insert(0, item_values[3])
+
+
+# 完成成绩申请处理 删除Treeview中选中的项
+def finish_application(tree):
+    selected_item = tree.selection()
+    if selected_item:
+        tree.delete(selected_item[0])
+
+
+# 确认修改 确认并保存修改后的成绩
+# 还存在小问题,就是如果是自己输入的话会认为你没有输入
+def confirm_modification(entry_id, entry_new_grade):
+    # 拿到输入的学号
+    student_id = entry_id.get()
+    # 拿到输入的新成绩
+    new_grade = entry_new_grade.get()
+    if student_id and new_grade:  # 这里调用实际的函数
+        messagebox.showinfo("成功")
+    else:
+        messagebox.showinfo("失败")
 
 
 def update_subject2(selected_subject1, selected_subject2, selected_subject3, subject2_menu, subject3_menu,
@@ -265,42 +307,69 @@ def import_grades(admin_window):
 # 查看成绩申请表函数 查看成绩复核申请表
 # 只做了查看功能,还没有添加确认按钮
 def admin_disp_apps(admin_window):
+    # 创建查看成绩申请的窗口
     admin_window.withdraw()
     apps_window = ttk.Toplevel(admin_window)
     apps_window.title("处理成绩申请")
     apps_window.attributes('-fullscreen', True)
-    # 创建一个Frame来包含Treeview和滚动条
-    frame = ttk.Frame(apps_window)
-    frame.pack(fill="both", expand=True)
+    # 创建左边的框架(查看申请)
+    left_frame = ttk.Frame(apps_window, padding=10)
+    left_frame.pack(side="left", fill="both", expand=True)
+
     # 创建Treeview
-    columns = ("栏目一", "栏目二", "栏目三")
-    tree = ttk.Treeview(frame, columns=columns, show='headings')
-    # 定义每一列的标题和宽度
+    columns = ("教师姓名", "学生姓名", "学生学号", "申请科目")
+    tree = ttk.Treeview(left_frame, columns=columns, show='headings')
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, width=100, anchor='center')
+    tree.pack(fill="both", expand=True, side="left")
     # 得到数据
-    data = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
+    data = [('教师1', '学生1', 111, '语文'), ('教师2', '学生2', 222, '数学'), ('教师3', '学生3', 333, '物理')]
     # 将得到的数据放到那个表里面去
     for item in data:
         tree.insert('', tk.END, values=item)
-    # 创建垂直和水平滚动条
-    scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
-    scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
-    # 配置Treeview的滚动条
-    tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
-    # 添加Treeview和滚动条到Frame中
-    tree.grid(row=0, column=0, sticky="nsew")
-    scrollbar_y.grid(row=0, column=1, sticky="ns")
-    scrollbar_x.grid(row=1, column=0, sticky="ew")
-    # 确保Treeview填充Frame
-    frame.grid_rowconfigure(0, weight=1)
-    frame.grid_columnconfigure(0, weight=1)
-
-    # 再做一个确认并返回的按钮
-    con_button = ttk.Button(apps_window, text='确认', command=lambda: last_step(apps_window, admin_window), width=10,
-                            bootstyle=bootstyle)
-    con_button.pack(pady=10)
+    # 创建垂直滚动条
+    scrollbar_y = ttk.Scrollbar(left_frame, orient="vertical", command=tree.yview)
+    tree.configure(yscrollcommand=scrollbar_y.set)
+    scrollbar_y.pack(side="right", fill="y")
+    # 创建"查看"和"完成"按钮
+    view_button = ttk.Button(left_frame, text="查看",
+                             command=lambda: view_application(tree, entry_id, entry_course, label_original_grade))
+    view_button.pack(pady=5)
+    finish_button = ttk.Button(left_frame, text="完成", command=lambda: finish_application(tree))
+    finish_button.pack(pady=5)
+    # 创建右边的框架(成绩修改)
+    right_frame = ttk.Frame(apps_window, padding=10)
+    right_frame.pack(side="right", fill="both", expand=True)
+    # 创建修改成绩的输入框和标签
+    # 学号以及学号的输入框
+    ttk.Label(right_frame, text="学号:").grid(row=0, column=0, pady=5, sticky="e")
+    entry_id = ttk.Entry(right_frame)
+    entry_id.grid(row=0, column=1, pady=5)
+    # 显示姓名
+    ttk.Label(right_frame, text="姓名:").grid(row=1, column=0, pady=5, sticky="e")
+    label_name = ttk.Label(right_frame, text="这里显示学生的姓名")
+    label_name.grid(row=1, column=1, pady=5)
+    # 科目以及科目的输入框
+    ttk.Label(right_frame, text="科目:").grid(row=2, column=0, pady=5, sticky="e")
+    entry_course = ttk.Entry(right_frame)
+    entry_course.grid(row=2, column=1, pady=5)
+    # 显示原来的成绩
+    ttk.Label(right_frame, text="原成绩:").grid(row=3, column=0, pady=5, sticky="e")
+    label_original_grade = ttk.Label(right_frame, text="这里显示原来的成绩")
+    label_original_grade.grid(row=3, column=1, pady=5)
+    # 修改后成绩以及修改后成绩的输入框
+    ttk.Label(right_frame, text="修改成绩:").grid(row=4, column=0, pady=5, sticky="e")
+    entry_new_grade = ttk.Entry(right_frame)
+    entry_new_grade.grid(row=4, column=1, pady=5)
+    # 修改完成后的确认按钮
+    confirm_button = ttk.Button(right_frame, text="确认",
+                                command=lambda: confirm_modification(entry_id, entry_new_grade))
+    confirm_button.grid(row=5, column=1, pady=10, sticky="e")
+    # 之后再在这里加个退出的按钮返回
+    quit_button = ttk.Button(right_frame,text="退出",
+                             command=lambda:last_step(apps_window,admin_window))
+    quit_button.grid(row=5,column=4,pady=10,sticky="e")
     apps_window.mainloop()
 
 
@@ -315,17 +384,23 @@ def admin_disp_users(admin_window):
     frame = ttk.Frame(users_window)
     frame.pack(fill="both", expand=True)
     # 创建Treeview
-    columns = ("栏目一", "栏目二", "栏目三")
+    columns = ("栏目一", "栏目二", "栏目三", "栏目四")
     tree = ttk.Treeview(frame, columns=columns, show='headings')
     # 定义每一列的标题和宽度
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, width=100, anchor='center')
-    # 得到数据
-    data = [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
+    # 得到数据 一个包含所有用户的字典列表
+    data = accountManager.getAllUsers()
     # 将得到的数据放到那个表里面去
     for item in data:
-        tree.insert('', tk.END, values=item)
+        if item['类型'] == 1:
+            identity = "教师"
+        elif item['类型'] == 2:
+            identity = "学生"
+        else:
+            identity = "管理员"
+        tree.insert('', tk.END, values=(item['姓名'], item['密码'], item['学号或工号'], identity))
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
     scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
@@ -344,11 +419,6 @@ def admin_disp_users(admin_window):
                             bootstyle=bootstyle)
     con_button.pack(pady=10)
     users_window.mainloop()
-
-
-# 修改成绩
-def admin_modify_grades():
-    pass
 
 
 # 退出登录函数，返回初始登录界面
@@ -413,11 +483,12 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
     bt_modify_password.pack(pady=pady)
     # bt_modify_password.place(x=180, y=500)
 
-    # 修改学生成绩
-    bt_modify_grades = ttk.Button(admin_window, text='修改成绩', command=admin_modify_grades, width=20,
-                                  bootstyle=bootstyle, padding=padding)
-    bt_modify_grades.pack(pady=pady)
-    # bt_modify_grades.place(x=180, y=600)
+    # 将这个功能放到处理申请表里面去
+    # # 修改学生成绩
+    # bt_modify_grades = ttk.Button(admin_window, text='修改成绩', command=admin_modify_grades, width=20,
+    #                               bootstyle=bootstyle, padding=padding)
+    # bt_modify_grades.pack(pady=pady)
+    # # bt_modify_grades.place(x=180, y=600)
 
     # 退出
     bt_logout = ttk.Button(admin_window, text='退出登录',

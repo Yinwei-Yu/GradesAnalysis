@@ -45,6 +45,12 @@ by刘杨健
 """
 
 
+# 点击之后实现排序的函数,在显示总成绩界面,点击之后就会按照单科进行排序
+# 传入点击的标题的名称
+def click_sort(sub):
+    pass
+
+
 def generate_histogram(scores):
     # 使用matplotlib生成直方图
     plt.hist(scores, bins=10, color='blue', edgecolor='black')
@@ -54,6 +60,7 @@ def generate_histogram(scores):
     plt.grid(True)
     plt.show()
 
+
 # 设置窗口居中
 def center_window(window, width, height):
     screen_width = window.winfo_screenwidth()
@@ -61,6 +68,7 @@ def center_window(window, width, height):
     x = (screen_width // 2) - (width // 2)
     y = (screen_height // 2) - (height // 2)
     window.geometry(f'{width}x{height}+{x}+{y}')
+
 
 # 显示成绩分布直方图的函数
 def disp_graph(choice2):
@@ -124,6 +132,7 @@ def disp_relation(choice2):
 
     analyze_button = ttk.Button(rel_window, text="分析", command=analyze_method)
     analyze_button.pack(pady=10)
+
     def on_close():
         rel_window.destroy()
         choice2.deiconify()
@@ -240,7 +249,7 @@ def disp_all_grades(grade_window):
 
     # 定义每一列的标题和宽度
     for col in columns:
-        tree.heading(col, text=col)
+        tree.heading(col, text=col, command=lambda sub=col: click_sort(sub))
         tree.column(col, width=100, anchor='center')
 
     # 拿到数据
