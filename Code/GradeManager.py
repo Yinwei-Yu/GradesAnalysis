@@ -83,6 +83,7 @@ import matplotlib.pyplot as plt
 import mysql.connector  # pip install mysql-connector-python
 import numpy as np
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
+import  statistics #统计中位数，众数
 
 import CheckApplication
 import Grades as gr
@@ -420,16 +421,44 @@ class GradeManager:
         # Collect scores for each subject
         for student in self.student:
             for i, subject in enumerate(subjects):
-                if student.stuGrades.grades[i].score != 0:
+                if student.stuGrades.grades[i].score != -1:
                     scores[subject].append(student.stuGrades.grades[i].score)
 
-        # Plot the histogram for the specified subject
+        if not scores[subjectName]:
+            print(f"学科：{subjectName}没有成绩数据！")
+            return
+
+        # Calculate statistics
+        subject_scores = scores[subjectName]
+        mean_score = np.mean(subject_scores)
+        max_score = np.max(subject_scores)
+        min_score = np.min(subject_scores)
+        mode_score = statistics.mode(subject_scores)
+        median_score = np.median(subject_scores)
+
+        # Plot the histogram
         plt.figure(figsize=(10, 6))
-        plt.hist(scores[subjectName], bins=10, edgecolor='black')
+        plt.hist(subject_scores, bins=10, edgecolor='black')
+
+        # 中位数线
+        plt.axvline(median_score, color='red', linestyle='-', linewidth=1,label='Median')
+        # 平均数线
+        plt.axvline(mean_score,color='green',linestyle='-',linewidth=1,label='Average')
+
+        # Add text for statistics
+        stats_text = (f'average: {mean_score:.2f}\n'
+                      f'max: {max_score}\n'
+                      f'min: {min_score}\n'
+                      f'mode: {mode_score}\n'
+                      f'median: {median_score}')
+        plt.text(0.05, 0.7, stats_text, fontsize=12, verticalalignment='center', horizontalalignment='left',
+                 transform=plt.gca().transAxes, bbox=dict(facecolor='white', alpha=0.7))
+
         plt.title(f'{subjectName} score distribution')
-        plt.xlabel('score')
-        plt.ylabel('students numbers')
+        plt.xlabel('Score')
+        plt.ylabel('Number of Students')
         plt.grid(False)
+        plt.legend()
         plt.show()
 
     '''
@@ -454,12 +483,12 @@ class GradeManager:
 
             # 保证两个数据长度一样，排除为0的数据
             if way == 1:
-                if total_pcb != 0:
+                if total_pcb != -3:
                     total_scores_physics_chemistry_biology.append(total_pcb)
                     total_scores_chinese_math_english.append(total_cme)
 
             elif way == 2:
-                if total_hpg != 0:
+                if total_hpg != -3:
                     total_scores_history_politics_geography.append(total_hpg)
                     total_scores_chinese_math_english.append(total_cme)
 
@@ -483,7 +512,7 @@ class GradeManager:
         # 添加线性回归系数文本注释
         slope = coefficients[0]
         intercept = coefficients[1]
-        plt.text(0.05, 0.95, f'Equation: y = {slope:.2f}x + {intercept:.2f}', transform=plt.gca().transAxes,
+        plt.text(0.05, 0.8, f'Equation: y = {slope:.2f}x + {intercept:.2f}', transform=plt.gca().transAxes,
                  fontsize=12, verticalalignment='top')
 
         plt.title('Linear Fit of PCB and CME Scores' if way == 1 else 'Linear Fit of HPG and CME Scores')
