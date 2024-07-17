@@ -409,14 +409,21 @@ class AccountManager:
                     return stuName, gradeList
             return False, []
         if mode == 2:
-            gradeManager.generateGradesAnalysis(1, 'Chinese')
-            gradeManager.generateGradesAnalysis(1, 'Math')
-            gradeManager.generateGradesAnalysis(1, 'English')
-            gradeManager.generateGradesAnalysis(1, 'Physics')
-            gradeManager.generateGradesAnalysis(1, 'Chemistry')
-            gradeManager.generateGradesAnalysis(1, 'Biology')
-            gradeManager.generateGradesAnalysis(2, 1)
-            return gradeManager.student
+            for stu in gradeManager.student:
+                if stu.stuID == stuID:
+                    stuName = stu.name
+                    rankings = [stu.stuGrades.totalRanking] + [ranking for ranking in stu.stuGrades.rankings]
+                    gradeList = [subject.score for subject in stu.stuGrades.grades]
+                    return stuName, gradeList, rankings
+            return False, [], []
+        if mode == 3:
+            for stu in gradeManager.student:
+                if stu.stuID == stuID:
+                    stuName = stu.name
+                    totalGrades = [stu.stuGrades.totalScores,stu.stuGrades.totalRanking]
+                    gradeList = [subject.score for subject in stu.stuGrades.grades]
+                    return stuName, gradeList, totalGrades
+            return False, [], []
 
     # mode1==0物理类mode1==1历史类
     # mode2==0总分排序
@@ -597,6 +604,7 @@ class AccountManager:
 
 
 accountManager = AccountManager()
+
 # accountManager.getAllGrades(1,0,0)
 
 if __name__ == "__main__":

@@ -304,7 +304,7 @@ class GradeManager:
     # 删除成绩审核申请表功能
     def deleteCheckApplication(self, index):
         stuID = self.checkApplication[index].stuID
-        subject = self.checkApplication[index].subject
+        subject = self.checkApplication[index].subjectToCheck
         try:
             self.deleteCheckApplicationFromMySQL(stuID, subject)
             del self.checkApplication[index]

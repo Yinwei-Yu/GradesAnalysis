@@ -38,31 +38,32 @@ by刘杨健
 
 import tkinter as tk
 from tkinter import messagebox
-from ttkbootstrap import Combobox
-import ttkbootstrap as ttk
+
 import matplotlib.pyplot as plt
 import numpy as np
+import ttkbootstrap as ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from AccountManager import accountManager
 # 复用Teacher_Window中修改密码的方法
 from Teacher_Window import change_my_password
+from Teacher_Window import get_grades
 # 复用Teacher_Window中的确认键
 # 复用Teacher_Window中返回上一步的方法
 from Teacher_Window import last_step
-from Teacher_Window import get_grades
+
 
 def generate_grade_report(userid, grade_window):
     # 这里写生成和显示成绩报告的代码
     grade_window.withdraw()
     # 创建一个成绩分析显示窗口
     analysis_window = ttk.Toplevel(grade_window)
-    # analysis_window.geometry('1000x1000')
+    analysis_window.geometry('+800+200')
     analysis_window.title('Analysis')
     # analysis_window.resizable(False, False)
 
     # 创建数据
-    stu_grades = get_grades(userid)
+    stu_grades, _ = get_grades(userid)
     categories = []
     scores1 = []  # 我的成绩
     scores2 = [80, 85, 75, 90, 80, 92]  # 平均成绩
@@ -119,7 +120,7 @@ def query_scores(userid, stu_window):
     # 创建一个成绩显示窗口
     stu_window.withdraw()
     grade_window = ttk.Toplevel(stu_window)
-    grade_window.geometry('600x600')
+    grade_window.geometry('600x600+800+400')
     grade_window.title("Grades")
     grade_window.resizable(False, False)
 
@@ -127,21 +128,25 @@ def query_scores(userid, stu_window):
     # messagebox.showinfo("这里显示出学生的成绩")
 
     try:
-        user_grades = get_grades(userid)
+        user_grades, total_grades = get_grades(userid)
     except ValueError as e:
-        messagebox.showerror("Error", str(e))
+        messagebox.showerror("获取成绩出现错误！", str(e))
         grade_window.destroy()
         stu_window.deiconify()
         return
     # 在窗口中显示成绩
-    label = ttk.Label(grade_window, text=f"姓名：{accountManager.users[int(userid)].userName}\n学号: {userid}",
-                      font=('黑体', 15))
-    label.pack(pady=30)
+    info_label = ttk.Label(grade_window,
+                           text=f"姓名：{accountManager.users[int(userid)].userName}\n总分：{str(total_grades[0])}",
+                           font=('黑体', 15))
+    info_label.place(x=20, y=10)
+    total_grades_label = ttk.Label(grade_window, text=f"学号：{userid}\n大类排名：{str(total_grades[1])}",
+                                   font=('黑体', 15))
+    total_grades_label.pack(anchor=tk.NE, pady=10, padx=20)
     grade_text = ''
     for subject, score in user_grades.items():
         grade_text += f"{subject}: {score}\n"
     label = ttk.Label(grade_window, text=grade_text, font=('黑体', 15))
-    label.pack(pady=30)
+    label.pack(pady=50)
     # 创建一个生成成绩分析报告的按钮
     report_button = ttk.Button(grade_window, text="查看成绩分析图", width=15,
                                command=lambda: generate_grade_report(userid, grade_window), bootstyle=bootstyle)

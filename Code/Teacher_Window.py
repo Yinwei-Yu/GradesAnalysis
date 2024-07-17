@@ -53,7 +53,7 @@ current_category = "物理类"
 def get_grades(stuID):
     if stuID == "":
         return False
-    stuName, gradeList = accountManager.getGrades(1, int(stuID))
+    stuName, gradeList, total_grades = accountManager.getGrades(3, int(stuID))
     subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治',
                 '\n地理：']
     grades = {}
@@ -63,7 +63,7 @@ def get_grades(stuID):
                 grades.update({subjects[i]: gradeList[i]})
             if not grades:
                 raise ValueError(f"No valid grades found for userid {stuID}")
-        return grades
+        return grades, total_grades
     else:
         return False
     # 获取特定用户的分数
@@ -379,21 +379,29 @@ def disp_single_grade(grade_window):
     # 参数 stuID:学生的学号
     def confirm_grade(stuID, grade_window):
         nonlocal grades_var, warning_var
-        stuName, gradeList = accountManager.getGrades(1, int(stuID))
-        if stuName is False:
-            warning_var.set("学号不存在！")
+        if stuID is None:
+            warning_var.set("未输入任何内容！")
             return
-        subjects = [' \n\n语文：', '\n数学：', '\n英语：', ' \n物理：', '\n化学：', '\n生物：', ' \n历史：', '\n政治：',
+        try:
+            stuName, gradeList, rankings = accountManager.getGrades(2, int(stuID))
+            if stuName is False:
+                warning_var.set("学号不存在！")
+                return
+        except ValueError as e:
+            warning_var.set("请输入数字！")
+            return
+        subjects = [' \n\n\n语文：', '\n数学：', '\n英语：', ' \n物理：', '\n化学：', '\n生物：', ' \n历史：', '\n政治：',
                     '\n地理：']
-        temp = stuName
+        temp = stuName + '\n\n' + f'大类排名：{rankings[0]}'
         for i in range(9):
             if i == 3:
                 temp += '\n'
-            temp += (subjects[i] + str(gradeList[i])) if gradeList[i] != -1 else ''
+            temp += (subjects[i] + f'{str(gradeList[i]):<4}' + '排名：' + str(rankings[i + 1])) if gradeList[
+                                                                                                      i] != -1 else ''
         print(temp)
         grades_var.set(temp)
         warning_var.set('')
-        seperator.pack(side="right", padx=30, pady=100, fill='y')
+        seperator.pack(side="right", padx=0, pady=100, fill='y')
 
     grades_var = ttk.StringVar()
     stuID_var = ttk.StringVar()
@@ -406,26 +414,26 @@ def disp_single_grade(grade_window):
     choice3.geometry("800x600+800+400")
     choice3.resizable(False, False)
     stuID_label = ttk.Label(choice3, text="请输入学号:", font=('黑体', 16))
-    stuID_label.place(x=100, y=100)
+    stuID_label.place(x=70, y=100)
     # 输入框
-    stuID_entry = ttk.Entry(choice3, show="", font=('楷体', 16), textvariable=stuID_var)
-    stuID_entry.place(x=100, y=220)
+    stuID_entry = ttk.Entry(choice3, show="", width=17, font=('楷体', 16), textvariable=stuID_var)
+    stuID_entry.place(x=70, y=220)
     # stuID里面放输入的内容
     # stuID = stuID_entry.get()
     # 取消按钮
     cancel_button = ttk.Button(choice3, text="取消", command=lambda: last_step(choice3, grade_window), width=5,
                                bootstyle='darkly')
-    cancel_button.place(x=100, y=400)
+    cancel_button.place(x=70, y=400)
     # 确认按钮
     confirm_button = ttk.Button(choice3, text="确定", command=lambda: confirm_grade(stuID_var.get(), choice3),
                                 width=5,
                                 bootstyle=bootstyle)
-    confirm_button.place(x=360, y=400)
+    confirm_button.place(x=250, y=400)
     warning_label = ttk.Label(choice3, textvariable=warning_var, font=('黑体', 12), style='danger')
-    warning_label.place(x=100, y=280)
+    warning_label.place(x=70, y=280)
     # myStr.set(('     '))
-    grades_label = ttk.Label(choice3, textvariable=grades_var, font=('黑体', 16))
-    grades_label.pack(padx=20, pady=100, side='right')
+    grades_label = ttk.Label(choice3, textvariable=grades_var, font=('黑体', 12))
+    grades_label.pack(padx=40, pady=100, side='right')
     seperator = ttk.Separator(choice3, orient=tk.VERTICAL)
 
     choice3.mainloop()
@@ -501,7 +509,7 @@ def app_review(tea_window):
         student_id = stuID_entry.get()
         options = []
         try:
-            stu_grades = get_grades(student_id)
+            stu_grades, _ = get_grades(student_id)
         except ValueError as e:
             messagebox.showerror("Error", str(e))
             app_window.destroy()
