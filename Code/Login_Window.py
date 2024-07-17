@@ -77,16 +77,19 @@ def start():
                     login_var.set('')
                     fault_times = 0
                     login_window.withdraw()
+                    accountManager.login(res_name, password_entry)
                     show_student_window(login_window, userid_entry, password_entry, res_name)
                 elif res_identity == 2:
                     login_var.set('')
                     fault_times = 0
                     login_window.withdraw()
+                    accountManager.login(res_name, password_entry)
                     show_teacher_window(login_window, userid_entry, password_entry, res_name)
                 else:  # identity==1
                     login_var.set('')
                     fault_times = 0
                     login_window.withdraw()
+                    accountManager.login(res_name, password_entry)
                     show_admin_window(login_window, userid_entry, password_entry, res_name)
             # login_var.set('成功登录')
 
