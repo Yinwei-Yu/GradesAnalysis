@@ -557,11 +557,6 @@ def change_my_password(tea_window, password, user_id):
     con_pas_entry.place(x=290, y=340)
     page4.focus_force()
 
-    # original = ori_pas_entry.get()
-    # new = new_pas_entry.get()
-    # confirm = con_pas_entry.get()
-    # 标志密码是否修改成功
-    password_flag = False
     user_id = user_id.get()
     confirm_button = ttk.Button(page4, text="确认",
                                 command=lambda: confirm_password(ori_pas_entry.get(), new_pas_entry.get(),
@@ -569,8 +564,6 @@ def change_my_password(tea_window, password, user_id):
                                 width=5,
                                 bootstyle=bootstyle)
     confirm_button.place(x=490, y=450)
-    if password_flag:
-        print(new_pas_entry.get())
     cancel_button = ttk.Button(page4, text="取消", command=lambda: last_step(page4, tea_window),
                                width=5, bootstyle='darkly')
     cancel_button.place(x=160, y=450)
