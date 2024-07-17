@@ -92,10 +92,11 @@ def confirm_modification(entry_id, combobox_course, entry_new_grade):
     new_grade = entry_new_grade.get()
     # 拿到修改的课程
     new_course = combobox_course.get()
-    if student_id and new_grade and new_course:  # 这里调用实际的函数
-        messagebox.showinfo("成功")
+    print(student_id, new_grade, new_course)
+    if accountManager.changeGrades(int(student_id), new_course, int(new_grade)):
+        messagebox.showinfo("成功", '成绩修改成功！')
     else:
-        messagebox.showinfo("失败")
+        messagebox.showwarning("失败", '成绩修改失败！')
 
 
 # 不仅会更新下拉框中的选项,还会在学号无效或不在数据中的情况下清楚下拉框的当前值
@@ -365,10 +366,11 @@ def admin_disp_apps(admin_window):
     tree.configure(yscrollcommand=scrollbar_y.set)
     scrollbar_y.pack(side="right", fill="y")
     # 创建"查看"和"完成"按钮
-    view_button = ttk.Button(left_frame, text="查看",
-                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name))
+    view_button = ttk.Button(left_frame, text="填入",
+                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name),
+                             bootstyle=bootstyle)
     view_button.pack(pady=5)
-    finish_button = ttk.Button(left_frame, text="完成", command=lambda: finish_application(tree))
+    finish_button = ttk.Button(left_frame, text="删除", command=lambda: finish_application(tree), bootstyle=bootstyle)
     finish_button.pack(pady=5)
     # 创建右边的框架(成绩修改)
     right_frame = ttk.Frame(apps_window, padding=10)
@@ -402,11 +404,12 @@ def admin_disp_apps(admin_window):
     entry_new_grade.grid(row=4, column=1, pady=5)
     # 修改完成后的确认按钮
     confirm_button = ttk.Button(right_frame, text="确认",
-                                command=lambda: confirm_modification(entry_id, entry_new_grade))
+                                command=lambda: confirm_modification(entry_id, combobox_course, entry_new_grade),
+                                bootstyle=bootstyle)
     confirm_button.grid(row=5, column=1, pady=10, sticky="e")
     # 之后再在这里加个退出的按钮返回
     quit_button = ttk.Button(right_frame, text="退出",
-                             command=lambda: last_step(apps_window, admin_window))
+                             command=lambda: last_step(apps_window, admin_window),bootstyle=bootstyle)
     quit_button.grid(row=5, column=4, pady=10, sticky="e")
     apps_window.mainloop()
 
@@ -463,6 +466,7 @@ def admin_disp_users(admin_window):
     category_dropdown.set("全部")  # 默认显示全部
     category_dropdown['values'] = ("全部", "管理员", "学生", "教师")
     category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
+
     # 一个函数过滤数据,得到所选择的数据
     def filter_data(event):
         # 根据选项更新数据
@@ -481,8 +485,9 @@ def admin_disp_users(admin_window):
 
         # 插入选择后的数据
         insert_data(filtered_data)
+
     # 下拉框要绑定这个函数
-    category_dropdown.bind('<<ComboboxSelected>>',filter_data)
+    category_dropdown.bind('<<ComboboxSelected>>', filter_data)
     # 添加搜索框
     search_var = ttk.StringVar()
     search_entry = ttk.Entry(users_window, textvariable=search_var)
