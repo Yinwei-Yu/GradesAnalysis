@@ -248,7 +248,7 @@ def import_single(admin_window):
     cancel_button.place(x=170, y=530)
 
     flag = 0
-    options = ['', '请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
+    options = ['', '学号请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
                '导入成功！']
 
     warning_text = ttk.StringVar()
