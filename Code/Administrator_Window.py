@@ -29,6 +29,11 @@ by  沈智恺
     将修改成绩和处理申请合并
     by 廖雨龙
 """
+"""
+2024/7/17
+    清空成绩功能
+by刘杨健
+"""
 
 import tkinter as tk
 
@@ -37,6 +42,29 @@ import ttkbootstrap as ttk
 from Teacher_Window import disp_grades
 # 复用Teacher修改密码的函数
 from Teacher_Window import change_my_password
+
+
+# 确认清空的操作
+def confirm_clear(clear_window, admin_window):
+    messagebox.showinfo('提示', '已清空所有成绩')
+    last_step(clear_window, admin_window)
+
+
+def clear_grades(admin_window):
+    admin_window.withdraw()
+    # 创建一个新的窗口
+    clear_window = tk.Toplevel(admin_window)
+    clear_window.geometry("360x200")
+    clear_window.resizable(False, False)
+    # 提示信息
+    clear_label = tk.Label(clear_window, text='确认清空所有成绩吗？', font=('楷体', 18, 'bold'), width=20, height=2)
+    clear_label.pack(side="top")
+    # 确认和取消按钮
+    confirm_button = ttk.Button(clear_window, text='确认', command=lambda :confirm_clear(clear_window, admin_window), width=5, bootstyle=bootstyle)
+    confirm_button.place(x=210, y=100)
+    cancel_button = ttk.Button(clear_window, text="取消", command=lambda: last_step(clear_window, admin_window),
+                               width=5, bootstyle='darkly')
+    cancel_button.place(x=40, y=100)
 
 
 def update_original_grade(entry_id, combobox_course, label_original_grade):
@@ -249,7 +277,7 @@ def import_single(admin_window):
     cancel_button.place(x=170, y=530)
 
     flag = 0
-    options = ['', '请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
+    options = ['', '学号请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
                '导入成功！']
 
     warning_text = ttk.StringVar()
@@ -574,6 +602,10 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
                                     width=20,
                                     bootstyle=bootstyle, padding=padding)
     bt_modify_password.pack(pady=pady)
+
+    bt_clear = ttk.Button(admin_window, text='清空成绩', width=20, command=lambda: clear_grades(admin_window),
+                          bootstyle=bootstyle, padding=padding)
+    bt_clear.pack(pady=pady)
     # bt_modify_password.place(x=180, y=500)
 
     # 将这个功能放到处理申请表里面去

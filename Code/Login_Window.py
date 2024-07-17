@@ -57,6 +57,10 @@ def start():
         else:
             userid =userid_entry.get()
             password = password_entry.get()
+            try:
+                userid.isdigit()
+            finally:
+                login_var.set('请输入正确的学号/工号')
             # 调用查找函数
             res_is_exist, res_identity, res_name = find_user(userid, password)
             if not res_is_exist:  # 用户不存在

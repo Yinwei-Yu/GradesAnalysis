@@ -27,10 +27,22 @@ by 廖雨龙
     修改了query_scores
 by陈邱华
 """
+
+"""
+2024/7/17
+    修改了query_scores
+    generate_grade_report()
+    实现了成绩分析图
+by刘杨健
+"""
+
 import tkinter as tk
 from tkinter import messagebox
 from ttkbootstrap import Combobox
 import ttkbootstrap as ttk
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from AccountManager import accountManager
 # 复用Teacher_Window中修改密码的方法
@@ -39,7 +51,6 @@ from Teacher_Window import change_my_password
 # 复用Teacher_Window中返回上一步的方法
 from Teacher_Window import last_step
 from Teacher_Window import get_grades
-
 
 # 修改了一下
 # 如果登录窗口收到的信号为1，则关闭登录窗口，打开学生窗口
@@ -60,13 +71,59 @@ def generate_grade_report(userid, grade_window):
     grade_window.withdraw()
     # 创建一个成绩分析显示窗口
     analysis_window = ttk.Toplevel(grade_window)
-    analysis_window.geometry('600x600')
+    # analysis_window.geometry('1000x1000')
     analysis_window.title('Analysis')
-    analysis_window.resizable(False, False)
-    # 创建一个下拉框,允许学生选择不同的科目
-    sub_combobox=ttk.Combobox(analysis_window, values=['总体', '语文', '数学', '英语'], state="readonly")
-    sub_combobox.set('总体')
-    sub_combobox.pack()
+    # analysis_window.resizable(False, False)
+
+    # 创建数据
+    stu_grades = get_grades(userid)
+    categories = []
+    scores1 = []  # 我的成绩
+    scores2 = [80, 85, 75, 90, 80, 92]  # 平均成绩
+    for subject, score in stu_grades.items():
+        categories.append(subject)
+        scores1.append(score)
+    # categories = ['语文', '数学', '英语', '物理', '化学', '生物']
+    # scores1 = [85, 90, 70, 88, 75, 95]
+
+    # 用来正常显示中文标签
+    plt.rc('font', family='SimHei', size=13)
+
+    # 绘制第一个六边形
+    plt.figure(figsize=(6, 6))
+    plt.subplot(111, polar=True)
+
+    angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
+    angles += angles[:1]
+
+    plt.plot(angles, scores1 + [scores1[0]], 'o-', linewidth=2, label='你的成绩')
+    plt.fill(angles, scores1 + [scores1[0]], alpha=0.25)
+
+    # 在第一个六边形的顶点处显示分数值
+    for angle, score in zip(angles, scores1 + [scores1[0]]):
+        plt.text(angle, score + 5, str(score), ha='center', va='center')
+
+    # 绘制第二个六边形
+    plt.plot(angles, scores2 + [scores2[0]], 'o-', linewidth=2, label='平均成绩')
+    plt.fill(angles, scores2 + [scores2[0]], alpha=0.25)
+
+    # 在第二个六边形的顶点处显示分数值
+    for angle, score in zip(angles, scores2 + [scores2[0]]):
+        plt.text(angle, score + 5, str(score), ha='center', va='center')
+
+    plt.xticks(angles[:-1], categories)
+    plt.yticks([])  # 隐藏极坐标的刻度
+    plt.ylim(0, 150)
+
+    plt.legend()
+    # 在GUI窗口中展示图形
+    canvas = FigureCanvasTkAgg(plt.gcf(), master=analysis_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+    # 关闭按钮
+    confirm_button = ttk.Button(analysis_window, text="确认", width=10,
+                                command=lambda: last_step(analysis_window, grade_window), bootstyle=bootstyle)
+    confirm_button.pack()
 
 
 # 成绩查询的函数 未完成
@@ -100,11 +157,11 @@ def query_scores(userid, stu_window):
     label = ttk.Label(grade_window, text=grade_text, font=('黑体', 15))
     label.pack(pady=30)
     # 创建一个生成成绩分析报告的按钮
-    report_button = ttk.Button(grade_window, text="成绩分析", width=10,
+    report_button = ttk.Button(grade_window, text="查看成绩分析图", width=15,
                                command=lambda: generate_grade_report(userid, grade_window), bootstyle=bootstyle)
     report_button.pack(pady=0)  # 放置在确认按钮的正上方
     # 这里加一个确认键,返回上一步
-    confirm_button = ttk.Button(grade_window, text="确认", width=10,
+    confirm_button = ttk.Button(grade_window, text="确认", width=15,
                                 command=lambda: last_step(grade_window, stu_window), bootstyle=bootstyle)
     confirm_button.pack(pady=0)
 
