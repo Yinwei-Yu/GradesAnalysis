@@ -109,16 +109,16 @@ class GradeManager:
     # stuID:int
     # grades:Grades
     # 实现从输入导入
-    def inputSingleGrades(self, name,
-                    stuID,
-                    gradeDict,
-                    host=host,  # 主机地址
-                    user=user,  # 数据库用户名
-                    password=password,  # 密码
-                    database=database,  # 数据库名称
-                    table=rankedGradesTable,  # 数据库表名
+    def saveSingleGrades(self, name,
+                         stuID,
+                         gradeDict,
+                         host=host,  # 主机地址
+                         user=user,  # 数据库用户名
+                         password=password,  # 密码
+                         database=database,  # 数据库名称
+                         table=rankedGradesTable,  # 数据库表名
 
-                    ):
+                         ):
         # 将数据转换为 DataFrame
         val = [name, stuID, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0]
         ind = {'语文': 2, '数学': 3, '英语': 4, '物理': 5, '化学': 6, '生物': 7, '历史': 8, '政治': 9, '地理': 10}
@@ -138,7 +138,7 @@ class GradeManager:
             )
         except Exception as e:
             print('无法连接至数据库{}'.format(database), e)
-            mydb.close()
+            mydb.rollback()
 
         # 创建一个游标对象
         mycursor = mydb.cursor()
@@ -163,6 +163,7 @@ class GradeManager:
                                                   Geography(val[10]))))
         self.sortGrades()
         self.saveGradesToCSV()
+
         self.stuNum += 1
         return 6
 
@@ -262,7 +263,7 @@ class GradeManager:
     # mode==3时通过sql数据库导入
     def inputGrades(self, mode, *args):
         if mode == 1:
-            return self.inputSingle(*args)
+            return self.saveSingleGrades(*args)
         elif mode == 2:
             self.inputMore(*args)
         elif mode == 3:

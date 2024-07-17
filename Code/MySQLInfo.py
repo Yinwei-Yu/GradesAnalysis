@@ -5,5 +5,5 @@ port = 3306  # 这里输入端口号
 charset = 'utf8mb4'
 database = 'orangeisland66'  # 这里选择数据库
 rankedGradesTable = 'grades'
-usersTable = 'users'
+usersTable = 'usersInfo'
 checkApplicationsTable = 'checkApplications'

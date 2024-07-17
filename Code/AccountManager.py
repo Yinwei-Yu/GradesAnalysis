@@ -1,9 +1,10 @@
+from tkinter import messagebox
+
 import mysql.connector  # pip install mysql-connector-python
 
 from GradeManager import gradeManager
 from User import *
 from csvToSQL import *
-from tkinter import messagebox
 
 '''
 2024/7/8
@@ -120,14 +121,14 @@ class AccountManager:
         self.updateUserInfoToMySQL(user_id)  # 保存信息到数据库
         return True
 
-
-    def updateUserInfoToMySQL(self,user_id,
-                            host=host,  # 主机地址
-                            user=user,  # 数据库用户名
-                            password=password,  # 密码
-                            database=database,  # 数据库名称
-                            table=usersTable,  # 数据库表名
-                            ):
+    # 修改密码
+    def updateUserInfoToMySQL(self, user_id,
+                              host=host,  # 主机地址
+                              user=user,  # 数据库用户名
+                              password=password,  # 密码
+                              database=database,  # 数据库名称
+                              table=usersTable,  # 数据库表名
+                              ):
 
         global mydb
         try:
@@ -142,16 +143,15 @@ class AccountManager:
             mydb.close()
         # 创建一个游标对象
         mycursor = mydb.cursor()
-        sqlUpdate="""UPDATE users SET `密码` = %s WHERE `学号或工号` = %s"""
-        data=(self.users[user_id].password,user_id)
-        #更新
-        mycursor.execute(sqlUpdate,data)
+        sqlUpdate = f"""UPDATE {table} SET `密码` = %s WHERE `学号或工号` = %s"""
+        data = (self.users[user_id].password, user_id)
+        # 更新
+        mycursor.execute(sqlUpdate, data)
         # 提交更改并关闭数据库连接
         mydb.commit()  # 提交更改
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
         return True
-
 
     # 创建新用户名
     '''
@@ -225,6 +225,7 @@ class AccountManager:
                             ):
         # 将数据转换为 DataFrame
         data = self.getUserInofoTable()
+
         df = pd.DataFrame(data)
         # print(df)
         # 将dataframe保存至数据库
@@ -259,6 +260,7 @@ class AccountManager:
                 mycursor.execute(sql, val)  # 执行SQL插入语句
         except Exception as e:
             print("插入数据时出现错误：{}".format(e))
+            print(data)
             mycursor.close()
             mydb.rollback()
             return False
@@ -268,6 +270,47 @@ class AccountManager:
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
         return True
+
+    def saveSingleUser(self, name,
+                       stuID,
+                       newPassword='123456',
+                       host=host,  # 主机地址
+                       user=user,  # 数据库用户名
+                       password=password,  # 密码
+                       database=database,  # 数据库名称
+                       table=usersTable,  # 数据库表名):
+                       ):
+        val = [name, newPassword, stuID, 3]
+        global mydb
+        try:
+
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.rollback()
+        mycursor = mydb.cursor()
+        try:
+            sql = (
+                f"INSERT INTO {table} "
+                f"(用户名, 密码, 学号或工号, 类型) "
+                f"VALUES (%s, %s, %s, %s) "
+                f"ON DUPLICATE KEY UPDATE 密码=VALUES(密码)")
+            print("正在插入数据至{}:".format(table), val)  # 输出正在插入的数据
+            print(sql)
+            mycursor.execute(sql, val)  # 执行SQL插入语句
+        except Exception as e:
+            print('插入数据时出现错误：{}'.format(e))
+            mycursor.close()
+            mydb.rollback()
+        # 提交更改并关闭数据库连接
+        mydb.commit()  # 提交更改
+        mycursor.close()  # 关闭游标对象
+        mydb.close()  # 关闭数据库连接
 
     # 从数据库中读取用户信息
     def getUserFromSql(self,
@@ -349,7 +392,6 @@ class AccountManager:
         if mode == 1:
             for stu in gradeManager.student:
                 if stu.stuID == stuID:
-                    print(1)
                     stuName = stu.name
                     gradeList = [subject.score for subject in stu.stuGrades.grades]
                     return stuName, gradeList
@@ -466,7 +508,7 @@ class AccountManager:
                 try:
                     self.refreshUserInfo()
                     self.saveUserInfoToCSV()
-                    self.saveUserInfoToMySQL()
+                    self.saveSingleUser(name, ID)
                 except:
                     return 5
             return temp

@@ -179,7 +179,7 @@ def import_single(admin_window):
         # print(grade3)
 
         flag = accountManager.inputSingleGrades(name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2,
-                                                grade3)
+                                               grade3)
         warning_text.set(options[flag])
         print(options[flag])
 
