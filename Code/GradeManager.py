@@ -79,15 +79,13 @@ by陈邱华
 2024/7/17
 GradeManager
     deleteCheckApplication()
+    deleteCheckApplicationFromMySQL()
 by陈邱华
 '''
 
 import os
-import statistics  # 统计中位数，众数
 
-import matplotlib.pyplot as plt
 import mysql.connector  # pip install mysql-connector-python
-import numpy as np
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
 
 import CheckApplication
@@ -303,38 +301,93 @@ class GradeManager:
 
         return False
 
+    # 删除成绩审核申请表功能
+    def deleteCheckApplication(self, index):
+        stuID = self.checkApplication[index].stuID
+        subject = self.checkApplication[index].subject
+        try:
+            self.deleteCheckApplicationFromMySQL(stuID, subject)
+            del self.checkApplication[index]
+            self.saveCheckApplicationsToCSV()
+        except Exception as e:
+            print('删除审核表时出现错误：{}'.format(e))
+            return False
+        return True
+
+    # 从数据库删除成绩审核申请表功能
+    def deleteCheckApplicationFromMySQL(self, stuID, subject,
+                                        host=host,  # 主机地址
+                                        user=user,  # 数据库用户名
+                                        password=password,  # 密码
+                                        database=database,  # 数据库名称
+                                        table=checkApplicationsTable,  # 数据库表名
+                                        ):
+
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        try:
+            sqlUpdate = f"""DELETE FROM {table} WHERE `学生学号` = %s AND `申请科目` = %s"""
+            data = (stuID, subject)
+            # 更新
+            mycursor.execute(sqlUpdate, data)
+            mydb.commit()  # 提交更改
+            # 提交更改并关闭数据库连接
+        except Exception as e:
+            mydb.rollback()
+            raise e
+        finally:
+            mycursor.close()  # 关闭游标对象
+            mydb.close()  # 关闭数据库连接
+
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
         for i in range(9):
             score = self.student[num].stuGrades.grades[i].score
-            self.student[num].stuGrades.totalGrades += self.student[num].stuGrades.grades[i].score if score != -1 else 0
+            self.student[num].stuGrades.totalScores += self.student[num].stuGrades.grades[i].score if score != -1 else 0
 
     # 修改学生成绩，修改成功返回True，否则返回False
     # name：学生姓名 stuID：学生学号 sub:学科名，英文全称 grade:修改后的分数
-    def changeGrades(self, name, stuID, sub, grade):
+    def changeGrades(self, stuID, subject, new_grade):
+        print(stuID, subject, new_grade)
         for i in range(len(self.student)):
             if self.student[i].stuID == stuID:
-                if sub == "Chinese":
-                    self.student[i].stuGrades.grades[0].score = grade
-                elif sub == "Math":
-                    self.student[i].stuGrades.grades[1].score = grade
-                elif sub == "English":
-                    self.student[i].stuGrades.grades[2].score = grade
-                elif sub == "Physics":
-                    self.student[i].stuGrades.grades[3].score = grade
-                elif sub == "Chemistry":
-                    self.student[i].stuGrades.grades[4].score = grade
-                elif sub == "Biology":
-                    self.student[i].stuGrades.grades[5].score = grade
-                elif sub == "History":
-                    self.student[i].stuGrades.grades[6].score = grade
-                elif sub == "Geography":
-                    self.student[i].stuGrades.grades[7].score = grade
-                elif sub == "Politics":
-                    self.student[i].stuGrades.grades[8].score = grade
-                self.renewTotalGrade(i)
-                self.saveGradesToCSV('excelFiles/student_grades.csv')
-            return True
+                if subject == "语文":
+                    self.student[i].stuGrades.grades[0].score = new_grade
+                elif subject == "数学":
+                    self.student[i].stuGrades.grades[1].score = new_grade
+                elif subject == "英语":
+                    self.student[i].stuGrades.grades[2].score = new_grade
+                elif subject == "物理":
+                    self.student[i].stuGrades.grades[3].score = new_grade
+                elif subject == "化学":
+                    self.student[i].stuGrades.grades[4].score = new_grade
+                elif subject == "生物":
+                    self.student[i].stuGrades.grades[5].score = new_grade
+                elif subject == "历史":
+                    self.student[i].stuGrades.grades[6].score = new_grade
+                elif subject == "政治":
+                    self.student[i].stuGrades.grades[7].score = new_grade
+                elif subject == "地理":
+                    self.student[i].stuGrades.grades[8].score = new_grade
+                try:
+                    self.renewTotalGrade(i)
+                    self.updateGradesToMySQL(stuID, subject, new_grade)
+                    self.saveGradesToCSV()
+                except Exception as e:
+                    print('更新数据时出现异常：{}'.format(e))
+                    return False
+                return True
         return False
 
     # 对学生按照总成绩进行排名
@@ -344,7 +397,7 @@ class GradeManager:
             self.student.sort(key=lambda s: s.stuGrades.totalScores, reverse=True)
             for i in range(len(self.student)):
                 self.student[i].stuGrades.totalRanking = i + 1
-            self.saveGradesToCSV('excelFiles/rankedCSV.csv')
+            self.saveGradesToCSV()
             # self.saveGradesToMySQL()
             return True
         except Exception as e:
@@ -475,6 +528,7 @@ class GradeManager:
         plt.grid(False)
         plt.legend()
         plt.show()
+
     '''
     折线图分析，接收一个参数way
     way==1时产生语数英和物化生的折线图
@@ -654,12 +708,13 @@ class GradeManager:
     def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
         try:
             # 将数据转换为 DataFrame
-            df = pd.DataFrame(1, self.getGradesTable(self.student))
+            df = pd.DataFrame(self.getGradesTable(1, self.student))
             # 将 DataFrame 保存到 CSV 文件中
             df.to_csv(path, index=False)
             print(f"学生数据已成功保存到 {path}")
             return True
         except Exception as e:
+            print(e)
             return False
 
     # 将学生成绩数据保存到数据库中
@@ -715,6 +770,42 @@ class GradeManager:
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
         return True
+
+    # 修改成绩至数据库
+    def updateGradesToMySQL(self, stuID, subject, new_grade,
+                            host=host,  # 主机地址
+                            user=user,  # 数据库用户名
+                            password=password,  # 密码
+                            database=database,  # 数据库名称
+                            table=rankedGradesTable,  # 数据库表名
+                            ):
+
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        try:
+            sqlUpdate = f"""UPDATE {table} SET `{subject}` = %s WHERE `学号` = %s"""
+            data = (new_grade, stuID)
+            # 更新
+            mycursor.execute(sqlUpdate, data)
+            mydb.commit()  # 提交更改
+            # 提交更改并关闭数据库连接
+        except Exception as e:
+            mydb.rollback()
+            raise e
+        finally:
+            mycursor.close()  # 关闭游标对象
+            mydb.close()  # 关闭数据库连接
 
     def getCheckApplicaionsTable(self):
         teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]

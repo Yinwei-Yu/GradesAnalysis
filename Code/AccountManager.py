@@ -41,6 +41,7 @@ by陈邱华
 AccountManager
     setRankings()
     addCheckApplication()
+    修改了login()
 by陈邱华
 '''
 
@@ -89,7 +90,11 @@ class AccountManager:
         if self.users.get(ID) is None:
             return False, 0, 0  # 用户名不存在
         if self.users[ID].password == password:
-            return True, self.users[ID].flag, self.users[ID].userName  # 用户名存在且密码正确
+            self.ID = ID
+            self.userName = self.users[ID].userName
+            self.password = password
+            self.flag = self.users[ID].flag
+            return True, self.flag, self.userName  # 用户名存在且密码正确
         return True, 0, 0  # 用户存在但密码错误
 
     # 登出，将类属性重置
@@ -421,6 +426,9 @@ class AccountManager:
     # 返回字典列表
     def getAllGrades(self, mode1, mode2, mode3):
         return gradeManager.getAllGrades(mode1, mode2, mode3)
+
+    def changeGrades(self, stuID, subject, new_grade):
+        return gradeManager.changeGrades(stuID, subject, new_grade)
 
     def setRankings(self):
         # 十二种选科排序

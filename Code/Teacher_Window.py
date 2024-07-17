@@ -624,7 +624,7 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
     # 修改自己的密码
     user_id = userid_entry.get()
     cha_my_button = ttk.Button(tea_window, text="修改我的密码",
-                               command=lambda: change_my_password(tea_window, password_entry.get(), int(user_id)),
+                               command=lambda: change_my_password(tea_window, password_entry.get(), userid_entry),
                                width=20, bootstyle=bootstyle, padding=padding)
     cha_my_button.pack(pady=pady)
     # 修改学生的密码
