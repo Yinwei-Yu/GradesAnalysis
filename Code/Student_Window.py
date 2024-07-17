@@ -27,6 +27,15 @@ by 廖雨龙
     修改了query_scores
 by陈邱华
 """
+
+"""
+2024/7/17
+    修改了query_scores
+    generate_grade_report()
+    实现了成绩分析图
+by刘杨健
+"""
+
 import tkinter as tk
 from tkinter import messagebox
 from ttkbootstrap import Combobox
