@@ -68,16 +68,21 @@ db.close()  # 关闭数据库连接]]></console>
         <condition column="学号或工号" operator="=" value="" active="true" />
       </filter>
     </filter-actions>
+    <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.grades" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.checkapplications" active-filter-id="EMPTY_FILTER">
       <filter id="86425ab4-3efc-46e2-a9f8-972c30b8ea6a" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="学生学号" operator="=" value="" active="true" />
       </filter>
     </filter-actions>
+    <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.usersinfo" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="6ac5c222-fed2-48f9-be27-0bfcac6dd61d" dataset="orangeisland66.student_grades" active-filter-id="EMPTY_FILTER">
       <filter id="9ee16a28-6e55-4b09-a37c-e3125b0b7db5" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="姓名" operator="=" value="" active="true" />
       </filter>
     </filter-actions>
+  </component>
+  <component name="DBNavigator.Project.ExecutionManager">
+    <retain-sticky-names value="false" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />

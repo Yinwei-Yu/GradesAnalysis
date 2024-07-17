@@ -413,9 +413,8 @@ class AccountManager:
     # 以此类推
     # mode3==0 降序，分数高到低，mode3==1升序，分数低到高
     # 返回字典列表
-    def getAllGrades(self, mode1, mode2,mode3):
-        return gradeManager.getAllGrades(mode1, mode2,mode3)
-
+    def getAllGrades(self, mode1, mode2, mode3):
+        return gradeManager.getAllGrades(mode1, mode2, mode3)
 
     def setRankings(self):
         # 十二种选科排序
@@ -471,127 +470,116 @@ class AccountManager:
             #     print()
             # print('----------------------------------------------------------------')
 
+    # 获得所有用户的字典列表
 
-# 获得所有用户的字典列表
+    def getAllUsers(self):
+        data = []
+        for id in self.users:
+            user_data = {'姓名': self.users[id].userName,
+                         '密码': self.users[id].password,
+                         '学号或工号': self.users[id].ID,
+                         '类型': self.users[id].flag}
+            data.append(user_data)
+        return data
 
+    def getAllApplications(self):
+        return gradeManager.getCheckApplicaionsTable()
 
-def getAllUsers(self):
-    data = []
-    for id in self.users:
-        user_data = {'姓名': self.users[id].userName,
-                     '密码': self.users[id].password,
-                     '学号或工号': self.users[id].ID,
-                     '类型': self.users[id].flag}
-        data.append(user_data)
-    return data
+    def dispAllGrades(self):
+        gradeManager.dispAllGrades()
 
+    def printCheckApplication(self):
+        for check_application in gradeManager.checkApplication:
+            check_application.printCheckApplication()
 
-def getAllApplications(self):
-    return gradeManager.getCheckApplicaionsTable()
+    def refreshAll(self, file_path):
+        global importedGrades
+        try:
+            importedGrades = True
+            # self.inputExcelGrades(file_path)
+            # self.saveGradesToMySQL()
+            print(importedGrades)
+            importedGrades = formationCheckAndInputToMySQL(file_path)
+            print(importedGrades)
+            if importedGrades is False:
+                return
+            importedGrades = gradeManager.inputMySQL()
+            print(importedGrades)
+            if importedGrades is False:
+                return
+            importedGrades = gradeManager.saveGradesToCSV()
+            print(1, importedGrades)
+            if importedGrades is False:
+                return
+            print(2, importedGrades)
+            self.refreshUserInfo()
+            if importedGrades is False:
+                return
+            print(3, importedGrades)
+            importedGrades = self.saveUserInfoToMySQL()
+            if importedGrades is False:
+                return
+            print(4, importedGrades)
+            importedGrades = self.getUserFromSql()
+            if importedGrades is False:
+                return
+            print(5, importedGrades)
+            importedGrades = self.saveUserInfoToCSV()
+            if importedGrades is False:
+                return
+        except Exception as e:
+            print("出现错误", e)
+            importedGrades = False
 
+    def getImportedGrades(self):
+        return importedGrades
 
-def dispAllGrades(self):
-    gradeManager.dispAllGrades()
+    # 返回值：
+    # 2，未选完科目就点击提交了
+    # 3  学号重复
+    # 4  分数越界
+    # 5  导入数据库时出现错误
+    # 6 导入成功
+    def inputSingleGrades(self, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+        if (sub1 in ['选科一', ''] or sub2 in ['选科一', ''] or sub3 in ['选科一', '']
+                or name == '' or ID == '' or chinese == '' or Math == '' or english == ''):
+            return 2
+        try:
+            ID = int(ID)
+            chinese = int(chinese)
+            Math = int(Math)
+            english = int(english)
+            grade1 = int(grade1)
+            grade2 = int(grade2)
+            grade3 = int(grade3)
+        except Exception as e:
+            print("格式错误{}".format(e))
+            return 1
+        # 注明flag变量为非本地变量
+        if gradeManager.hasRepeated(ID) is False:
+            return 3
+        elif 0 <= chinese <= 150 and 0 <= Math <= 150 and 0 <= english <= 150 and 0 <= grade1 <= 100 and 0 <= grade2 <= 100 and 0 <= grade3 <= 100:
+            gradesDict = {'语文': chinese, '数学': Math, '英语': english, sub1: grade1, sub2: grade2, sub3: grade3}
+            temp = gradeManager.inputGrades(1, name, ID, gradesDict)
+            if temp == 6:
+                try:
+                    self.refreshUserInfo()
+                    self.saveUserInfoToCSV()
+                    self.saveSingleUser(name, ID)
+                except:
+                    return 5
+            return temp
+        else:
+            return 4
 
+    def inputExcelGrades(self, path):
+        gradeManager.inputGrades(2, path)
 
-def printCheckApplication(self):
-    for check_application in gradeManager.checkApplication:
-        check_application.printCheckApplication()
+    def saveGradesToMySQL(self):
+        gradeManager.saveGradesToMySQL()
 
-
-def refreshAll(self, file_path):
-    global importedGrades
-    try:
-        importedGrades = True
-        # self.inputExcelGrades(file_path)
-        # self.saveGradesToMySQL()
-        print(importedGrades)
-        importedGrades = formationCheckAndInputToMySQL(file_path)
-        print(importedGrades)
-        if importedGrades is False:
-            return
-        importedGrades = gradeManager.inputMySQL()
-        print(importedGrades)
-        if importedGrades is False:
-            return
-        importedGrades = gradeManager.saveGradesToCSV()
-        print(1, importedGrades)
-        if importedGrades is False:
-            return
-        print(2, importedGrades)
-        self.refreshUserInfo()
-        if importedGrades is False:
-            return
-        print(3, importedGrades)
-        importedGrades = self.saveUserInfoToMySQL()
-        if importedGrades is False:
-            return
-        print(4, importedGrades)
-        importedGrades = self.getUserFromSql()
-        if importedGrades is False:
-            return
-        print(5, importedGrades)
-        importedGrades = self.saveUserInfoToCSV()
-        if importedGrades is False:
-            return
-    except Exception as e:
-        print("出现错误", e)
-        importedGrades = False
-
-
-def getImportedGrades(self):
-    return importedGrades
-
-
-# 返回值：
-# 2，未选完科目就点击提交了
-# 3  学号重复
-# 4  分数越界
-# 5  导入数据库时出现错误
-# 6 导入成功
-def inputSingleGrades(self, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
-    if (sub1 in ['选科一', ''] or sub2 in ['选科一', ''] or sub3 in ['选科一', '']
-            or name == '' or ID == '' or chinese == '' or Math == '' or english == ''):
-        return 2
-    try:
-        ID = int(ID)
-        chinese = int(chinese)
-        Math = int(Math)
-        english = int(english)
-        grade1 = int(grade1)
-        grade2 = int(grade2)
-        grade3 = int(grade3)
-    except Exception as e:
-        print("格式错误{}".format(e))
-        return 1
-    # 注明flag变量为非本地变量
-    if gradeManager.hasRepeated(ID) is False:
-        return 3
-    elif 0 <= chinese <= 150 and 0 <= Math <= 150 and 0 <= english <= 150 and 0 <= grade1 <= 100 and 0 <= grade2 <= 100 and 0 <= grade3 <= 100:
-        gradesDict = {'语文': chinese, '数学': Math, '英语': english, sub1: grade1, sub2: grade2, sub3: grade3}
-        temp = gradeManager.inputGrades(1, name, ID, gradesDict)
-        if temp == 6:
-            try:
-                self.refreshUserInfo()
-                self.saveUserInfoToCSV()
-                self.saveSingleUser(name, ID)
-            except:
-                return 5
-        return temp
-    else:
-        return 4
-
-
-def inputExcelGrades(self, path):
-    gradeManager.inputGrades(2, path)
-
-
-def saveGradesToMySQL(self):
-    gradeManager.saveGradesToMySQL()
-
-
-def saveGradesToCSV(self):
-    gradeManager.saveGradesToCSV()
+    def saveGradesToCSV(self):
+        gradeManager.saveGradesToCSV()
 
 
 accountManager = AccountManager()
