@@ -45,6 +45,8 @@ by 廖雨龙
     完善了提交了申请表的功能
 by刘杨健
 """
+# 分了物理历史类之后还要标记一下
+current_category = "物理类"
 
 
 # 根据学号获取成绩
@@ -69,9 +71,13 @@ def get_grades(stuID):
 
 # 点击之后实现排序的函数,在显示总成绩界面,点击之后就会按照单科进行排序
 # 传入点击的标题的名称
-def click_sort(sub, tree):
+def click_sort(current_category, sub, tree):
     # 这个函数传两个参数 mod1=0 总分 1 语文 mod2=0 降序
     # 维护一个字典,使得每个科目的名称有对应的mod1
+    if current_category == "物理类":
+        flag = 0
+    else:
+        flag = 1
     subject_mapping = {
         '总分': 0,
         '语文': 1,
@@ -81,13 +87,13 @@ def click_sort(sub, tree):
         '化学': 5,
         '生物': 6,
         '历史': 7,
-        '地理': 8,
-        '政治': 9
+        '政治': 8,
+        '地理': 9
     }
     mod1 = subject_mapping.get(sub, -1)
     if mod1 != -1:
         # 拿到新的排序方式得到的成绩
-        data1 = accountManager.getAllGrades(mod1, 0)
+        data1 = accountManager.getAllGrades(flag, mod1, 0)
         update_treeview(data1, tree)
 
 
@@ -99,8 +105,9 @@ def update_treeview(data2, tree):
     # 重新插入数据
     for item2 in data2:
         values2 = []
-        for key2 in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理',
-                     '总分']:
+        for key2 in ['姓名', '学号', '语文', '语文排名', '数学', '数学排名', '英语', '英语排名', '物理', '物理排名',
+                     '化学', '化学排名', '生物', '生物排名', '历史', '历史排名', '政治', '政治排名', '地理',
+                     '地理排名', '总分', '总排名']:
             if item2[key2] == -1:
                 values2.append('/')
             else:
@@ -239,6 +246,7 @@ def disp_all_grades(grade_window):
     # 添加选择下拉菜单  # 还没有绑定相关的事件
     category_var = tk.StringVar()
     category_dropdown = ttk.Combobox(choice1, textvariable=category_var, state="readonly")
+    category_dropdown.set("物理类")
     category_dropdown['values'] = ("物理类", "历史类")
     category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
     # 添加一个搜索框
@@ -247,24 +255,27 @@ def disp_all_grades(grade_window):
     search_entry.pack(pady=10, side=tk.LEFT, anchor='nw')
     # 创建Treeview
     columns = (
-        "姓名", "学号", "语文", "数学", "外语", "物理", "化学", "生物", "历史",
-        "地理", "政治", "总分")
+        "姓名", "学号", "语文", "语文排名", "数学", "数学排名", "外语", "外语排名", "物理", "物理排名", "化学",
+        "化学排名", "生物", "生物排名", "历史", "历史排名",
+        "政治", "政治排名", "地理", "地理排名", "总分", "总排名")
     tree = ttk.Treeview(frame, columns=columns, show='headings')
 
     # 定义每一列的标题和宽度
     for col in columns:
-        tree.heading(col, text=col, command=lambda sub=col: click_sort(sub, tree))
-        tree.column(col, width=100, anchor='center')
+        tree.heading(col, text=col, command=lambda sub=col: click_sort(current_category, sub, tree))
+        tree.column(col, width=50, anchor='center')
 
-    # 总分降序
-    data = accountManager.getAllGrades(0, 0)
+    # 先默认物理降序
+    data = accountManager.getAllGrades(0, 0, 0)
 
     def insert_data(i_data):
         # 将得到的数据放到那个表里面去
         for item in i_data:
             # 将 -1 转换为斜杠
             values = []
-            for key in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理', '总分']:
+            for key in ['姓名', '学号', '语文', '语文排名', '数学', '数学排名', '英语', '英语排名', '物理', '物理排名',
+                        '化学', '化学排名', '生物', '生物排名', '历史', '历史排名', '政治', '政治排名', '地理',
+                        '地理排名', '总分', '总排名']:
                 if item[key] == -1:
                     values.append('/')
                 else:
@@ -309,12 +320,15 @@ def disp_all_grades(grade_window):
 
     # 添加一个选择类别的东西
     def filter_data(event):
+        global current_category
         # 拿到选择的类别
         selected_category = category_var.get()
         if selected_category == "物理类":
-            filtered_data = [item for item in data if item["物理"] != -1]
+            filtered_data = accountManager.getAllGrades(0, 0, 0)
+            current_category = "物理类"
         elif selected_category == "历史类":
-            filtered_data = [item for item in data if item["历史"] != -1]
+            filtered_data = accountManager.getAllGrades(1, 0, 0)
+            current_category = "历史类"
         else:
             filtered_data = data
         # 清空TreeView中的数据并插入新的数据
