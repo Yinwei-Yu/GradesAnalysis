@@ -9,8 +9,6 @@ from tinui.TinUI import *
 
 from AccountManager import accountManager
 
-from ttkbootstrap.widgets import Combobox
-
 """
 2024/7/12
     添加：
@@ -282,15 +280,19 @@ def import_grades(admin_window):
                 top.destroy()
                 tktop.destroy()
                 tktop1 = tk.Toplevel(admin_window)
+                importedGrades = accountManager.getImportedGrades()
+                # label = tk.Label(tktop1, text='导入成功！' if importedGrades is True else '导入失败！')
+                # label.pack(side='top')
                 tktop1.resizable(False, False)
-                tktop1.geometry('200x100+200+250')
+                tktop1.geometry('400x200+900+600')
                 top1 = TinUI(tktop1)
                 top1.pack(fill='both', expand=True)
-                importedGrades = accountManager.getImportedGrades()
-                top1.add_paragraph((70, 20), '导入成功！' if importedGrades is True else '导入失败！')
+                top1.add_paragraph((140, 50), '导入成功！' if importedGrades is True else '导入失败！',
+                                   fg='green' if importedGrades is True else 'red')
+                # top1.pack(side='top', pady=50)
                 # top.add_title('')
                 if importedGrades is True:
-                    _, _, finish2, _ = top1.add_waitbar3((30, 50), width=150)
+                    _, _, finish2, _ = top1.add_waitbar3((100, 130), width=200)
                     finish2()
 
                 # top1.after(2000, top1.destroy())
@@ -314,14 +316,14 @@ def import_grades(admin_window):
             # tktop.overrideredirect(True)
             # top = tk.Toplevel(admin_window)
             tktop.resizable(False, False)
-            tktop.geometry('200x100+200+250')
+            tktop.geometry('400x200+900+600')
             disable_close_button()
             top = TinUI(tktop)
             top.pack(fill='both', expand=True)
             # top.add_title('')
-            _, _, finish, _ = top.add_waitbar3((25, 50), width=150)
+            _, _, finish, _ = top.add_waitbar3((100, 130), width=200, fg='#2177b8')
 
-            top.add_paragraph((50, 10), '导入成绩中……')
+            top.add_paragraph((120, 50), '导入成绩中……', fg='#2177b8')
             check_condition()
             top.mainloop()
 
@@ -410,7 +412,7 @@ def admin_disp_users(admin_window):
     frame = ttk.Frame(users_window)
     frame.pack(fill="both", expand=True)
     # 创建Treeview
-    columns = ("栏目一", "栏目二", "栏目三", "栏目四")
+    columns = ("用户名", "密码", "学号/工号", "用户类别")
     tree = ttk.Treeview(frame, columns=columns, show='headings')
     # 定义每一列的标题和宽度
     for col in columns:
@@ -421,11 +423,11 @@ def admin_disp_users(admin_window):
     # 将得到的数据放到那个表里面去
     for item in data:
         if item['类型'] == 1:
-            identity = "教师"
-        elif item['类型'] == 2:
-            identity = "学生"
-        else:
             identity = "管理员"
+        elif item['类型'] == 2:
+            identity = "教师"
+        else:
+            identity = "学生"
         tree.insert('', tk.END, values=(item['姓名'], item['密码'], item['学号或工号'], identity))
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
@@ -489,7 +491,7 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
 
     # 查看成绩复核申请表
 
-    bt_show_apps = ttk.Button(admin_window, text='查看成绩复核申请表', command=lambda: admin_disp_apps(admin_window),
+    bt_show_apps = ttk.Button(admin_window, text='修改成绩', command=lambda: admin_disp_apps(admin_window),
                               width=20, bootstyle=bootstyle, padding=padding)
     bt_show_apps.pack(pady=pady)
     # bt_show_apps.place(x=180, y=300)
