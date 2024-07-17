@@ -210,9 +210,9 @@ def confirm_app(stuid, sub, current_window, pre_window):
         messagebox.showerror('错误', '请输入正确的学号并选择科目')
     else:
         messagebox.showinfo('提示', '申请已提交')
+        current_window.destroy()
+        pre_window.deiconify()
         # 补充将申请存到数据库中的功能
-    current_window.destroy()
-    pre_window.deiconify()
 
 
 def confirm_password(old, new1, new2, password_window, tea_window, user_id):
