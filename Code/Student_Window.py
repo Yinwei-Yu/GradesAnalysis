@@ -52,20 +52,6 @@ from Teacher_Window import change_my_password
 from Teacher_Window import last_step
 from Teacher_Window import get_grades
 
-# 修改了一下
-# 如果登录窗口收到的信号为1，则关闭登录窗口，打开学生窗口
-# if login_hit == 3:
-#    stu_window.title('学生窗口')
-#    stu_window.geometry('600x400')
-
-
-"""
-学生成绩分析的内容包括：
-1、总分排名及百分比
-2、优势学科、劣势学科
-"""
-
-
 def generate_grade_report(userid, grade_window):
     # 这里写生成和显示成绩报告的代码
     grade_window.withdraw()
