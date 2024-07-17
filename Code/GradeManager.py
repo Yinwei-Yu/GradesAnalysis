@@ -416,6 +416,15 @@ class GradeManager:
     '''
 
     def plotHistograms(self, subjectName: str):
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from matplotlib import rcParams
+        import statistics
+
+        # 设置支持中文显示的字体
+        rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体
+        rcParams['axes.unicode_minus'] = False  # 解决坐标轴负号显示问题
+
         subjects = ['Chinese', 'Math', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Politics', 'Geography']
 
         if subjectName not in subjects:
@@ -447,26 +456,25 @@ class GradeManager:
         plt.hist(subject_scores, bins=10, edgecolor='black')
 
         # 中位数线
-        plt.axvline(median_score, color='red', linestyle='-', linewidth=1, label='Median')
+        plt.axvline(median_score, color='red', linestyle='-', linewidth=1, label='中位数')
         # 平均数线
-        plt.axvline(mean_score, color='green', linestyle='-', linewidth=1, label='Average')
+        plt.axvline(mean_score, color='green', linestyle='-', linewidth=1, label='平均数')
 
         # Add text for statistics
-        stats_text = (f'average: {mean_score:.2f}\n'
-                      f'max: {max_score}\n'
-                      f'min: {min_score}\n'
-                      f'mode: {mode_score}\n'
-                      f'median: {median_score}')
+        stats_text = (f'平均数: {mean_score:.2f}\n'
+                      f'最高分: {max_score}\n'
+                      f'最低分: {min_score}\n'
+                      f'众数: {mode_score}\n'
+                      f'中位数: {median_score}')
         plt.text(0.05, 0.7, stats_text, fontsize=12, verticalalignment='center', horizontalalignment='left',
                  transform=plt.gca().transAxes, bbox=dict(facecolor='white', alpha=0.7))
 
-        plt.title(f'{subjectName} score distribution')
-        plt.xlabel('Score')
-        plt.ylabel('Number of Students')
+        plt.title(f'{subjectName} 成绩分布')
+        plt.xlabel('成绩')
+        plt.ylabel('学生人数')
         plt.grid(False)
         plt.legend()
         plt.show()
-
     '''
     折线图分析，接收一个参数way
     way==1时产生语数英和物化生的折线图
@@ -474,6 +482,14 @@ class GradeManager:
     '''
 
     def plotLineCharts(self, way):
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from matplotlib import rcParams
+
+        # 设置支持中文显示的字体
+        rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体
+        rcParams['axes.unicode_minus'] = False  # 解决坐标轴负号显示问题
+
         total_scores_chinese_math_english = []
         total_scores_physics_chemistry_biology = []
         total_scores_history_politics_geography = []
@@ -512,18 +528,18 @@ class GradeManager:
 
         # 绘制散点图和拟合线
         plt.figure(figsize=(10, 6))
-        plt.scatter(x, y, marker='o', label='Data points')
-        plt.plot(x, y_fit, color='red', label='Fit line')
+        plt.scatter(x, y, marker='o', label='数据点')
+        plt.plot(x, y_fit, color='red', label='拟合线')
 
         # 添加线性回归系数文本注释
         slope = coefficients[0]
         intercept = coefficients[1]
-        plt.text(0.05, 0.8, f'Equation: y = {slope:.2f}x + {intercept:.2f}', transform=plt.gca().transAxes,
+        plt.text(0.05, 0.8, f'回归方程: y = {slope:.2f}x + {intercept:.2f}', transform=plt.gca().transAxes,
                  fontsize=12, verticalalignment='top')
 
-        plt.title('Linear Fit of PCB and CME Scores' if way == 1 else 'Linear Fit of HPG and CME Scores')
-        plt.xlabel('Physics Chemistry Biology Total Scores' if way == 1 else 'History Politics Geography Total Scores')
-        plt.ylabel('Chinese Math English Total Scores')
+        plt.title('物化生与语数英总分线性拟合' if way == 1 else '史政地与语数英总分线性拟合')
+        plt.xlabel('物化生总分' if way == 1 else '史政地总分')
+        plt.ylabel('语数英总分')
         plt.legend()
         plt.grid(True)
         plt.show()
