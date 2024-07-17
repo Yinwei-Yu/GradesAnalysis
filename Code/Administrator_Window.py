@@ -46,7 +46,7 @@ def update_original_grade(entry_id, combobox_course, label_original_grade):
         student_id = int(student_id)
         # 获取学号对应的姓名和科目成绩
         stu_name, sub = accountManager.getGrades(1, student_id)
-        course_names = ["语文", "数学", "外语", "物理", "化学", "生物", "历史", "政治", "地理"]
+        course_names = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "政治", "地理"]
         if stu_name:
             course_index = course_names.index(selected_course)
             original_grade = sub[course_index]
@@ -59,7 +59,7 @@ def last_step(current_window, previous_window):
 
 
 # 获取Treeview中选中的选项,并将其值填入右侧的输入字段
-def view_application(tree, entry_id, combobox_course, label_student_name):
+def view_application(tree, entry_id, combobox_course, label_student_name,label_original_grade):
     # 看是否有选中什么东西
     selected_item = tree.selection()
     # 如果有选中东西的话,就会填入它的学号和科目和初始成绩 # 待修改
@@ -72,7 +72,13 @@ def view_application(tree, entry_id, combobox_course, label_student_name):
         # 自动得到姓名
         label_student_name.config(text=item_values[1])
         combobox_course.set(item_values[3])
-
+        # 自动设置科目的初始分数 学号item_values[2]
+        stu_name, sub = accountManager.getGrades(1, int(item_values[2]))
+        course_names = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "政治", "地理"]
+        if stu_name:
+            course_index = course_names.index(item_values[3])
+            original_grade = sub[course_index]
+            label_original_grade.config(text=str(original_grade))
 
 # 完成成绩申请处理 删除Treeview中选中的项
 def finish_application(tree):
@@ -84,7 +90,6 @@ def finish_application(tree):
 
 
 # 确认修改 确认并保存修改后的成绩
-# 还存在小问题,就是如果是自己输入的话会认为你没有输入
 def confirm_modification(entry_id, combobox_course, entry_new_grade):
     # 拿到输入的学号
     student_id = entry_id.get()
@@ -92,10 +97,7 @@ def confirm_modification(entry_id, combobox_course, entry_new_grade):
     new_grade = entry_new_grade.get()
     # 拿到修改的课程
     new_course = combobox_course.get()
-    if student_id and new_grade and new_course:  # 这里调用实际的函数
-        messagebox.showinfo("成功")
-    else:
-        messagebox.showinfo("失败")
+    # 这里调用修改函数
 
 
 # 不仅会更新下拉框中的选项,还会在学号无效或不在数据中的情况下清楚下拉框的当前值
@@ -108,7 +110,7 @@ def update_course_options(event, entry_id, combobox_course, label_student_name, 
         stu_name, sub = accountManager.getGrades(1, student_id)
         # 当这个学号是存在的
         if stu_name:
-            course_names = ["语文", "数学", "外语", "物理", "化学", "生物", "历史", "政治", "地理"]
+            course_names = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "政治", "地理"]
             valid_courses = [course_names[i] for i in range(len(sub)) if sub[i] != -1]
             combobox_course['values'] = valid_courses
             if combobox_course.get() not in valid_courses:
@@ -120,6 +122,7 @@ def update_course_options(event, entry_id, combobox_course, label_student_name, 
     combobox_course['values'] = []
     combobox_course.set('')
     label_student_name.config(text="")
+    label_original_grade.config(text="")
 
 
 def update_subject2(selected_subject1, selected_subject2, selected_subject3, subject2_menu, subject3_menu,
@@ -186,7 +189,7 @@ def import_single(admin_window):
     admin_window.withdraw()
     single_window.geometry("800x600+800+400")
     single_window.resizable(False, False)
-    # 姓名 学号 语文 数学 外语 物理/历史 四选二 输入框的文字变量
+    # 姓名 学号 语文 数学 英语 物理/历史 四选二 输入框的文字变量
     var_name = tk.StringVar()
     var_id = tk.StringVar()
     var_chinese = tk.StringVar()
@@ -366,7 +369,7 @@ def admin_disp_apps(admin_window):
     scrollbar_y.pack(side="right", fill="y")
     # 创建"查看"和"完成"按钮
     view_button = ttk.Button(left_frame, text="查看",
-                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name))
+                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name,label_original_grade))
     view_button.pack(pady=5)
     finish_button = ttk.Button(left_frame, text="完成", command=lambda: finish_application(tree))
     finish_button.pack(pady=5)
@@ -402,7 +405,7 @@ def admin_disp_apps(admin_window):
     entry_new_grade.grid(row=4, column=1, pady=5)
     # 修改完成后的确认按钮
     confirm_button = ttk.Button(right_frame, text="确认",
-                                command=lambda: confirm_modification(entry_id, entry_new_grade))
+                                command=lambda: confirm_modification(entry_id, combobox_course, entry_new_grade))
     confirm_button.grid(row=5, column=1, pady=10, sticky="e")
     # 之后再在这里加个退出的按钮返回
     quit_button = ttk.Button(right_frame, text="退出",
@@ -463,6 +466,7 @@ def admin_disp_users(admin_window):
     category_dropdown.set("全部")  # 默认显示全部
     category_dropdown['values'] = ("全部", "管理员", "学生", "教师")
     category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
+
     # 一个函数过滤数据,得到所选择的数据
     def filter_data(event):
         # 根据选项更新数据
@@ -481,8 +485,9 @@ def admin_disp_users(admin_window):
 
         # 插入选择后的数据
         insert_data(filtered_data)
+
     # 下拉框要绑定这个函数
-    category_dropdown.bind('<<ComboboxSelected>>',filter_data)
+    category_dropdown.bind('<<ComboboxSelected>>', filter_data)
     # 添加搜索框
     search_var = ttk.StringVar()
     search_entry = ttk.Entry(users_window, textvariable=search_var)
