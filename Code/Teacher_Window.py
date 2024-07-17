@@ -52,7 +52,7 @@ def get_grades(stuID):
     if stuID == "":
         return False
     stuName, gradeList = accountManager.getGrades(1, int(stuID))
-    subjects = ['语文', '数学', '英语', '物理', '化学', '生物', ' 历史', '政治',
+    subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治',
                 '\n地理：']
     grades = {}
     if gradeList:
@@ -197,18 +197,12 @@ def disp_relation(choice2):
     rel_window.protocol("WM_DELETE_WINDOW", on_close)
 
 
-# 显示单科成绩情况
-def dignose_single(choice2):
-    choice2.withdraw()
-    dig_window = tk.Toplevel()
-    pass
-
-
 # 提交申请的确认函数
 def confirm_app(stuid, sub, current_window, pre_window):
     if not sub:  # 当科目为空时，说明用户没有选择或者学号输入有误，提示错误
         messagebox.showerror('错误', '请输入正确的学号并选择科目')
     else:
+        accountManager.addCheckApplication(accountManager.users[int(stuid)].userName, int(stuid), sub)
         messagebox.showinfo('提示', '申请已提交')
         current_window.destroy()
         pre_window.deiconify()
@@ -328,8 +322,9 @@ def disp_all_grades(grade_window):
             tree.delete(child)
         # 插入过滤后的数据
         insert_data(filtered_data)
+
     # 为下拉框绑定相关的函数
-    category_dropdown.bind("<<ComboboxSelected>>",filter_data)
+    category_dropdown.bind("<<ComboboxSelected>>", filter_data)
     choice1.mainloop()
 
 
@@ -353,10 +348,7 @@ def disp_all_analysis(grade_window):
     disp_all_analysis_button = ttk.Button(choice2, text='查看主副科关系曲线', command=lambda: disp_relation(choice2),
                                           width=20, bootstyle=bootstyle, padding=padding)
     disp_all_analysis_button.pack(pady=pady)
-    # 单科成绩情况
-    disp_single_grade_button = ttk.Button(choice2, text='查看单科成绩情况', command=lambda: dignose_single(choice2),
-                                          width=20, bootstyle=bootstyle, padding=padding)
-    disp_single_grade_button.pack(pady=pady)
+
     # 返回上一步
     last_step_button = ttk.Button(choice2, text='返回', command=lambda: last_step(choice2, grade_window), width=20,
                                   bootstyle=bootstyle, padding=padding)
@@ -377,10 +369,12 @@ def disp_single_grade(grade_window):
         if stuName is False:
             warning_var.set("学号不存在！")
             return
-        subjects = [' \n\n语文：', '\n数学：', '\n英语：', ' \n\n物理：', '\n化学：', '\n生物：', ' \n\n历史：', '\n政治：',
+        subjects = [' \n\n语文：', '\n数学：', '\n英语：', ' \n物理：', '\n化学：', '\n生物：', ' \n历史：', '\n政治：',
                     '\n地理：']
         temp = stuName
         for i in range(9):
+            if i == 3:
+                temp += '\n'
             temp += (subjects[i] + str(gradeList[i])) if gradeList[i] != -1 else ''
         print(temp)
         grades_var.set(temp)
@@ -415,7 +409,7 @@ def disp_single_grade(grade_window):
     confirm_button.place(x=360, y=400)
     warning_label = ttk.Label(choice3, textvariable=warning_var, font=('黑体', 12), style='danger')
     warning_label.place(x=100, y=280)
-    #myStr.set(('     '))
+    # myStr.set(('     '))
     grades_label = ttk.Label(choice3, textvariable=grades_var, font=('黑体', 16))
     grades_label.pack(padx=20, pady=100, side='right')
     seperator = ttk.Separator(choice3, orient=tk.VERTICAL)
@@ -502,6 +496,8 @@ def app_review(tea_window):
         if stu_grades:
             for subject, score in stu_grades.items():
                 options.append(subject)
+        else:
+            sub_combobox.set("")
         sub_combobox['values'] = options
         if options:
             sub_combobox.set("")  # 设置默认为空

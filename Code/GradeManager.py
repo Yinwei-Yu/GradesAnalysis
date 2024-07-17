@@ -75,6 +75,11 @@ by陈邱华
 GradeManager
     修改了inputSingle()
 by陈邱华
+
+2024/7/17
+GradeManager
+    deleteCheckApplication()
+by陈邱华
 '''
 
 import os
@@ -293,6 +298,7 @@ class GradeManager:
                 self.checkApplicationNum = len(self.checkApplication)
                 # print(self.checkApplicationNum)
                 self.saveCheckApplicationsToCSV()
+                self.saveCheckApplicationsToMySQL()
                 return True
 
         return False
@@ -543,27 +549,57 @@ class GradeManager:
             stu.stuGrades.displayGradesAnalysis()
 
     # 获取dict类型学生成绩表格
-    def getGradesTable(self, sortedStudent) -> list:
+    def getGradesTable(self, mode, sortedStudent) -> list:
         # 创建一个字典列表存储每个学生的数据
         data = []
-        for student in sortedStudent:
-            # 创建一个字典存储单个学生的信息
-            student_data = {
-                '姓名': student.name,
-                '学号': student.stuID,
-                '语文': student.stuGrades.grades[0].score,
-                '数学': student.stuGrades.grades[1].score,
-                '英语': student.stuGrades.grades[2].score,
-                '物理': student.stuGrades.grades[3].score,
-                '化学': student.stuGrades.grades[4].score,
-                '生物': student.stuGrades.grades[5].score,
-                '历史': student.stuGrades.grades[6].score,
-                '政治': student.stuGrades.grades[7].score,
-                '地理': student.stuGrades.grades[8].score,
-                '总分': student.stuGrades.totalScores
-            }
-            # 将这个学生的信息字典添加到数据列表中
-            data.append(student_data)
+        if mode == 1:
+            for student in sortedStudent:
+                # 创建一个字典存储单个学生的信息
+                student_data = {
+                    '姓名': student.name,
+                    '学号': student.stuID,
+                    '语文': student.stuGrades.grades[0].score,
+                    '数学': student.stuGrades.grades[1].score,
+                    '英语': student.stuGrades.grades[2].score,
+                    '物理': student.stuGrades.grades[3].score,
+                    '化学': student.stuGrades.grades[4].score,
+                    '生物': student.stuGrades.grades[5].score,
+                    '历史': student.stuGrades.grades[6].score,
+                    '政治': student.stuGrades.grades[7].score,
+                    '地理': student.stuGrades.grades[8].score,
+                    '总分': student.stuGrades.totalScores
+                }
+                # 将这个学生的信息字典添加到数据列表中
+                data.append(student_data)
+        if mode == 2:
+            for student in sortedStudent:
+                # 创建一个字典存储单个学生的信息
+                student_data = {
+                    '姓名': student.name,
+                    '学号': student.stuID,
+                    '语文': student.stuGrades.grades[0].score,
+                    '语文排名': student.stuGrades.rankings[0],
+                    '数学': student.stuGrades.grades[1].score,
+                    '数学排名': student.stuGrades.rankings[1],
+                    '英语': student.stuGrades.grades[2].score,
+                    '英语排名': student.stuGrades.rankings[2],
+                    '物理': student.stuGrades.grades[3].score,
+                    '物理排名': student.stuGrades.rankings[3],
+                    '化学': student.stuGrades.grades[4].score,
+                    '化学排名': student.stuGrades.rankings[4],
+                    '生物': student.stuGrades.grades[5].score,
+                    '生物排名': student.stuGrades.rankings[5],
+                    '历史': student.stuGrades.grades[6].score,
+                    '历史排名': student.stuGrades.rankings[6],
+                    '政治': student.stuGrades.grades[7].score,
+                    '政治排名': student.stuGrades.rankings[7],
+                    '地理': student.stuGrades.grades[8].score,
+                    '地理排名': student.stuGrades.rankings[8],
+                    '总分': student.stuGrades.totalScores,
+                    '总排名': student.stuGrades.totalRanking,
+                }
+                # 将这个学生的信息字典添加到数据列表中
+                data.append(student_data)
         print(data)
         return data
 
@@ -579,7 +615,6 @@ class GradeManager:
         selected_subjects = [stu for stu in self.student if
                              stu.stuGrades.grades[mode1].score != -1]
         if mode2 != 0:
-
             selected_subjects = sorted(selected_subjects,
                                        key=lambda sub: (
                                            sub.stuGrades.rankings[mode2 - 1] == -1, sub.stuGrades.rankings[mode2 - 1]),
@@ -598,12 +633,12 @@ class GradeManager:
             print(end='|')
             print()
         print('----------------------------------------------------------------')
-        return self.getGradesTable(selected_subjects)
+        return self.getGradesTable(2, selected_subjects)
 
     def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
         try:
             # 将数据转换为 DataFrame
-            df = pd.DataFrame(self.getGradesTable(self.student))
+            df = pd.DataFrame(1, self.getGradesTable(self.student))
             # 将 DataFrame 保存到 CSV 文件中
             df.to_csv(path, index=False)
             print(f"学生数据已成功保存到 {path}")
@@ -620,7 +655,7 @@ class GradeManager:
                           table=rankedGradesTable,  # 数据库表名
                           ):
         # 将数据转换为 DataFrame
-        df = pd.DataFrame(self.getGradesTable(self.student))
+        df = pd.DataFrame(2, self.getGradesTable(self.student))
         print(df)
         # 将dataframe保存至数据库
         global mydb

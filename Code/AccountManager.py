@@ -36,6 +36,12 @@ AccountManager
     getAllUsers()
     getAllApplications()
 by陈邱华
+
+2024/7/17
+AccountManager
+    setRankings()
+    addCheckApplication()
+by陈邱华
 '''
 
 
@@ -485,12 +491,12 @@ class AccountManager:
     def getAllApplications(self):
         return gradeManager.getCheckApplicaionsTable()
 
+    # 增加成绩审核申请表
+    def addCheckApplication(self, stuName, stuID, subject):
+        gradeManager.addCheckApplication(self.userName, stuName, stuID, subject)
+
     def dispAllGrades(self):
         gradeManager.dispAllGrades()
-
-    def printCheckApplication(self):
-        for check_application in gradeManager.checkApplication:
-            check_application.printCheckApplication()
 
     def refreshAll(self, file_path):
         global importedGrades
@@ -583,6 +589,7 @@ class AccountManager:
 
 
 accountManager = AccountManager()
+# accountManager.getAllGrades(1,0,0)
 
 if __name__ == "__main__":
     print(accountManager.getAllUsers())
