@@ -77,6 +77,8 @@ def view_application(tree, entry_id, combobox_course, label_student_name):
 # 完成成绩申请处理 删除Treeview中选中的项
 def finish_application(tree):
     selected_item = tree.selection()
+    print("testing")
+    print(tree.index(tree.selection()))
     if selected_item:
         tree.delete(selected_item[0])
 
@@ -176,7 +178,7 @@ def import_single(admin_window):
         # print(grade3)
 
         flag = accountManager.inputSingleGrades(name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2,
-                                               grade3)
+                                                grade3)
         warning_text.set(options[flag])
         print(options[flag])
 
@@ -411,6 +413,8 @@ def admin_disp_apps(admin_window):
 
 # 查看所有用户
 # 做一张表查看所有的用户
+# 添加一个搜索框的功能,可以通过搜索框直接定位到用户
+# 可以在下面加一个下拉框来分类显示 学生 管理员 教师
 def admin_disp_users(admin_window):
     admin_window.withdraw()
     users_window = ttk.Toplevel(admin_window)
@@ -428,15 +432,19 @@ def admin_disp_users(admin_window):
         tree.column(col, width=100, anchor='center')
     # 得到数据 一个包含所有用户的字典列表
     data = accountManager.getAllUsers()
-    # 将得到的数据放到那个表里面去
-    for item in data:
-        if item['类型'] == 1:
-            identity = "管理员"
-        elif item['类型'] == 2:
-            identity = "教师"
-        else:
-            identity = "学生"
-        tree.insert('', tk.END, values=(item['姓名'], item['密码'], item['学号或工号'], identity))
+
+    # 将得到的数据放到那个表里面去 改为一个函数,方便后面使用
+    def insert_data(data):
+        for item in data:
+            if item['类型'] == 1:
+                identity = "管理员"
+            elif item['类型'] == 2:
+                identity = "教师"
+            else:
+                identity = "学生"
+            tree.insert('', tk.END, values=(item['姓名'], item['密码'], item['学号或工号'], identity))
+
+    insert_data(data)
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
     scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
@@ -449,6 +457,49 @@ def admin_disp_users(admin_window):
     # 确保Treeview填充Frame
     frame.grid_rowconfigure(0, weight=1)
     frame.grid_columnconfigure(0, weight=1)
+    # 添加选择身份的下拉框
+    category_var = tk.StringVar()
+    category_dropdown = ttk.Combobox(users_window, textvariable=category_var, state="readonly")
+    category_dropdown.set("全部")  # 默认显示全部
+    category_dropdown['values'] = ("全部", "管理员", "学生", "教师")
+    category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
+    # 一个函数过滤数据,得到所选择的数据
+    def filter_data(event):
+        # 根据选项更新数据
+        selected_category = category_var.get()
+        if selected_category == "管理员":
+            filtered_data = [item for item in data if item['类型'] == 1]
+        elif selected_category == "教师":
+            filtered_data = [item for item in data if item['类型'] == 2]
+        elif selected_category == "学生":
+            filtered_data = [item for item in data if item['类型'] == 3]
+        else:
+            filtered_data = data
+        # 清空原来的treeview
+        for child in tree.get_children():
+            tree.delete(child)
+
+        # 插入选择后的数据
+        insert_data(filtered_data)
+    # 下拉框要绑定这个函数
+    category_dropdown.bind('<<ComboboxSelected>>',filter_data)
+    # 添加搜索框
+    search_var = ttk.StringVar()
+    search_entry = ttk.Entry(users_window, textvariable=search_var)
+    search_entry.pack(pady=10, side=tk.LEFT, anchor='nw')
+
+    # 搜索框的搜索函数
+    def search_tree():
+        search_term = search_var.get().lower()
+        for child in tree.get_children():
+            values = tree.item(child, 'values')
+            if any(search_term in str(value).lower() for value in values):
+                tree.see(child)
+                tree.selection_set(child)
+            else:
+                tree.selection_remove(child)
+
+    search_var.trace("w", lambda name, index, mode: search_tree())
 
     # 再做一个确认并返回的按钮
     con_button = ttk.Button(users_window, text='确认', command=lambda: last_step(users_window, admin_window), width=10,
