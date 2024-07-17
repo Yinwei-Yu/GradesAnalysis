@@ -78,12 +78,12 @@ by陈邱华
 '''
 
 import os
+import statistics  # 统计中位数，众数
 
 import matplotlib.pyplot as plt
 import mysql.connector  # pip install mysql-connector-python
 import numpy as np
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
-import  statistics #统计中位数，众数
 
 import CheckApplication
 import Grades as gr
@@ -101,7 +101,7 @@ class GradeManager:
     def __init__(self, student: list[stu], stuNum: int, checkApplication: list[CheckApplication],
                  checkApplicationNum: int):
 
-        self.student = student
+        self.student: list[stu] = student
         self.stuNum = stuNum
         self.checkApplication = checkApplication
         self.checkApplicationNum = checkApplicationNum
@@ -441,9 +441,9 @@ class GradeManager:
         plt.hist(subject_scores, bins=10, edgecolor='black')
 
         # 中位数线
-        plt.axvline(median_score, color='red', linestyle='-', linewidth=1,label='Median')
+        plt.axvline(median_score, color='red', linestyle='-', linewidth=1, label='Median')
         # 平均数线
-        plt.axvline(mean_score,color='green',linestyle='-',linewidth=1,label='Average')
+        plt.axvline(mean_score, color='green', linestyle='-', linewidth=1, label='Average')
 
         # Add text for statistics
         stats_text = (f'average: {mean_score:.2f}\n'
@@ -567,20 +567,38 @@ class GradeManager:
         print(data)
         return data
 
-    # mode1==0总分排序
-    # mode1==1语文排序
+    # mode1==0物理类mode1==1历史类
+    # mode2==0总分排序
+    # mode2==1语文排序
     # 以此类推
-    # mode2==0 降序，mode2==1升序
+    # mode3==0 降序，分数高到低，mode3==1升序，分数低到高
     # 返回字典列表
-    def getAllGrades(self, mode1, mode2):
-        subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
-        if mode1 == 0:
-            temp = sorted(self.student, key=lambda sub: sub.stuGrades.totalScores, reverse=1 - mode2)
+    def getAllGrades(self, mode1, mode2, mode3):
+        switch = [3, 6]
+        mode1 = switch[mode1]
+        selected_subjects = [stu for stu in self.student if
+                             stu.stuGrades.grades[mode1].score != -1]
+        if mode2 != 0:
 
+            selected_subjects = sorted(selected_subjects,
+                                       key=lambda sub: (
+                                           sub.stuGrades.rankings[mode2 - 1] == -1, sub.stuGrades.rankings[mode2 - 1]),
+                                       reverse=mode3)
         else:
-            temp = self.calculateRanking(subjects[mode1 - 1], mode2 + 1)
-
-        return self.getGradesTable(temp)
+            selected_subjects = sorted(selected_subjects,
+                                       key=lambda sub: sub.stuGrades.totalRanking,
+                                       reverse=mode3)
+        for stu in selected_subjects:
+            for i in range(9):
+                print(stu.stuGrades.grades[i].score, end='\t')
+            print(end='|')
+            print(stu.stuGrades.totalRanking, end=' |')
+            for i in range(9):
+                print(stu.stuGrades.rankings[i], end='\t')
+            print(end='|')
+            print()
+        print('----------------------------------------------------------------')
+        return self.getGradesTable(selected_subjects)
 
     def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
         try:
