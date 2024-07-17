@@ -29,7 +29,7 @@ by陈邱华
 """
 import tkinter as tk
 from tkinter import messagebox
-
+from ttkbootstrap import Combobox
 import ttkbootstrap as ttk
 
 from AccountManager import accountManager
@@ -38,6 +38,7 @@ from Teacher_Window import change_my_password
 # 复用Teacher_Window中的确认键
 # 复用Teacher_Window中返回上一步的方法
 from Teacher_Window import last_step
+from Teacher_Window import get_grades
 
 
 # 修改了一下
@@ -46,9 +47,26 @@ from Teacher_Window import last_step
 #    stu_window.title('学生窗口')
 #    stu_window.geometry('600x400')
 
-def generate_grade_report():
+
+"""
+学生成绩分析的内容包括：
+1、总分排名及百分比
+2、优势学科、劣势学科
+"""
+
+
+def generate_grade_report(userid, grade_window):
     # 这里写生成和显示成绩报告的代码
-    pass
+    grade_window.withdraw()
+    # 创建一个成绩分析显示窗口
+    analysis_window = ttk.Toplevel(grade_window)
+    analysis_window.geometry('600x600')
+    analysis_window.title('Analysis')
+    analysis_window.resizable(False, False)
+    # 创建一个下拉框,允许学生选择不同的科目
+    sub_combobox=ttk.Combobox(analysis_window, values=['总体', '语文', '数学', '英语'], state="readonly")
+    sub_combobox.set('总体')
+    sub_combobox.pack()
 
 
 # 成绩查询的函数 未完成
@@ -64,18 +82,6 @@ def query_scores(userid, stu_window):
 
     # 下面打印学生的成绩
     # messagebox.showinfo("这里显示出学生的成绩")
-    def get_grades(stuID):
-        stuName, gradeList = accountManager.getGrades(1, int(stuID))
-        subjects = ['语文', '数学', '英语', '物理', '化学', '生物', ' 历史', '政治',
-                    '\n地理：']
-        grades = {}
-        for i in range(9):
-            if gradeList[i] != -1:
-                grades.update({subjects[i]: gradeList[i]})
-            if not grades:
-                raise ValueError(f"No valid grades found for userid {stuID}")
-        return grades
-        # 获取特定用户的分数
 
     try:
         user_grades = get_grades(userid)
@@ -95,7 +101,7 @@ def query_scores(userid, stu_window):
     label.pack(pady=30)
     # 创建一个生成成绩分析报告的按钮
     report_button = ttk.Button(grade_window, text="成绩分析", width=10,
-                               command=lambda: generate_grade_report(), bootstyle=bootstyle)
+                               command=lambda: generate_grade_report(userid, grade_window), bootstyle=bootstyle)
     report_button.pack(pady=0)  # 放置在确认按钮的正上方
     # 这里加一个确认键,返回上一步
     confirm_button = ttk.Button(grade_window, text="确认", width=10,
