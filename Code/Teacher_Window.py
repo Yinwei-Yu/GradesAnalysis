@@ -241,7 +241,16 @@ def disp_all_grades(grade_window):
     # 创建一个Frame来包含Treeview和滚动条
     frame = ttk.Frame(choice1)
     frame.pack(fill="both", expand=True)
-
+    # 创建一个修改显示模式的函数,绑定在下拉框的切换上面
+    # 添加选择下拉菜单  # 还没有绑定相关的事件
+    category_var = tk.StringVar()
+    category_dropdown = ttk.Combobox(choice1, textvariable=category_var, state="readonly")
+    category_dropdown['values'] = ("物理类", "历史类")
+    category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
+    # 添加一个搜索框
+    search_var = tk.StringVar()
+    search_entry = ttk.Entry(choice1, textvariable=search_var)
+    search_entry.pack(pady=10, side=tk.LEFT, anchor='nw')
     # 创建Treeview
     columns = (
         "姓名", "学号", "语文", "数学", "外语", "物理", "化学", "生物", "历史",
@@ -253,25 +262,22 @@ def disp_all_grades(grade_window):
         tree.heading(col, text=col, command=lambda sub=col: click_sort(sub, tree))
         tree.column(col, width=100, anchor='center')
 
-    # 拿到数据
-    # 通过调用后端的什么东西,得到所有的信息
-    # data = [(), (), ()]
-    # 测试数据
     # 总分降序
     data = accountManager.getAllGrades(0, 0)
-    print("hello2")
-    # 将得到的数据放到那个表里面去
-    for item in data:
-        # 将 -1 转换为斜杠
-        values = []
-        for key in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理', '总分']:
-            if item[key] == -1:
-                values.append('/')
-            else:
-                values.append(item[key])
 
-        tree.insert('', tk.END, values=tuple(values))
+    def insert_data(i_data):
+        # 将得到的数据放到那个表里面去
+        for item in i_data:
+            # 将 -1 转换为斜杠
+            values = []
+            for key in ['姓名', '学号', '语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理', '总分']:
+                if item[key] == -1:
+                    values.append('/')
+                else:
+                    values.append(item[key])
+            tree.insert('', tk.END, values=tuple(values))
 
+    insert_data(data)  # 插入初始数据
     # 创建垂直和水平滚动条
     scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
     scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
@@ -292,6 +298,38 @@ def disp_all_grades(grade_window):
     con_button = ttk.Button(choice1, text='确认', command=lambda: last_step(choice1, grade_window), width=10,
                             bootstyle=bootstyle)
     con_button.pack(pady=10)
+
+    # 完成搜索框的搜索功能
+    def search_tree():
+        search_term = search_entry.get()
+        for child in tree.get_children():
+            s_values = tree.item(child, 'values')
+            # 只在姓名和学号里面搜索
+            if search_term.lower() in s_values[0].lower() or search_term.lower() in s_values[1].lower():
+                tree.see(child)
+                tree.selection_set(child)
+            else:
+                tree.selection_remove(child)
+
+    search_var.trace("w", lambda name, index, mode: search_tree())
+
+    # 添加一个选择类别的东西
+    def filter_data(event):
+        # 拿到选择的类别
+        selected_category = category_var.get()
+        if selected_category == "物理类":
+            filtered_data = [item for item in data if item["物理"] != -1]
+        elif selected_category == "历史类":
+            filtered_data = [item for item in data if item["历史"] != -1]
+        else:
+            filtered_data = data
+        # 清空TreeView中的数据并插入新的数据
+        for child in tree.get_children():
+            tree.delete(child)
+        # 插入过滤后的数据
+        insert_data(filtered_data)
+    # 为下拉框绑定相关的函数
+    category_dropdown.bind("<<ComboboxSelected>>",filter_data)
     choice1.mainloop()
 
 
@@ -389,7 +427,7 @@ def disp_single_grade(grade_window):
 # 成绩展示的内置其他选项
 # 1. 查看所有学生成绩
 # 2. 所有学生成绩分析
-# 3. 查找个人成绩 -> 个人成绩分析
+# 添加功能,在下面加搜索框和历史类物理类的切换
 def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选择查看成绩后,原来的窗口无法隐藏 已解决
     grade_window = ttk.Toplevel(tea_window)
     grade_window.title("查看成绩")
