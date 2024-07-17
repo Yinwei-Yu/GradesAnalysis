@@ -38,26 +38,6 @@ from Teacher_Window import disp_grades
 # 复用Teacher修改密码的函数
 from Teacher_Window import change_my_password
 
-# 暂时的数据,之后再找后端的函数
-# 示例数据
-student_courses = {
-    1: ['语文', '数学'],
-    2: ['英语', '物理'],
-    3: ['历史', '化学']
-}
-
-student_info = {
-    1: {"name": "学生一"},
-    2: {"name": "学生二"},
-    3: {"name": "学生三"}
-}
-
-# 示例申请数据
-applications = [
-    ("老师一", "学生一", 1, "语文"),
-    ("老师二", "学生二", 2, "英语"),
-    ("老师三", "学生三", 3, "历史")
-]
 
 
 def last_step(current_window, previous_window):
@@ -96,31 +76,35 @@ def confirm_modification(entry_id, combobox_course, entry_new_grade):
     # 拿到输入的新成绩
     new_grade = entry_new_grade.get()
     # 拿到修改的课程
-    new_corse = combobox_course.get()
-    if student_id and new_grade and new_corse:  # 这里调用实际的函数
+    new_course = combobox_course.get()
+    if student_id and new_grade and new_course:  # 这里调用实际的函数
         messagebox.showinfo("成功")
     else:
         messagebox.showinfo("失败")
 
 
 # 不仅会更新下拉框中的选项,还会在学号无效或不在数据中的情况下清楚下拉框的当前值
+# 还要更新原成绩
 def update_course_options(event, entry_id, combobox_course, label_student_name):
     student_id = entry_id.get()
     if student_id.isdigit():
         student_id = int(student_id)
-        if student_id in student_courses:
-            combobox_course['values'] = student_courses[student_id]
-            if combobox_course.get() not in student_courses[student_id]:
-                combobox_course.set('')  # 清除不在新选项中的值
-            label_student_name.config(text=student_info[student_id]["name"])
-        else:
-            combobox_course['values'] = []
-            combobox_course.set('')
-            label_student_name.config(text="")
-    else:
-        combobox_course['values'] = []
-        combobox_course.set('')
-        label_student_name.config(text="")
+        # 调用getGrades,拿到这个学号对应的姓名 name 和科目成绩 sub [],sub里面是分数,如果是-1就是没选择 没找到的话stu_name = False
+        stu_name,sub = accountManager.getGrades(1,student_id)
+        # 当这个学号是存在的
+        if stu_name:
+            course_names = ["语文", "数学", "外语", "物理", "化学", "生物", "历史", "政治", "地理"]
+            valid_courses = [course_names[i] for i in range(len(sub)) if sub[i] != -1]
+            combobox_course['values'] = valid_courses
+            if combobox_course.get() not in valid_courses:
+                combobox_course.set('')
+            # 设置姓名
+            label_student_name.config(text=stu_name)
+            return
+    # 学号不存在或者是无效的选择的时候就直接全清空
+    combobox_course['values'] = []
+    combobox_course.set('')
+    label_student_name.config(text="")
 
 
 def update_subject2(selected_subject1, selected_subject2, selected_subject3, subject2_menu, subject3_menu,
@@ -350,10 +334,17 @@ def admin_disp_apps(admin_window):
         tree.column(col, width=100, anchor='center')
     tree.pack(fill="both", expand=True, side="left")
     # 得到数据
-    data = [('教师1', '学生1', 111, '语文'), ('教师2', '学生2', 222, '数学'), ('教师3', '学生3', 333, '物理')]
-    # 将得到的数据放到那个表里面去
-    for item in data:
-        tree.insert('', tk.END, values=item)
+    # data = [('教师1', '学生1', 111, '语文'), ('教师2', '学生2', 222, '数学'), ('教师3', '学生3', 333, '物理')]
+    data = accountManager.getAllApplications()
+    teacher_list = data['申请老师']
+    student_list = data['被申请学生姓名']
+    stuID_list = data['学生学号']
+    subject_list = data['申请科目']
+    # 将数据插入到Treeview中
+    num_rows = len(teacher_list)  # 获取行数
+    for i in range(num_rows):
+        row_data = (teacher_list[i], student_list[i], stuID_list[i], subject_list[i])
+        tree.insert("", "end", values=row_data)
     # 创建垂直滚动条
     scrollbar_y = ttk.Scrollbar(left_frame, orient="vertical", command=tree.yview)
     tree.configure(yscrollcommand=scrollbar_y.set)
@@ -380,11 +371,11 @@ def admin_disp_apps(admin_window):
     combobox_course.grid(row=1, column=1, pady=5)
     # 显示姓名
     ttk.Label(right_frame, text="姓名:").grid(row=2, column=0, pady=5, sticky="e")
-    label_student_name = ttk.Label(right_frame, text="这里显示学生的姓名")
+    label_student_name = ttk.Label(right_frame, text="")  # 等下这个设置为空的
     label_student_name.grid(row=2, column=1, pady=5)
     # 显示原来的成绩
     ttk.Label(right_frame, text="原成绩:").grid(row=3, column=0, pady=5, sticky="e")
-    label_original_grade = ttk.Label(right_frame, text="这里显示原来的成绩")
+    label_original_grade = ttk.Label(right_frame, text="")
     label_original_grade.grid(row=3, column=1, pady=5)
     # 修改成绩及其文本输入框
     ttk.Label(right_frame, text="修改成绩:").grid(row=4, column=0, pady=5, sticky="e")
