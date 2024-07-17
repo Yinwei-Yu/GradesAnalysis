@@ -39,6 +39,19 @@ from Teacher_Window import disp_grades
 from Teacher_Window import change_my_password
 
 
+def update_original_grade(entry_id, combobox_course, label_original_grade):
+    student_id = entry_id.get()
+    selected_course = combobox_course.get()
+    if student_id.isdigit() and selected_course:
+        student_id = int(student_id)
+        # 获取学号对应的姓名和科目成绩
+        stu_name, sub = accountManager.getGrades(1, student_id)
+        course_names = ["语文", "数学", "外语", "物理", "化学", "生物", "历史", "政治", "地理"]
+        if stu_name:
+            course_index = course_names.index(selected_course)
+            original_grade = sub[course_index]
+            label_original_grade.config(text=str(original_grade))
+
 
 def last_step(current_window, previous_window):
     previous_window.deiconify()
@@ -85,12 +98,12 @@ def confirm_modification(entry_id, combobox_course, entry_new_grade):
 
 # 不仅会更新下拉框中的选项,还会在学号无效或不在数据中的情况下清楚下拉框的当前值
 # 还要更新原成绩
-def update_course_options(event, entry_id, combobox_course, label_student_name):
+def update_course_options(event, entry_id, combobox_course, label_student_name, label_original_grade):
     student_id = entry_id.get()
     if student_id.isdigit():
         student_id = int(student_id)
         # 调用getGrades,拿到这个学号对应的姓名 name 和科目成绩 sub [],sub里面是分数,如果是-1就是没选择 没找到的话stu_name = False
-        stu_name,sub = accountManager.getGrades(1,student_id)
+        stu_name, sub = accountManager.getGrades(1, student_id)
         # 当这个学号是存在的
         if stu_name:
             course_names = ["语文", "数学", "外语", "物理", "化学", "生物", "历史", "政治", "地理"]
@@ -364,11 +377,15 @@ def admin_disp_apps(admin_window):
     entry_id = ttk.Entry(right_frame)
     entry_id.grid(row=0, column=1, pady=5)
     entry_id.bind('<KeyRelease>',
-                  lambda event: update_course_options(event, entry_id, combobox_course, label_student_name))
+                  lambda event: update_course_options(event, entry_id, combobox_course, label_student_name,
+                                                      label_original_grade))
     # 科目的下拉框
     ttk.Label(right_frame, text="科目:").grid(row=1, column=0, pady=5, sticky="e")
     combobox_course = ttk.Combobox(right_frame, state="readonly")
     combobox_course.grid(row=1, column=1, pady=5)
+    # 绑定科目下拉框的事件,使得可以显示出原成绩
+    combobox_course.bind('<<ComboboxSelected>>',
+                         lambda event: update_original_grade(entry_id, combobox_course, label_original_grade))
     # 显示姓名
     ttk.Label(right_frame, text="姓名:").grid(row=2, column=0, pady=5, sticky="e")
     label_student_name = ttk.Label(right_frame, text="")  # 等下这个设置为空的
