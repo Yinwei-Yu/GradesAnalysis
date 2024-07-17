@@ -157,9 +157,9 @@ def start():
     # 添加command参数补充按钮功能
     # 注册、登录、退出按钮
     bt_login = ttk.Button(login_window, text='登录', command=log_in, bootstyle='info-outline', width=12)
-    bt_login.place(x=120, y=600)
+    bt_login.place(x=550, y=600)
     bt_logout = ttk.Button(login_window, text='退出', command=log_out, bootstyle='dark-outline', width=12)
-    bt_logout.place(x=550, y=600)
+    bt_logout.place(x=120, y=600)
     bt_change_theme = ttk.Button(login_window, text='切换主题', command=lambda: change_theme(style),
                                  bootstyle="dark-toolbutton")
     bt_change_theme.place(x=50, y=50)

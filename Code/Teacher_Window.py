@@ -428,11 +428,8 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
     grade_window.resizable(False, False)
     tea_window.withdraw()
 
-    # 标题
-    welcome_title = ttk.Label(grade_window, text='你好!' + name, font=('楷体', 10))
-    welcome_title.place(x=0, y=0)
 
-    blank_title = ttk.Label(grade_window, text='', font=('黑体', 10))
+    blank_title = ttk.Label(grade_window, text='', font=('黑体', 15))
     blank_title.pack(pady=20)
     disp_all_grades_button = ttk.Button(grade_window, text='显示所有学生成绩',
                                         command=lambda: disp_all_grades(grade_window), width=20, bootstyle=bootstyle,

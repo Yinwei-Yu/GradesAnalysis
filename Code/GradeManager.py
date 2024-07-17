@@ -109,7 +109,7 @@ class GradeManager:
     # stuID:int
     # grades:Grades
     # 实现从输入导入
-    def inputSingle(self, name,
+    def inputSingleGrades(self, name,
                     stuID,
                     gradeDict,
                     host=host,  # 主机地址
