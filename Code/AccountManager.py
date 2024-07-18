@@ -62,6 +62,8 @@ class AccountManager:
         self.ID: int = 0
         self.userNum = 0
         # self.inputUsers('./excelFiles/users.csv')
+
+    def initialize(self):
         self.getUserFromSql()
         self.setRankings()
 
@@ -673,6 +675,7 @@ accountManager = AccountManager()
 # accountManager.resetGrades()
 gradeManager.getApplicationFromSql()
 gradeManager.inputMySQL()
+accountManager.initialize()
 # accountManager.getAllGrades(1,0,0)
 
 if __name__ == "__main__":
