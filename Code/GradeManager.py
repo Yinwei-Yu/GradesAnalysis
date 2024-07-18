@@ -78,8 +78,13 @@ by陈邱华
 
 2024/7/17
 GradeManager
-    deleteCheckApplication()
     deleteCheckApplicationFromMySQL()
+by陈邱华
+
+2024/7/18
+GradeManager
+   TruncateGrades()
+   TruncateCheckApplication()
 by陈邱华
 '''
 
@@ -301,18 +306,8 @@ class GradeManager:
 
         return False
 
-    # 删除成绩审核申请表功能
-    def deleteCheckApplication(self, index):
-        stuID = self.checkApplication[index].stuID
-        subject = self.checkApplication[index].subjectToCheck
-        try:
-            self.deleteCheckApplicationFromMySQL(stuID, subject)
-            del self.checkApplication[index]
-            self.saveCheckApplicationsToCSV()
-        except Exception as e:
-            print('删除审核表时出现错误：{}'.format(e))
-            return False
-        return True
+
+
 
     # 从数据库删除成绩审核申请表功能
     def deleteCheckApplicationFromMySQL(self, stuID, subject,
@@ -807,6 +802,40 @@ class GradeManager:
             mycursor.close()  # 关闭游标对象
             mydb.close()  # 关闭数据库连接
 
+    # 清空成绩
+    def truncateGrades(self, host=host,  # 主机地址
+                       user=user,  # 数据库用户名
+                       password=password,  # 密码
+                       database=database,  # 数据库名称
+                       table=rankedGradesTable,  # 数据库表名
+                       ):
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        try:
+            sql = f"TRUNCATE TABLE {table}"
+            # 更新
+            mycursor.execute(sql)
+            mydb.commit()  # 提交更改
+            # 提交更改并关闭数据库连接
+        except Exception as e:
+            mydb.rollback()
+            raise e
+        finally:
+            mycursor.close()  # 关闭游标对象
+            mydb.close()  # 关闭数据库连接
+
+    # 将申请表列表转换为字典列表类型
     def getCheckApplicaionsTable(self):
         teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
         stu_name_list = [check_application.stuName for check_application in self.checkApplication]
@@ -816,6 +845,7 @@ class GradeManager:
                 '申请科目': subject_list}
         return data
 
+    # 保存申请表到CSV文件中
     def saveCheckApplicationsToCSV(self):
         teacher_name_list = [check_application.teacherName for check_application in self.checkApplication]
         stu_name_list = [check_application.stuName for check_application in self.checkApplication]
@@ -852,7 +882,6 @@ class GradeManager:
             print('无法连接至数据库{}'.format(database), e)
             mydb.close()
             return False
-
         # 创建一个游标对象
         # 先清空表格
         # sql = 'TRUNCATE TABLE {};'.format(table)
@@ -883,7 +912,7 @@ class GradeManager:
         mycursor.close()  # 关闭游标对象
         mydb.close()  # 关闭数据库连接
 
-    def getApplicaFromSql(self,
+    def getApplicationFromSql(self,
                           host=host,  # 主机地址
                           user=user,  # 数据库用户名
                           password=password,  # 密码
@@ -930,10 +959,44 @@ class GradeManager:
 
         return True
 
+    # 清空申请表
+    def truncateCheckApplication(self, host=host,  # 主机地址
+                                 user=user,  # 数据库用户名
+                                 password=password,  # 密码
+                                 database=database,  # 数据库名称
+                                 table=checkApplicationsTable,  # 数据库表名
+                                 ):
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        try:
+            sql = f"TRUNCATE TABLE {table}"
+            # 更新
+            mycursor.execute(sql)
+            mydb.commit()  # 提交更改
+            # 提交更改并关闭数据库连接
+        except Exception as e:
+            mydb.rollback()
+            raise e
+        finally:
+            mycursor.close()  # 关闭游标对象
+            mydb.close()  # 关闭数据库连接
+
 
 gradeManager = GradeManager([], 0, [], 0)
-gradeManager.inputMore("./excelFiles/rankedGrades.csv")
-gradeManager.inputCheckApplications("./excelFiles/checkApplications.csv")
+
+# gradeManager.inputMore("./excelFiles/rankedGrades.csv")
+# gradeManager.inputCheckApplications("./excelFiles/checkApplications.csv")
 # for i in range(10):
 #     for j in range(2):
 #         gradeManager.getAllGrades(i, j)

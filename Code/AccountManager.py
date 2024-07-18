@@ -41,7 +41,12 @@ by陈邱华
 AccountManager
     setRankings()
     addCheckApplication()
+    delteteCheckApplication()
     修改了login()
+by陈邱华
+2024/7/18
+AccountManager
+   TruncateUsers() 
 by陈邱华
 '''
 
@@ -56,7 +61,8 @@ class AccountManager:
         # 管理员为1，教师为2，学生为3
         self.ID: int = 0
         self.userNum = 0
-        self.inputUsers('./excelFiles/users.csv')
+        # self.inputUsers('./excelFiles/users.csv')
+        self.getUserFromSql()
         self.setRankings()
 
     # 读取用户信息
@@ -381,6 +387,38 @@ class AccountManager:
 
         return True
 
+    def truncateUsers(self, host=host,  # 主机地址
+                      user=user,  # 数据库用户名
+                      password=password,  # 密码
+                      database=database,  # 数据库名称
+                      table=usersTable,  # 数据库表名
+                      ):
+        global mydb
+        try:
+            mydb = mysql.connector.connect(
+                host=host,  # 数据库主机地址
+                user=user,  # 数据库用户名
+                password=password,  # 数据库密码
+                database=database  # 数据库名称
+            )
+        except Exception as e:
+            print('无法连接至数据库{}'.format(database), e)
+            mydb.close()
+        # 创建一个游标对象
+        mycursor = mydb.cursor()
+        try:
+            sql = f"DELETE FROM {table} WHERE 类型 = 3"
+            # 更新
+            mycursor.execute(sql)
+            mydb.commit()  # 提交更改
+            # 提交更改并关闭数据库连接
+        except Exception as e:
+            mydb.rollback()
+            raise e
+        finally:
+            mycursor.close()  # 关闭游标对象
+            mydb.close()  # 关闭数据库连接
+
     # 更新用户信息
     # 根据学生信息更新用户信息，并置初始密码为123456
     def refreshUserInfo(self):
@@ -420,7 +458,7 @@ class AccountManager:
             for stu in gradeManager.student:
                 if stu.stuID == stuID:
                     stuName = stu.name
-                    totalGrades = [stu.stuGrades.totalScores,stu.stuGrades.totalRanking]
+                    totalGrades = [stu.stuGrades.totalScores, stu.stuGrades.totalRanking]
                     gradeList = [subject.score for subject in stu.stuGrades.grades]
                     return stuName, gradeList, totalGrades
             return False, [], []
@@ -435,7 +473,10 @@ class AccountManager:
         return gradeManager.getAllGrades(mode1, mode2, mode3)
 
     def changeGrades(self, stuID, subject, new_grade):
-        return gradeManager.changeGrades(stuID, subject, new_grade)
+        if gradeManager.changeGrades(stuID, subject, new_grade):
+            self.setRankings()
+            return True
+        return False
 
     def setRankings(self):
         # 十二种选科排序
@@ -510,6 +551,19 @@ class AccountManager:
     def addCheckApplication(self, stuName, stuID, subject):
         gradeManager.addCheckApplication(self.userName, stuName, stuID, subject)
 
+    # 删除成绩审核申请表功能
+    def deleteCheckApplication(self, index):
+        stuID = gradeManager.checkApplication[index].stuID
+        subject = gradeManager.checkApplication[index].subjectToCheck
+        try:
+            gradeManager.deleteCheckApplicationFromMySQL(stuID, subject)
+            del gradeManager.checkApplication[index]
+            gradeManager.saveCheckApplicationsToCSV()
+        except Exception as e:
+            print('删除审核表时出现错误：{}'.format(e))
+            return False
+        return True
+
     def dispAllGrades(self):
         gradeManager.dispAllGrades()
 
@@ -525,6 +579,7 @@ class AccountManager:
             if importedGrades is False:
                 return
             importedGrades = gradeManager.inputMySQL()
+            self.setRankings()
             print(importedGrades)
             if importedGrades is False:
                 return
@@ -584,6 +639,7 @@ class AccountManager:
             temp = gradeManager.inputGrades(1, name, ID, gradesDict)
             if temp == 6:
                 try:
+                    self.setRankings()
                     self.refreshUserInfo()
                     self.saveUserInfoToCSV()
                     self.saveSingleUser(name, ID)
@@ -602,9 +658,21 @@ class AccountManager:
     def saveGradesToCSV(self):
         gradeManager.saveGradesToCSV()
 
+    def resetGrades(self):
+        try:
+            gradeManager.truncateGrades()
+            gradeManager.truncateCheckApplication()
+            self.truncateUsers()
+        except Exception as e:
+            print(e)
+            return False
+        return True
+
 
 accountManager = AccountManager()
-
+# accountManager.resetGrades()
+gradeManager.getApplicationFromSql()
+gradeManager.inputMySQL()
 # accountManager.getAllGrades(1,0,0)
 
 if __name__ == "__main__":
