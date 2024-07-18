@@ -1,5 +1,5 @@
 from tkinter import messagebox
-
+import numpy as np
 import mysql.connector  # pip install mysql-connector-python
 
 from GradeManager import gradeManager
@@ -671,16 +671,20 @@ class AccountManager:
             return False
         return True
 
-    def getAverage(self):
-        sumList = [0] * 9
-        for stu in gradeManager.student:
-            sumList = [sumList[i] + (stu.stuGrades.grades[i].score if stu.stuGrades.grades[i].score != -1 else 0)
-                       for i in range(9)
-                       ]
+    import numpy as np
 
-        averList = [int(sumList[i] / gradeManager.stuNum)
-                    for i in range(9)
-                    ]
+    def getAverage(self):
+        subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
+        scores = {subject: [] for subject in subjects}
+
+        # Collect scores for each subject
+        for student in gradeManager.student:
+            for i, subject in enumerate(subjects):
+                if student.stuGrades.grades[i].score != -1:
+                    scores[subject].append(student.stuGrades.grades[i].score)
+
+        # Calculate average scores for each subject
+        averList = [int(np.mean(scores[subject])) if scores[subject] else 0 for subject in subjects]
 
         return averList
 
@@ -691,7 +695,6 @@ gradeManager.getApplicationFromSql()
 gradeManager.inputMySQL()
 accountManager.initialize()
 # accountManager.getAllGrades(1,0,0)
-
 
 if __name__ == "__main__":
     print(accountManager.getAllUsers())
