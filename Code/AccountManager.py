@@ -555,14 +555,15 @@ class AccountManager:
 
     # 删除成绩审核申请表功能
     def deleteCheckApplication(self, index):
-        stuID = gradeManager.checkApplication[index].stuID
-        subject = gradeManager.checkApplication[index].subjectToCheck
+
         try:
+            stuID = gradeManager.checkApplication[index].stuID
+            subject = gradeManager.checkApplication[index].subjectToCheck
             gradeManager.deleteCheckApplicationFromMySQL(stuID, subject)
             del gradeManager.checkApplication[index]
             gradeManager.saveCheckApplicationsToCSV()
         except Exception as e:
-            print('删除审核表时出现错误：{}'.format(e))
+            #print('删除审核表时出现错误：{}'.format(e))
             return False
         return True
 
