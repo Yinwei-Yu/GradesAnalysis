@@ -64,10 +64,15 @@ def generate_grade_report(userid, grade_window):
 
     # 创建数据
     stu_grades, _ = get_grades(userid)
+    subjects = {'语文': 0, '数学': 1, '英语': 2, '物理': 3, '化学': 4, '生物': 5, '历史': 6, '政治': 7,
+                '地理': 8}
+    all_scores = accountManager.getAverage()
     categories = []
     scores1 = []  # 我的成绩
-    scores2 = [80, 85, 75, 90, 80, 92]  # 平均成绩
+    scores2 = []  # 平均成绩
+
     for subject, score in stu_grades.items():
+        scores2.append(all_scores[subjects[subject]])
         categories.append(subject)
         scores1.append(score)
     # categories = ['语文', '数学', '英语', '物理', '化学', '生物']
