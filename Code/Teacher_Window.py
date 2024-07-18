@@ -150,7 +150,7 @@ def disp_graph(choice2):
     subject_var = tk.StringVar(graph_window)
     subject_var.set(subjects[0])
 
-    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0],*subjects)
+    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0], *subjects)
     subject_menu.pack(pady=10)
 
     def analyze_subject():
@@ -183,7 +183,7 @@ def disp_relation(choice2):
     method_var = tk.StringVar(rel_window)
     method_var.set(analysis_methods[0])
 
-    method_menu = ttk.OptionMenu(rel_window, method_var,analysis_methods[0],*analysis_methods)
+    method_menu = ttk.OptionMenu(rel_window, method_var, analysis_methods[0], *analysis_methods)
     method_menu.pack(pady=10)
 
     def analyze_method():
@@ -315,14 +315,29 @@ def disp_all_grades(grade_window):
     # 搜索加一个高亮
     def search_tree():
         search_term = search_entry.get()
+        # 如果搜索框为空，则清除所有行的标签并重置背景颜色
+        if not search_term:
+            for item in tree.get_children():
+                tree.item(item, tags=())
+            tree.tag_configure('match', background='white')
+            tree.selection_remove(tree.selection())  # 取消所有选中的行
+            return
         for child in tree.get_children():
             s_values = tree.item(child, 'values')
             # 只在姓名和学号里面搜索
             if search_term.lower() in s_values[0].lower() or search_term.lower() in s_values[1].lower():
                 tree.see(child)
                 tree.selection_set(child)
+                tree.item(child,tags=('match',))
             else:
                 tree.selection_remove(child)
+                tree.item(child,tags=('nomatch',))
+            # 重置所有行的背景颜色
+            for item in tree.get_children():
+                if 'match' in tree.item(item, 'tags'):
+                    tree.tag_configure('match', background='grey',foreground='white')
+                else:
+                    tree.tag_configure('nomatch', background='white')
 
     search_var.trace("w", lambda name, index, mode: search_tree())
 
@@ -598,13 +613,6 @@ def change_my_password(tea_window, password, user_id):
                                width=5, bootstyle='darkly')
     cancel_button.place(x=160, y=450)
     page4.mainloop()
-
-
-# 老师可能不需要这个功能
-# 修改学生的密码的函数  未实现
-#
-# def change_stu_password():
-#   pass
 
 
 # 退出函数 返回到主界面
