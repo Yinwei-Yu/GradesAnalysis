@@ -52,7 +52,7 @@ current_category = "物理类"
 # 根据学号获取成绩
 def get_grades(stuID):
     if stuID == "":
-        return False
+        return False, []
     stuName, gradeList, total_grades = accountManager.getGrades(3, int(stuID))
     subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治',
                 '\n地理：']
@@ -71,9 +71,15 @@ def get_grades(stuID):
 
 # 点击之后实现排序的函数,在显示总成绩界面,点击之后就会按照单科进行排序
 # 传入点击的标题的名称
+
+# 实现升序和降序
+Orders = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+
 def click_sort(current_category, sub, tree):
     # 这个函数传两个参数 mod1=0 总分 1 语文 mod2=0 降序
     # 维护一个字典,使得每个科目的名称有对应的mod1
+    global Orders
     if current_category == "物理类":
         flag = 0
     else:
@@ -90,10 +96,12 @@ def click_sort(current_category, sub, tree):
         '政治': 8,
         '地理': 9
     }
+    # mod1拿到的是科目的标号
     mod1 = subject_mapping.get(sub, -1)
     if mod1 != -1:
         # 拿到新的排序方式得到的成绩
-        data1 = accountManager.getAllGrades(flag, mod1, 0)
+        data1 = accountManager.getAllGrades(flag, mod1, Orders[mod1])
+        Orders[mod1] = not Orders[mod1]
         update_treeview(data1, tree)
 
 
@@ -150,7 +158,7 @@ def disp_graph(choice2):
     subject_var = tk.StringVar(graph_window)
     subject_var.set(subjects[0])
 
-    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0],*subjects)
+    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0], *subjects)
     subject_menu.pack(pady=10)
 
     def analyze_subject():
@@ -183,7 +191,7 @@ def disp_relation(choice2):
     method_var = tk.StringVar(rel_window)
     method_var.set(analysis_methods[0])
 
-    method_menu = ttk.OptionMenu(rel_window, method_var,analysis_methods[0],*analysis_methods)
+    method_menu = ttk.OptionMenu(rel_window, method_var, analysis_methods[0], *analysis_methods)
     method_menu.pack(pady=10)
 
     def analyze_method():
@@ -234,7 +242,10 @@ def last_step(current_window, previous_window):
 # 实现查看所有成绩的返回上一步的功能,解决了大类与实际情况的显示问题
 def last_step_reset(current_window, previous_window):
     global current_category
+    global Orders
     current_category = "物理类"
+    # 重新将所有的序列默认为升序
+    Orders = [0] * len(Orders)
     last_step(current_window, previous_window)
 
 
@@ -315,20 +326,38 @@ def disp_all_grades(grade_window):
     # 搜索加一个高亮
     def search_tree():
         search_term = search_entry.get()
+        # 如果搜索框为空，则清除所有行的标签并重置背景颜色
+        if not search_term:
+            for item in tree.get_children():
+                tree.item(item, tags=())
+            tree.tag_configure('match', background='white')
+            tree.selection_remove(tree.selection())  # 取消所有选中的行
+            return
         for child in tree.get_children():
             s_values = tree.item(child, 'values')
             # 只在姓名和学号里面搜索
             if search_term.lower() in s_values[0].lower() or search_term.lower() in s_values[1].lower():
                 tree.see(child)
                 tree.selection_set(child)
+                tree.item(child, tags=('match',))
             else:
                 tree.selection_remove(child)
+                tree.item(child, tags=('nomatch',))
+            # 重置所有行的背景颜色
+            for item in tree.get_children():
+                if 'match' in tree.item(item, 'tags'):
+                    tree.tag_configure('match', background='grey', foreground='white')
+                else:
+                    tree.tag_configure('nomatch', background='white')
 
     search_var.trace("w", lambda name, index, mode: search_tree())
 
     # 添加一个选择类别的东西
     def filter_data(event):
         global current_category
+        global Orders
+        # 重新将所有的序列默认为升序
+        Orders = [0] * len(Orders)
         # 拿到选择的类别
         selected_category = category_var.get()
         if selected_category == "物理类":
@@ -497,6 +526,30 @@ def app_review(tea_window):
     stuID_label.place(x=100, y=100)
     sub_label = ttk.Label(app_window, text="申请科目:", font=('黑体', 14))
     sub_label.place(x=100, y=220)
+    # 输入学号时也要把名字打印出来
+    ttk.Label(app_window, text='学生姓名:', font=('黑体', 14)).place(x=100, y=160)
+    name_label = ttk.Label(app_window, text='', font=('黑体', 14))
+    name_label.place(x=270, y=160)
+
+    # 检测学号输入的同时更新姓名和下拉框选项
+    def update_options(event):
+        student_id = stuID_entry.get()
+        if student_id.isdigit():
+            student_id = int(student_id)
+            # 调用getGrades,拿到这个学号对应的姓名 name 和科目成绩 sub [],sub里面是分数,如果是-1就是没选择 没找到的话stu_name = False
+            stu_name, sub = accountManager.getGrades(1, student_id)
+            # 当这个学号是存在的
+            if stu_name:
+                # 显示姓名
+                course_names = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "政治", "地理"]
+                valid_courses = [course_names[i] for i in range(len(sub)) if sub[i] != -1]
+                sub_combobox['values'] = valid_courses
+                if sub_combobox.get() not in valid_courses:
+                    sub_combobox.set('')
+                name_label.config(text=stu_name)
+                return
+        name_label.config(text='')
+        sub_combobox.set("")  # 设置默认为空
 
     def on_text_change(*args):
         # 获取文本框中的内容
@@ -512,27 +565,28 @@ def app_review(tea_window):
     sub_combobox = Combobox(app_window, values=[], state="readonly")
     sub_combobox.place(x=270, y=220)
 
-    # 绑定下拉框事件
-    def update_combobox(event):
-        student_id = stuID_entry.get()
-        options = []
-        try:
-            stu_grades, _ = get_grades(student_id)
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
-            app_window.destroy()
-            tea_window.deiconify()
-            return
-        if stu_grades:
-            for subject, score in stu_grades.items():
-                options.append(subject)
-        else:
-            sub_combobox.set("")
-        sub_combobox['values'] = options
-        if options:
-            sub_combobox.set("")  # 设置默认为空
+    # 绑定文本框事件
+    # 同时更新姓名和下拉框
+    # def update_options(event):
+    #     student_id = stuID_entry.get()
+    #     options = []
+    #     try:
+    #         stu_grades, _ = get_grades(student_id)
+    #     except ValueError as e:
+    #         messagebox.showerror("Error", str(e))
+    #         app_window.destroy()
+    #         tea_window.deiconify()
+    #         return
+    #     if stu_grades:
+    #         for subject, score in stu_grades.items():
+    #             options.append(subject)
+    #     else:
+    #         sub_combobox.set("")
+    #     sub_combobox['values'] = options
+    #     if options:
+    #         sub_combobox.set("")  # 设置默认为空
 
-    stuID_entry.bind("<KeyRelease>", update_combobox)
+    stuID_entry.bind("<KeyRelease>", update_options)
 
     # 获取选中的科目
     def on_select(event):
@@ -598,13 +652,6 @@ def change_my_password(tea_window, password, user_id):
                                width=5, bootstyle='darkly')
     cancel_button.place(x=160, y=450)
     page4.mainloop()
-
-
-# 老师可能不需要这个功能
-# 修改学生的密码的函数  未实现
-#
-# def change_stu_password():
-#   pass
 
 
 # 退出函数 返回到主界面
