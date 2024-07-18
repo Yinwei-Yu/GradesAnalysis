@@ -92,6 +92,11 @@ import os
 
 import mysql.connector  # pip install mysql-connector-python
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+import statistics
+
 
 import CheckApplication
 import Grades as gr
@@ -462,16 +467,13 @@ class GradeManager:
     '''
 
     def plotHistograms(self, subjectName: str):
-        import numpy as np
-        import matplotlib.pyplot as plt
-        from matplotlib import rcParams
-        import statistics
+
 
         # 设置支持中文显示的字体
         rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体
         rcParams['axes.unicode_minus'] = False  # 解决坐标轴负号显示问题
 
-        subjects = ['Chinese', 'Math', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Politics', 'Geography']
+        subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
 
         if subjectName not in subjects:
             print(f"学科：{subjectName}不存在！")
@@ -529,9 +531,6 @@ class GradeManager:
     '''
 
     def plotLineCharts(self, way):
-        import numpy as np
-        import matplotlib.pyplot as plt
-        from matplotlib import rcParams
 
         # 设置支持中文显示的字体
         rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体

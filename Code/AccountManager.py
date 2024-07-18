@@ -670,6 +670,19 @@ class AccountManager:
             return False
         return True
 
+    def getAverage(self):
+        sumList = [0] * 9
+        for stu in gradeManager.student:
+            sumList = [sumList[i] + (stu.stuGrades.grades[i].score if stu.stuGrades.grades[i].score != -1 else 0)
+                       for i in range(9)
+                       ]
+
+        averList = [int(sumList[i] / gradeManager.stuNum)
+                    for i in range(9)
+                    ]
+
+        return averList
+
 
 accountManager = AccountManager()
 # accountManager.resetGrades()
@@ -677,6 +690,7 @@ gradeManager.getApplicationFromSql()
 gradeManager.inputMySQL()
 accountManager.initialize()
 # accountManager.getAllGrades(1,0,0)
+
 
 if __name__ == "__main__":
     print(accountManager.getAllUsers())
@@ -813,3 +827,4 @@ if __name__ == "__main__":
 # accountManager.refreshUserInfo()
 # accountManager.printUserInfo()
 # accountManager.saveUserInfo()
+
