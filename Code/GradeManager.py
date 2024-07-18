@@ -306,9 +306,6 @@ class GradeManager:
 
         return False
 
-
-
-
     # 从数据库删除成绩审核申请表功能
     def deleteCheckApplicationFromMySQL(self, stuID, subject,
                                         host=host,  # 主机地址
@@ -347,6 +344,7 @@ class GradeManager:
 
     # 修改成绩后用于修改总成绩
     def renewTotalGrade(self, num):
+        self.student[num].stuGrades.totalScores = 0
         for i in range(9):
             score = self.student[num].stuGrades.grades[i].score
             self.student[num].stuGrades.totalScores += self.student[num].stuGrades.grades[i].score if score != -1 else 0
@@ -913,12 +911,12 @@ class GradeManager:
         mydb.close()  # 关闭数据库连接
 
     def getApplicationFromSql(self,
-                          host=host,  # 主机地址
-                          user=user,  # 数据库用户名
-                          password=password,  # 密码
-                          database=database,  # 数据库名称
-                          table=checkApplicationsTable  # 数据库表名
-                          ):
+                              host=host,  # 主机地址
+                              user=user,  # 数据库用户名
+                              password=password,  # 密码
+                              database=database,  # 数据库名称
+                              table=checkApplicationsTable  # 数据库表名
+                              ):
 
         global mydb
         try:
