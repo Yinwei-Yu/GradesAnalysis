@@ -49,6 +49,14 @@ by刘杨健
 current_category = "物理类"
 
 
+# 一个检测输入的长度的函数
+def check_input_length(var):
+    input_text = var.get()
+    if len(input_text) > 20:
+        messagebox.showerror("Error", "输入过长,最多输入20个字符")
+        var.set("")
+
+
 # 根据学号获取成绩
 def get_grades(stuID):
     if stuID == "":
@@ -361,7 +369,6 @@ def disp_all_grades(grade_window):
     # 确保搜索变量的trace只触发搜索函数
     search_var.trace("w", lambda name, index, mode: search_tree())
 
-
     #     for child in tree.get_children():
     #         s_values = tree.item(child, 'values')
     #         #只在姓名和学号里面搜索
@@ -471,6 +478,7 @@ def disp_single_grade(grade_window):
 
     grades_var = ttk.StringVar()
     stuID_var = ttk.StringVar()
+    stuID_var.trace("w", lambda name, index, mode, var=stuID_var: check_input_length(var))
     warning_var = ttk.StringVar()
     # 隐藏grade_window窗口
     grade_window.withdraw()
@@ -587,6 +595,7 @@ def app_review(tea_window):
     stuID_var = ttk.StringVar()
     # 绑定文本变化事件
     stuID_var.trace_add("write", on_text_change)
+    stuID_var.trace("w", lambda name, index, mode, var=stuID_var: check_input_length(var))
     # 学号文本框
     stuID_entry = ttk.Entry(app_window, show="", font=('黑体', 16), textvariable=stuID_var)
     stuID_entry.place(x=270, y=100)
@@ -649,8 +658,11 @@ def app_review(tea_window):
 
 def change_my_password(tea_window, password, user_id):
     var_old = tk.StringVar()
+    var_old.trace("w", lambda name, index, mode, var=var_old: check_input_length(var))
     var_new1 = tk.StringVar()
+    var_new1.trace("w", lambda name, index, mode, var=var_new1: check_input_length(var))
     var_new2 = tk.StringVar()
+    var_new2.trace("w", lambda name, index, mode, var=var_new2: check_input_length(var))
     tea_window.withdraw()
     page4 = tk.Toplevel(tea_window)
     page4.title('修改密码')

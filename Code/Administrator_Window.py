@@ -9,6 +9,8 @@ from tinui.TinUI import *
 
 from AccountManager import accountManager
 
+from Teacher_Window import check_input_length
+
 """
 2024/7/12
     添加：
@@ -37,6 +39,7 @@ import ttkbootstrap as ttk
 from Teacher_Window import disp_grades
 # 复用Teacher修改密码的函数
 from Teacher_Window import change_my_password
+
 
 
 # 确认清空的操作 # 接上了后端的函数
@@ -202,6 +205,9 @@ def update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic
 # 导入单个成绩的函数
 def import_single(admin_window):
     def preSubmit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
+        if int(ID) <= 0:
+            messagebox.showerror("Error","学号输入有误")
+            return
         nonlocal warning_text
         warning_text.set('正在导入……')
         # 创建子线程
@@ -238,7 +244,9 @@ def import_single(admin_window):
     single_window.resizable(False, False)
     # 姓名 学号 语文 数学 英语 物理/历史 四选二 输入框的文字变量
     var_name = tk.StringVar()
+    var_name.trace("w", lambda name, index, mode, var=var_name: check_input_length(var))
     var_id = tk.StringVar()
+    var_id.trace("w", lambda name, index, mode, var=var_id: check_input_length(var))
     var_chinese = tk.StringVar()
     var_math = tk.StringVar()
     var_english = tk.StringVar()

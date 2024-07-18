@@ -4,6 +4,7 @@ from AccountManager import accountManager
 from Administrator_Window import show_admin_window
 from Student_Window import show_student_window
 from Teacher_Window import show_teacher_window
+from Teacher_Window import check_input_length
 
 """
 2024/7/9
@@ -144,8 +145,9 @@ def start():
     password_label.place(x=120, y=400)
     # 设置两个var获取输入的学号和密码
     var_userid = ttk.StringVar()
+    var_userid.trace("w", lambda name, index, mode, var=var_userid: check_input_length(var))
     var_password = ttk.StringVar()
-
+    var_password.trace("w", lambda name, index, mode, var=var_password: check_input_length(var))
     # 学号和密码的输入框
     userid_entry = ttk.Entry(login_window, font=('楷体', 20), textvariable=var_userid, bootstyle='info')
     userid_entry.place(x=370, y=300)
