@@ -333,24 +333,53 @@ def disp_all_grades(grade_window):
             tree.tag_configure('match', background='white')
             tree.selection_remove(tree.selection())  # 取消所有选中的行
             return
+        search_term = search_var.get().lower()
+        matches = []
+
+        # 遍历一次，收集匹配项并设置初始标签
         for child in tree.get_children():
             s_values = tree.item(child, 'values')
-            # 只在姓名和学号里面搜索
-            if search_term.lower() in s_values[0].lower() or search_term.lower() in s_values[1].lower():
-                tree.see(child)
-                tree.selection_set(child)
+            if search_term in s_values[0].lower() or search_term in s_values[1].lower():
+                matches.append(child)
                 tree.item(child, tags=('match',))
             else:
-                tree.selection_remove(child)
                 tree.item(child, tags=('nomatch',))
-            # 重置所有行的背景颜色
-            for item in tree.get_children():
-                if 'match' in tree.item(item, 'tags'):
-                    tree.tag_configure('match', background='grey', foreground='white')
-                else:
-                    tree.tag_configure('nomatch', background='white')
 
+        # 配置标签样式，仅需一次
+        tree.tag_configure('match', background='grey', foreground='white')
+        tree.tag_configure('nomatch', background='white')
+
+        # 显示匹配项并清除旧选择
+        for child in matches:
+            tree.see(child)
+            tree.selection_set(child)
+        else:
+            tree.selection_remove(tree.selection())  # 清除非匹配项的选择
+
+        # 这里假设不需要每次搜索都重置所有行的背景，因为上面已经根据匹配状态设置了
+
+    # 确保搜索变量的trace只触发搜索函数
     search_var.trace("w", lambda name, index, mode: search_tree())
+
+
+    #     for child in tree.get_children():
+    #         s_values = tree.item(child, 'values')
+    #         #只在姓名和学号里面搜索
+    #         if search_term.lower() in s_values[0].lower() or search_term.lower() in s_values[1].lower():
+    #             tree.see(child)
+    #             tree.selection_set(child)
+    #             tree.item(child, tags=('match',))
+    #         else:
+    #             tree.selection_remove(child)
+    #             tree.item(child, tags=('nomatch',))
+    #         # 重置所有行的背景颜色
+    #         for item in tree.get_children():
+    #             if 'match' in tree.item(item, 'tags'):
+    #                 tree.tag_configure('match', background='lightgrey', foreground='white')
+    #             else:
+    #                 tree.tag_configure('nomatch', background='white')
+    #
+    # search_var.trace("w", lambda name, index, mode: search_tree())
 
     # 添加一个选择类别的东西
     def filter_data(event):
