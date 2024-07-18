@@ -39,9 +39,10 @@ from Teacher_Window import disp_grades
 from Teacher_Window import change_my_password
 
 
-# 确认清空的操作
+# 确认清空的操作 # 接上了后端的函数
 def confirm_clear(clear_window, admin_window):
     messagebox.showinfo('提示', '已清空所有成绩')
+    accountManager.resetGrades()
     last_step(clear_window, admin_window)
 
 
@@ -297,7 +298,7 @@ def import_single(admin_window):
     cancel_button.place(x=170, y=530)
 
     flag = 0
-    options = ['', '学号请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
+    options = ['', '请输入数字！', '请完善信息！', '学号与已导入数据重复！', '分数超出范围！', '导入数据时出现错误！',
                '导入成功！']
 
     warning_text = ttk.StringVar()
@@ -581,7 +582,7 @@ def admin_logout(admin_window, login_window, username_entry, password_entry):
 def show_admin_window(login_window, userid_entry, password_entry, res_name):
     admin_window = ttk.Toplevel()
     admin_window.title('admin_window')
-    admin_window.geometry('800x1000+800+400')
+    admin_window.geometry('800x1050+800+400')
 
     admin_window.resizable(False, False)
     # 标题

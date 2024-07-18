@@ -65,7 +65,7 @@ def get_grades(stuID):
                 raise ValueError(f"No valid grades found for userid {stuID}")
         return grades, total_grades
     else:
-        return False,[]
+        return False, []
     # 获取特定用户的分数
 
 
@@ -231,6 +231,13 @@ def last_step(current_window, previous_window):
     current_window.destroy()
 
 
+# 实现查看所有成绩的返回上一步的功能,解决了大类与实际情况的显示问题
+def last_step_reset(current_window, previous_window):
+    global current_category
+    current_category = "物理类"
+    last_step(current_window, previous_window)
+
+
 # 实现查看成绩功能1 查看所有学生成绩 未实现
 # 预期目标,可以打印出来各科成绩,做成一个可以往下拉的东西
 # 还要在左上角做一个返回键
@@ -299,12 +306,13 @@ def disp_all_grades(grade_window):
     frame.grid_rowconfigure(0, weight=1)
     frame.grid_columnconfigure(0, weight=1)
 
-    # 再做一个确认并返回的按钮
-    con_button = ttk.Button(choice1, text='确认', command=lambda: last_step(choice1, grade_window), width=10,
+    # 再做一个确认并返回的按钮 # 并且要重置全局变量
+    con_button = ttk.Button(choice1, text='确认', command=lambda: last_step_reset(choice1, grade_window), width=10,
                             bootstyle=bootstyle)
-    con_button.pack(pady=10)
+    con_button.pack(padx=700, side=tk.LEFT)
 
     # 完成搜索框的搜索功能
+    # 搜索加一个高亮
     def search_tree():
         search_term = search_entry.get()
         for child in tree.get_children():
@@ -616,7 +624,7 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
     tea_window.geometry('800x1000+800+400')
     tea_window.resizable(False, False)
     # 欢迎标题
-    welcome_title = ttk.Label(tea_window, text='你好!' + name, font=('楷体', 10))
+    welcome_title = ttk.Label(tea_window, text='你好!' + name, font=('黑体', 15))
     welcome_title.place(x=0, y=0)
 
     blank_title = ttk.Label(tea_window, text='', font=('黑体', 10))
