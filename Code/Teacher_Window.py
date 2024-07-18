@@ -71,9 +71,15 @@ def get_grades(stuID):
 
 # 点击之后实现排序的函数,在显示总成绩界面,点击之后就会按照单科进行排序
 # 传入点击的标题的名称
+
+# 实现升序和降序
+Orders = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+
 def click_sort(current_category, sub, tree):
     # 这个函数传两个参数 mod1=0 总分 1 语文 mod2=0 降序
     # 维护一个字典,使得每个科目的名称有对应的mod1
+    global Orders
     if current_category == "物理类":
         flag = 0
     else:
@@ -90,10 +96,12 @@ def click_sort(current_category, sub, tree):
         '政治': 8,
         '地理': 9
     }
+    # mod1拿到的是科目的标号
     mod1 = subject_mapping.get(sub, -1)
     if mod1 != -1:
         # 拿到新的排序方式得到的成绩
-        data1 = accountManager.getAllGrades(flag, mod1, 0)
+        data1 = accountManager.getAllGrades(flag, mod1, Orders[mod1])
+        Orders[mod1] = not Orders[mod1]
         update_treeview(data1, tree)
 
 
@@ -234,7 +242,10 @@ def last_step(current_window, previous_window):
 # 实现查看所有成绩的返回上一步的功能,解决了大类与实际情况的显示问题
 def last_step_reset(current_window, previous_window):
     global current_category
+    global Orders
     current_category = "物理类"
+    # 重新将所有的序列默认为升序
+    Orders = [0] * len(Orders)
     last_step(current_window, previous_window)
 
 
@@ -315,20 +326,38 @@ def disp_all_grades(grade_window):
     # 搜索加一个高亮
     def search_tree():
         search_term = search_entry.get()
+        # 如果搜索框为空，则清除所有行的标签并重置背景颜色
+        if not search_term:
+            for item in tree.get_children():
+                tree.item(item, tags=())
+            tree.tag_configure('match', background='white')
+            tree.selection_remove(tree.selection())  # 取消所有选中的行
+            return
         for child in tree.get_children():
             s_values = tree.item(child, 'values')
             # 只在姓名和学号里面搜索
             if search_term.lower() in s_values[0].lower() or search_term.lower() in s_values[1].lower():
                 tree.see(child)
                 tree.selection_set(child)
+                tree.item(child, tags=('match',))
             else:
                 tree.selection_remove(child)
+                tree.item(child, tags=('nomatch',))
+            # 重置所有行的背景颜色
+            for item in tree.get_children():
+                if 'match' in tree.item(item, 'tags'):
+                    tree.tag_configure('match', background='grey', foreground='white')
+                else:
+                    tree.tag_configure('nomatch', background='white')
 
     search_var.trace("w", lambda name, index, mode: search_tree())
 
     # 添加一个选择类别的东西
     def filter_data(event):
         global current_category
+        global Orders
+        # 重新将所有的序列默认为升序
+        Orders = [0] * len(Orders)
         # 拿到选择的类别
         selected_category = category_var.get()
         if selected_category == "物理类":
@@ -623,13 +652,6 @@ def change_my_password(tea_window, password, user_id):
                                width=5, bootstyle='darkly')
     cancel_button.place(x=160, y=450)
     page4.mainloop()
-
-
-# 老师可能不需要这个功能
-# 修改学生的密码的函数  未实现
-#
-# def change_stu_password():
-#   pass
 
 
 # 退出函数 返回到主界面
