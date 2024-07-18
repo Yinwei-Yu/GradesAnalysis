@@ -52,7 +52,7 @@ current_category = "物理类"
 # 根据学号获取成绩
 def get_grades(stuID):
     if stuID == "":
-        return False
+        return False, []
     stuName, gradeList, total_grades = accountManager.getGrades(3, int(stuID))
     subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治',
                 '\n地理：']
@@ -150,7 +150,7 @@ def disp_graph(choice2):
     subject_var = tk.StringVar(graph_window)
     subject_var.set(subjects[0])
 
-    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0],*subjects)
+    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0], *subjects)
     subject_menu.pack(pady=10)
 
     def analyze_subject():
@@ -183,7 +183,7 @@ def disp_relation(choice2):
     method_var = tk.StringVar(rel_window)
     method_var.set(analysis_methods[0])
 
-    method_menu = ttk.OptionMenu(rel_window, method_var,analysis_methods[0],*analysis_methods)
+    method_menu = ttk.OptionMenu(rel_window, method_var, analysis_methods[0], *analysis_methods)
     method_menu.pack(pady=10)
 
     def analyze_method():
@@ -497,6 +497,30 @@ def app_review(tea_window):
     stuID_label.place(x=100, y=100)
     sub_label = ttk.Label(app_window, text="申请科目:", font=('黑体', 14))
     sub_label.place(x=100, y=220)
+    # 输入学号时也要把名字打印出来
+    ttk.Label(app_window, text='学生姓名:', font=('黑体', 14)).place(x=100, y=160)
+    name_label = ttk.Label(app_window, text='', font=('黑体', 14))
+    name_label.place(x=270, y=160)
+
+    # 检测学号输入的同时更新姓名和下拉框选项
+    def update_options(event):
+        student_id = stuID_entry.get()
+        if student_id.isdigit():
+            student_id = int(student_id)
+            # 调用getGrades,拿到这个学号对应的姓名 name 和科目成绩 sub [],sub里面是分数,如果是-1就是没选择 没找到的话stu_name = False
+            stu_name, sub = accountManager.getGrades(1, student_id)
+            # 当这个学号是存在的
+            if stu_name:
+                # 显示姓名
+                course_names = ["语文", "数学", "英语", "物理", "化学", "生物", "历史", "政治", "地理"]
+                valid_courses = [course_names[i] for i in range(len(sub)) if sub[i] != -1]
+                sub_combobox['values'] = valid_courses
+                if sub_combobox.get() not in valid_courses:
+                    sub_combobox.set('')
+                name_label.config(text=stu_name)
+                return
+        name_label.config(text='')
+        sub_combobox.set("")  # 设置默认为空
 
     def on_text_change(*args):
         # 获取文本框中的内容
@@ -512,27 +536,28 @@ def app_review(tea_window):
     sub_combobox = Combobox(app_window, values=[], state="readonly")
     sub_combobox.place(x=270, y=220)
 
-    # 绑定下拉框事件
-    def update_combobox(event):
-        student_id = stuID_entry.get()
-        options = []
-        try:
-            stu_grades, _ = get_grades(student_id)
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
-            app_window.destroy()
-            tea_window.deiconify()
-            return
-        if stu_grades:
-            for subject, score in stu_grades.items():
-                options.append(subject)
-        else:
-            sub_combobox.set("")
-        sub_combobox['values'] = options
-        if options:
-            sub_combobox.set("")  # 设置默认为空
+    # 绑定文本框事件
+    # 同时更新姓名和下拉框
+    # def update_options(event):
+    #     student_id = stuID_entry.get()
+    #     options = []
+    #     try:
+    #         stu_grades, _ = get_grades(student_id)
+    #     except ValueError as e:
+    #         messagebox.showerror("Error", str(e))
+    #         app_window.destroy()
+    #         tea_window.deiconify()
+    #         return
+    #     if stu_grades:
+    #         for subject, score in stu_grades.items():
+    #             options.append(subject)
+    #     else:
+    #         sub_combobox.set("")
+    #     sub_combobox['values'] = options
+    #     if options:
+    #         sub_combobox.set("")  # 设置默认为空
 
-    stuID_entry.bind("<KeyRelease>", update_combobox)
+    stuID_entry.bind("<KeyRelease>", update_options)
 
     # 获取选中的科目
     def on_select(event):
