@@ -305,7 +305,6 @@ class GradeManager:
                 self.checkApplication.append(check_application)
                 self.checkApplicationNum = len(self.checkApplication)
                 # print(self.checkApplicationNum)
-                self.saveCheckApplicationsToCSV()
                 self.saveCheckApplicationsToMySQL()
                 return True
 

@@ -1,6 +1,7 @@
 from tkinter import messagebox
-import numpy as np
+
 import mysql.connector  # pip install mysql-connector-python
+import numpy as np
 
 from GradeManager import gradeManager
 from User import *
@@ -547,6 +548,7 @@ class AccountManager:
         return data
 
     def getAllApplications(self):
+        gradeManager.saveCheckApplicationsToCSV()
         return gradeManager.getCheckApplicaionsTable()
 
     # 增加成绩审核申请表
@@ -563,7 +565,7 @@ class AccountManager:
             del gradeManager.checkApplication[index]
             gradeManager.saveCheckApplicationsToCSV()
         except Exception as e:
-            #print('删除审核表时出现错误：{}'.format(e))
+            # print('删除审核表时出现错误：{}'.format(e))
             return False
         return True
 
@@ -666,12 +668,14 @@ class AccountManager:
             gradeManager.truncateGrades()
             gradeManager.truncateCheckApplication()
             self.truncateUsers()
+            self.users.clear()
+            self.getUserFromSql()
+            gradeManager.student.clear()
+            gradeManager.checkApplication.clear()
         except Exception as e:
             print(e)
             return False
         return True
-
-    import numpy as np
 
     def getAverage(self):
         subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
@@ -687,6 +691,14 @@ class AccountManager:
         averList = [int(np.mean(scores[subject])) if scores[subject] else 0 for subject in subjects]
 
         return averList
+
+    def saveCheckApplicationToCSV(self):
+        return gradeManager.saveCheckApplicationsToCSV()
+
+    def saveAll(self):
+        self.saveGradesToCSV()
+        self.saveUserInfoToCSV()
+        self.saveCheckApplicationToCSV()
 
 
 accountManager = AccountManager()
@@ -831,4 +843,3 @@ if __name__ == "__main__":
 # accountManager.refreshUserInfo()
 # accountManager.printUserInfo()
 # accountManager.saveUserInfo()
-

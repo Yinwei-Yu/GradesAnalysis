@@ -3,8 +3,8 @@ import ttkbootstrap as ttk
 from AccountManager import accountManager
 from Administrator_Window import show_admin_window
 from Student_Window import show_student_window
-from Teacher_Window import show_teacher_window
 from Teacher_Window import check_input_length
+from Teacher_Window import show_teacher_window
 
 """
 2024/7/9
@@ -56,7 +56,7 @@ def start():
         elif password_entry.get() == "":
             login_var.set('请输入密码')
         else:
-            userid =userid_entry.get()
+            userid = userid_entry.get()
             password = password_entry.get()
             try:
                 userid.isdigit()
@@ -91,6 +91,7 @@ def start():
                     fault_times = 0
                     login_window.withdraw()
                     accountManager.login(int(userid_entry.get()), password_entry.get())
+                    accountManager.saveAll()
                     show_admin_window(login_window, userid_entry, password_entry, res_name)
             # login_var.set('成功登录')
 
