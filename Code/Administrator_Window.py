@@ -395,7 +395,7 @@ def admin_disp_apps(admin_window):
     tree = ttk.Treeview(left_frame, columns=columns, show='headings')
     for col in columns:
         tree.heading(col, text=col)
-        tree.column(col, width=100, anchor='center')
+        tree.column(col, width=250, anchor='center')
     tree.pack(fill="both", expand=True, side="left")
     # 得到数据
     # data = [('教师1', '学生1', 111, '语文'), ('教师2', '学生2', 222, '数学'), ('教师3', '学生3', 333, '物理')]
@@ -414,51 +414,60 @@ def admin_disp_apps(admin_window):
     tree.configure(yscrollcommand=scrollbar_y.set)
     scrollbar_y.pack(side="right", fill="y")
     # 创建"查看"和"完成"按钮
-    view_button = ttk.Button(left_frame, text="查看",
+    view_button = ttk.Button(left_frame, text="填入",
                              command=lambda: view_application(tree, entry_id, combobox_course, label_student_name,
-                                                              label_original_grade))
+                                                              label_original_grade), bootstyle=bootstyle)
     view_button.pack(pady=5)
-    finish_button = ttk.Button(left_frame, text="完成", command=lambda: finish_application(tree))
+    finish_button = ttk.Button(left_frame, text="删除", command=lambda: finish_application(tree), bootstyle=bootstyle)
     finish_button.pack(pady=5)
     # 创建右边的框架(成绩修改)
     right_frame = ttk.Frame(apps_window, padding=10)
     right_frame.pack(side="right", fill="both", expand=True)
     # 创建修改成绩的输入字段和标签
     # 显示学号
-    ttk.Label(right_frame, text="学号:").grid(row=0, column=0, pady=5, sticky="e")
+    for i in range(9):
+        ttk.Label(right_frame, text="", width=10).grid(row=i, column=0, pady=5, sticky="e")
+
+    # ttk.Label(right_frame, text="", width=10).grid(row=0, column=1, pady=5, sticky="e")
+    # ttk.Label(right_frame, text="", width=10).grid(row=0, column=2, pady=5, sticky="e")
+    ttk.Label(right_frame, text="学号:").grid(row=9, column=1, pady=5, sticky="e")
     entry_id = ttk.Entry(right_frame)
-    entry_id.grid(row=0, column=1, pady=5)
+    entry_id.grid(row=9, column=2, pady=5)
     entry_id.bind('<KeyRelease>',
                   lambda event: update_course_options(event, entry_id, combobox_course, label_student_name,
                                                       label_original_grade))
     # 科目的下拉框
-    ttk.Label(right_frame, text="科目:").grid(row=1, column=0, pady=5, sticky="e")
-    combobox_course = ttk.Combobox(right_frame, state="readonly")
-    combobox_course.grid(row=1, column=1, pady=5)
+    ttk.Label(right_frame, text="科目:").grid(row=10, column=1, pady=5, sticky="e")
+    combobox_course = ttk.Combobox(right_frame, state="readonly",width=19)
+    combobox_course.grid(row=10, column=2, pady=5)
     # 绑定科目下拉框的事件,使得可以显示出原成绩
     combobox_course.bind('<<ComboboxSelected>>',
                          lambda event: update_original_grade(entry_id, combobox_course, label_original_grade))
     # 显示姓名
-    ttk.Label(right_frame, text="姓名:").grid(row=2, column=0, pady=5, sticky="e")
-    label_student_name = ttk.Label(right_frame, text="")  # 等下这个设置为空的
-    label_student_name.grid(row=2, column=1, pady=5)
+
+    ttk.Label(right_frame, text="姓名:").grid(row=11, column=1, pady=5, sticky="e")
+    label_student_name = ttk.Label(right_frame, text="", font=('黑体', 12))  # 等下这个设置为空的
+    label_student_name.grid(row=11, column=2, pady=5)
     # 显示原来的成绩
-    ttk.Label(right_frame, text="原成绩:").grid(row=3, column=0, pady=5, sticky="e")
-    label_original_grade = ttk.Label(right_frame, text="")
-    label_original_grade.grid(row=3, column=1, pady=5)
+
+    ttk.Label(right_frame, text="原成绩:").grid(row=12, column=1, pady=5, sticky="e")
+    label_original_grade = ttk.Label(right_frame, text="", font=('黑体', 12))
+    label_original_grade.grid(row=12, column=2, pady=5)
     # 修改成绩及其文本输入框
-    ttk.Label(right_frame, text="修改成绩:").grid(row=4, column=0, pady=5, sticky="e")
+
+    ttk.Label(right_frame, text="修改成绩:").grid(row=13, column=1, pady=5, sticky="e")
     entry_new_grade = ttk.Entry(right_frame)
-    entry_new_grade.grid(row=4, column=1, pady=5)
+    entry_new_grade.grid(row=13, column=2, pady=5)
     # 修改完成后的确认按钮
     confirm_button = ttk.Button(right_frame, text="确认",
                                 command=lambda: confirm_modification(entry_id, combobox_course, entry_new_grade
-                                                                     , label_student_name, label_original_grade))
-    confirm_button.grid(row=5, column=1, pady=10, sticky="e")
+                                                                     , label_student_name, label_original_grade),
+                                bootstyle=bootstyle)
+    confirm_button.grid(row=14, column=1, pady=10, sticky="e")
     # 之后再在这里加个退出的按钮返回
     quit_button = ttk.Button(right_frame, text="退出",
-                             command=lambda: last_step(apps_window, admin_window))
-    quit_button.grid(row=5, column=4, pady=10, sticky="e")
+                             command=lambda: last_step(apps_window, admin_window), bootstyle=bootstyle)
+    quit_button.grid(row=14, column=2, pady=10, sticky="e")
     apps_window.mainloop()
 
 
