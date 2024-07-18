@@ -97,32 +97,53 @@ def view_application(tree, entry_id, combobox_course, label_student_name, label_
         label_student_name.config(text=item_values[1])
         combobox_course.set(item_values[3])
         # 自动填入成绩
-        update_original_grade(entry_id,combobox_course,label_original_grade)
+        update_original_grade(entry_id, combobox_course, label_original_grade)
 
 
 # 完成成绩申请处理 删除Treeview中选中的项
 def finish_application(tree):
     selected_item = tree.selection()
-    print("testing")
-    print(tree.index(tree.selection()))
+    accountManager.deleteCheckApplication(tree.index(tree.selection()))
     if selected_item:
         tree.delete(selected_item[0])
 
 
 # 确认修改 确认并保存修改后的成绩
 # 还存在小问题,就是如果是自己输入的话会认为你没有输入
-def confirm_modification(entry_id, combobox_course, entry_new_grade):
+# 添加错误检测
+def confirm_modification(entry_id, combobox_course, entry_new_grade, label_student_name, label_original_grade):
     # 拿到输入的学号
     student_id = entry_id.get()
+    if not student_id.isdigit():
+        messagebox.showerror("错误", "输入的学号必须是整数")
+        return
     # 拿到输入的新成绩
     new_grade = entry_new_grade.get()
     # 拿到修改的课程
     new_course = combobox_course.get()
+    if new_course == "语文" or new_course == "数学" or new_course == "英语":
+        limit = 150
+    else:
+        limit = 100
+    if not new_grade.isdigit() or not (0 <= int(new_grade) <= limit):
+        messagebox.showerror("错误", f"成绩必须是0到{limit}之间的整数")
+        return
+    # 拿到原来的成绩
+    original_grade = label_original_grade.cget("text")
+    # 拿到姓名
+    student_name = label_student_name.cget("text")
     print(student_id, new_grade, new_course)
     if accountManager.changeGrades(int(student_id), new_course, int(new_grade)):
-        messagebox.showinfo("成功", '成绩修改成功！')
+        success_message = f"修改成功！\n姓名: {student_name}\n学号:{student_id}\n原成绩:{original_grade}\n新成绩: {new_grade}"
+        messagebox.showinfo("成功", success_message)
     else:
         messagebox.showwarning("失败", '成绩修改失败！')
+    # 点击确认之后所有的输入框和提示什么的直接全清空
+    entry_id.delete(0, tk.END)
+    combobox_course.set("")
+    entry_new_grade.delete(0, tk.END)
+    label_student_name.config(text="")
+    label_original_grade.config(text="")
 
 
 # 不仅会更新下拉框中的选项,还会在学号无效或不在数据中的情况下清楚下拉框的当前值
@@ -394,7 +415,8 @@ def admin_disp_apps(admin_window):
     scrollbar_y.pack(side="right", fill="y")
     # 创建"查看"和"完成"按钮
     view_button = ttk.Button(left_frame, text="查看",
-                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name,label_original_grade))
+                             command=lambda: view_application(tree, entry_id, combobox_course, label_student_name,
+                                                              label_original_grade))
     view_button.pack(pady=5)
     finish_button = ttk.Button(left_frame, text="完成", command=lambda: finish_application(tree))
     finish_button.pack(pady=5)
@@ -430,7 +452,8 @@ def admin_disp_apps(admin_window):
     entry_new_grade.grid(row=4, column=1, pady=5)
     # 修改完成后的确认按钮
     confirm_button = ttk.Button(right_frame, text="确认",
-                                command=lambda: confirm_modification(entry_id, combobox_course, entry_new_grade))
+                                command=lambda: confirm_modification(entry_id, combobox_course, entry_new_grade
+                                                                     , label_student_name, label_original_grade))
     confirm_button.grid(row=5, column=1, pady=10, sticky="e")
     # 之后再在这里加个退出的按钮返回
     quit_button = ttk.Button(right_frame, text="退出",
