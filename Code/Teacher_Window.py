@@ -146,11 +146,11 @@ def disp_graph(choice2):
     label = ttk.Label(graph_window, text="选择学科进行直方图分析：", background="lightblue")
     label.pack(pady=10)
 
-    subjects = ['Chinese', 'Math', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Politics', 'Geography']
+    subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
     subject_var = tk.StringVar(graph_window)
     subject_var.set(subjects[0])
 
-    subject_menu = ttk.OptionMenu(graph_window, subject_var, *subjects)
+    subject_menu = ttk.OptionMenu(graph_window, subject_var, subjects[0],*subjects)
     subject_menu.pack(pady=10)
 
     def analyze_subject():
@@ -183,7 +183,7 @@ def disp_relation(choice2):
     method_var = tk.StringVar(rel_window)
     method_var.set(analysis_methods[0])
 
-    method_menu = ttk.OptionMenu(rel_window, method_var, *analysis_methods)
+    method_menu = ttk.OptionMenu(rel_window, method_var,analysis_methods[0],*analysis_methods)
     method_menu.pack(pady=10)
 
     def analyze_method():
