@@ -178,7 +178,7 @@ def show_student_window(login_window, userid_entry, password_entry, name):
 
     stu_window.resizable(False, False)
     # 标题
-    welcome_title = ttk.Label(stu_window, text='你好!' + name, font=('楷体', 15))
+    welcome_title = ttk.Label(stu_window, text='你好!' + name, font=('黑体', 15))
     welcome_title.place(x=0, y=0)
 
     blank_title = ttk.Label(stu_window, text='', font=('黑体', 10))
