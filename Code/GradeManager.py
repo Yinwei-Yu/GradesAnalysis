@@ -87,7 +87,10 @@ import os
 
 import mysql.connector  # pip install mysql-connector-python
 import pandas as pd  # 导入pandas库，用于读取Excel文件和处理数据
-
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+import statistics
 import CheckApplication
 import Grades as gr
 import Student as stu
@@ -469,16 +472,13 @@ class GradeManager:
     '''
 
     def plotHistograms(self, subjectName: str):
-        import numpy as np
-        import matplotlib.pyplot as plt
-        from matplotlib import rcParams
-        import statistics
+
 
         # 设置支持中文显示的字体
         rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体
         rcParams['axes.unicode_minus'] = False  # 解决坐标轴负号显示问题
 
-        subjects = ['Chinese', 'Math', 'English', 'Physics', 'Chemistry', 'Biology', 'History', 'Politics', 'Geography']
+        subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '政治', '地理']
 
         if subjectName not in subjects:
             print(f"学科：{subjectName}不存在！")
@@ -934,74 +934,3 @@ class GradeManager:
 gradeManager = GradeManager([], 0, [], 0)
 gradeManager.inputMore("./excelFiles/rankedGrades.csv")
 gradeManager.inputCheckApplications("./excelFiles/checkApplications.csv")
-# for i in range(10):
-#     for j in range(2):
-#         gradeManager.getAllGrades(i, j)
-#         print('\n')
-# gradeManager=GradeManager()
-
-# gradeManager.inputMySQL()
-# gradeManager.renewTotalGrade()
-# gradeManager.sortGrades()
-# gradeManager.saveGradesToMySQL()
-# gradeManager.inputCheckApplications('./excelFiles/checkApplications.csv')
-# gradeManager.getApplicaFromSql()
-
-# gradeManager.addCheckApplication('user2', '杨浩焱', 20501004, '语文')
-
-# 测试函数
-if __name__ == '__main__':
-    '''
-   grade1 = gr.Grades(Chinese(120), Math(150), English(145), Physics(100), Chemistry(100), Biology(100), History(0),
-                      Politics(0), Geography(0))
-   grade2 = gr.Grades(Chinese(150), Math(100), English(149), Physics(0), Chemistry(0), Biology(0), History(100),
-                      Politics(100), Geography(100))
-   stu1 = stu.Student("张三", 1, grade1)
-   stu2 = stu.Student("袁华", 2, grade2)
-   stus = [stu1, stu2]
-   manager = GradeManager(stus, 2, [])
-   for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
-   grade3 = gr.Grades(Chinese(139), Math(100), English(149),
-                      Physics(0), Chemistry(0), Biology(0), History(100), Politics(100), Geography(100))
-   manager.inputExcelGrades(1, "夏洛", 3, grade3)
-   for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试添加功能
-   print("张三：", manager.student[0].stuGrades.grades[0].score)
-   manager.changeGrades("张三", 1, "Chinese", 1)
-   print("张三：", manager.student[0].stuGrades.grades[0].score)
-   print("排序前:")
-   for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试修改功能
-   manager.sortGrades()
-   print("排序后：")
-   for x in manager.student:
-       print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)  # 测试排序功能
-   '''
-
-    # 测试从csv文件导入
-
-    # gradeManager = GradeManager([], 0, [], 0)
-    # gradeManager.inputCSV("./excelFiles/student.csv")
-    # gradeManager.addCheckApplication('user2', '张三', 200001, '语文')
-    # manager = GradeManager([], 0, [],0)
-    # manager.inputExcelGrades(2, r"C:\\Users\\32284\Desktop\Grades\GradesAnalysis\Code\student.xlsx")
-
-    # for x in manager.student:
-    #     print(x.name, " ", x.stuID, " ", x.stuGrades.totalScores)
-
-    # 测试单科排名
-    '''
-    print("按语文排名前：")
-    for x in manager.student:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
-
-    templist = manager.calculateRanking("chinese", 1)
-
-    print("按语文排名后：")
-    for x in templist:
-        print(x.name, " ", x.stuID, " ", x.stuGrades.grades[0].score)
-    '''
-
-    # manager.generateGradesAnalysis(1, "Math")
-    # manager.generateGradesAnalysis(2,1)
