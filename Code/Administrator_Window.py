@@ -53,7 +53,7 @@ def clear_grades(admin_window):
     admin_window.withdraw()
     # 创建一个新的窗口
     clear_window = tk.Toplevel(admin_window)
-    clear_window.geometry("540x300")
+    clear_window.geometry("540x300+800+400")
     clear_window.resizable(False, False)
     # 提示信息
     clear_label = tk.Label(clear_window, text='确认清空所有成绩吗？', font=('楷体', 20, 'bold'), width=20, height=2)

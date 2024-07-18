@@ -205,8 +205,8 @@ class GradeManager:
             stuTemp = stu.Student(row['姓名'], row['学号'], grades)
             self.student.append(stuTemp)
         self.stuNum = len(self.student)
-        return
 
+        return
     # 批量导入函数
     def inputMore(self, path, sheetName=None, outputPath=None):
         fileExtension = os.path.splitext(path)[1].lower()
@@ -216,6 +216,10 @@ class GradeManager:
             # 转化为csv文件
             self.excelToCsv(path, sheetName, csvFilePath)
             self.inputCSV(csvFilePath)
+            try:
+                os.remove("tempPath.csv")
+            except FileNotFoundError:
+                print(f"文件不存在\n\n")
         elif fileExtension == '.csv':
             self.inputCSV(path)
         else:
@@ -251,7 +255,6 @@ class GradeManager:
             results = cursor.fetchall()
             # 将结果转换为DataFrame
             df = pd.DataFrame(results)
-            print(df)
             for index, row in df.iterrows():
                 grades = gr.Grades(
                     Chinese(row['语文']), Math(row['数学']), English(row['英语']),
@@ -935,7 +938,7 @@ class GradeManager:
             results = cursor.fetchall()
 
             df = pd.DataFrame(results)
-            print(df)
+            #print(df)
 
             for index, row in df.iterrows():
                 check_application = CheckApplication.CheckApplication(row['申请老师'], row['被申请学生姓名'],

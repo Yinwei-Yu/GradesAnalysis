@@ -589,22 +589,22 @@ class AccountManager:
             if importedGrades is False:
                 return
             importedGrades = gradeManager.saveGradesToCSV()
-            print(1, importedGrades)
+            print(importedGrades)
             if importedGrades is False:
                 return
-            print(2, importedGrades)
+            print(importedGrades)
             self.refreshUserInfo()
             if importedGrades is False:
                 return
-            print(3, importedGrades)
+            print(importedGrades)
             importedGrades = self.saveUserInfoToMySQL()
             if importedGrades is False:
                 return
-            print(4, importedGrades)
+            print(importedGrades)
             importedGrades = self.getUserFromSql()
             if importedGrades is False:
                 return
-            print(5, importedGrades)
+            print(importedGrades)
             importedGrades = self.saveUserInfoToCSV()
             if importedGrades is False:
                 return

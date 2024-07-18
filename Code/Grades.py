@@ -28,7 +28,6 @@ class Grades:
             #     self.grades[i].score = -1
             self.totalScores += self.grades[i].score if self.grades[i].score != -1 else 0
 
-        print(self.totalScores)
         self.gradesAnalysis: str = ""
         self.totalRanking: int = 0
         self.rankings = [-1, -1, -1, -1, -1, -1, -1, -1, -1]

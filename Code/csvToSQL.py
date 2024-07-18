@@ -34,7 +34,13 @@ def formationCheckAndInputToMySQL(path, sheetName=None, outputPath=None):
         if fileExtension in ['.xls', '.xlsx']:
             # 转化为csv文件
             excelToCsv(path, sheetName, csvFilePath)
-            return insert_ranked_grades_to_mysql(csvFilePath)
+            if insert_ranked_grades_to_mysql(csvFilePath):
+                try:
+                    os.remove("tempPath.csv")
+                except FileNotFoundError:
+                    print(f"文件不存在\n\n")
+                return True
+            return False
         elif fileExtension == '.csv':
             return insert_ranked_grades_to_mysql(path)
         else:
