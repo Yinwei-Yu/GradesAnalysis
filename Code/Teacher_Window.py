@@ -156,7 +156,7 @@ def disp_graph(choice2):
     graph_window = tk.Toplevel()
     graph_window.title("直方图分析")
     graph_window.geometry("1600x900")  # 设置窗口大小
-    center_window(graph_window, 400, 300)  # 将窗口居中
+    center_window(graph_window, 600, 450)  # 将窗口居中
     graph_window.configure(bg="lightblue")  # 设置背景颜色
 
     label = ttk.Label(graph_window, text="选择学科进行直方图分析：", background="lightblue")
@@ -188,8 +188,8 @@ def disp_relation(choice2):
     choice2.withdraw()
     rel_window = tk.Toplevel()
     rel_window.title("折线图分析")
-    rel_window.geometry("400x300")  # 设置窗口大小
-    center_window(rel_window, 400, 300)  # 将窗口居中
+    rel_window.geometry("600x450")  # 设置窗口大小
+    center_window(rel_window, 600, 450)  # 将窗口居中
     rel_window.configure(bg="lightblue")  # 设置背景颜色
 
     label = ttk.Label(rel_window, text="选择分析方式：", background="lightgreen")
