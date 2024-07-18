@@ -65,7 +65,7 @@ def get_grades(stuID):
                 raise ValueError(f"No valid grades found for userid {stuID}")
         return grades, total_grades
     else:
-        return False
+        return False,[]
     # 获取特定用户的分数
 
 
