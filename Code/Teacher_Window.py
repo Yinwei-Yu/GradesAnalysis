@@ -527,7 +527,7 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
 
     blank_title = ttk.Label(grade_window, text='', font=('黑体', 15))
     blank_title.pack(pady=20)
-    disp_all_grades_button = ttk.Button(grade_window, text='显示学生成绩',
+    disp_all_grades_button = ttk.Button(grade_window, text='学生成绩表',
                                         command=lambda: disp_all_grades(grade_window), width=20, bootstyle=bootstyle,
                                         padding=padding)
     disp_all_grades_button.pack(pady=pady)
@@ -535,7 +535,7 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
                                           command=lambda: disp_all_analysis(grade_window), width=20,
                                           bootstyle=bootstyle, padding=padding)
     disp_all_analysis_button.pack(pady=pady)
-    disp_single_grade_button = ttk.Button(grade_window, text='查找学生成绩',
+    disp_single_grade_button = ttk.Button(grade_window, text='查询学生成绩',
                                           command=lambda: disp_single_grade(grade_window), width=20,
                                           bootstyle=bootstyle, padding=padding)
     disp_single_grade_button.pack(pady=pady)
