@@ -543,22 +543,27 @@ class GradeManager:
         total_scores_history_politics_geography = []
 
         # 将学生的每三科总分分别存储
+        # 只计算物化生选科和史政地选科
         for student in self.student:
             total_cme = (student.stuGrades.grades[0].score + student.stuGrades.grades[1].score +
                          student.stuGrades.grades[2].score)
-            total_pcb = (student.stuGrades.grades[3].score + student.stuGrades.grades[4].score +
+            total_pcb=0
+            if all(grade.score !=-1 for grade in student.stuGrades.grades[3:6]):
+                total_pcb = (student.stuGrades.grades[3].score + student.stuGrades.grades[4].score +
                          student.stuGrades.grades[5].score)
-            total_hpg = (student.stuGrades.grades[6].score + student.stuGrades.grades[7].score +
+            total_hpg=0
+            if all(grade.score !=-1 for grade in student.stuGrades.grades[6:9]):
+                total_hpg = (student.stuGrades.grades[6].score + student.stuGrades.grades[7].score +
                          student.stuGrades.grades[8].score)
 
             # 保证两个数据长度一样，排除为0的数据
             if way == 1:
-                if total_pcb != -3:
+                if total_pcb != 0:
                     total_scores_physics_chemistry_biology.append(total_pcb)
                     total_scores_chinese_math_english.append(total_cme)
 
             elif way == 2:
-                if total_hpg != -3:
+                if total_hpg != 0:
                     total_scores_history_politics_geography.append(total_hpg)
                     total_scores_chinese_math_english.append(total_cme)
 
