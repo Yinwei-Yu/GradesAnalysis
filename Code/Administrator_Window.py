@@ -3,13 +3,19 @@
     管理员窗口
 by 刘杨健
 """
+import threading
+import tkinter as tk
 from tkinter import filedialog, messagebox
 
+import ttkbootstrap as ttk
 from tinui.TinUI import *
 
 from AccountManager import accountManager
-
+# 复用Teacher修改密码的函数
+from Teacher_Window import change_my_password
 from Teacher_Window import check_input_length
+# 复用Teacher查看成绩的窗口
+from Teacher_Window import disp_grades
 
 """
 2024/7/12
@@ -31,15 +37,6 @@ by  沈智恺
     将修改成绩和处理申请合并
     by 廖雨龙
 """
-
-import tkinter as tk
-
-import ttkbootstrap as ttk
-# 复用Teacher查看成绩的窗口
-from Teacher_Window import disp_grades
-# 复用Teacher修改密码的函数
-from Teacher_Window import change_my_password
-
 
 
 # 确认清空的操作 # 接上了后端的函数
@@ -206,7 +203,7 @@ def update_subject3(selected_subject2, selected_subject3, subject3_menu, dynamic
 def import_single(admin_window):
     def preSubmit(single_window, name, ID, chinese, Math, english, sub1, sub2, sub3, grade1, grade2, grade3):
         if int(ID) <= 0:
-            messagebox.showerror("Error","学号输入有误")
+            messagebox.showerror("Error", "学号输入有误")
             return
         nonlocal warning_text
         warning_text.set('正在导入……')
@@ -447,7 +444,7 @@ def admin_disp_apps(admin_window):
                                                       label_original_grade))
     # 科目的下拉框
     ttk.Label(right_frame, text="科目:").grid(row=10, column=1, pady=5, sticky="e")
-    combobox_course = ttk.Combobox(right_frame, state="readonly",width=19)
+    combobox_course = ttk.Combobox(right_frame, state="readonly", width=19)
     combobox_course.grid(row=10, column=2, pady=5)
     # 绑定科目下拉框的事件,使得可以显示出原成绩
     combobox_course.bind('<<ComboboxSelected>>',
@@ -533,8 +530,6 @@ def admin_disp_users(admin_window):
     category_dropdown['values'] = ("全部", "管理员", "学生", "教师")
     category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
 
-
-
     # 一个函数过滤数据,得到所选择的数据
     def filter_data(event):
         # 根据选项更新数据
@@ -560,8 +555,6 @@ def admin_disp_users(admin_window):
     search_var = ttk.StringVar()
     search_entry = ttk.Entry(users_window, textvariable=search_var)
     search_entry.pack(pady=10, side=tk.LEFT, anchor='nw')
-
-
 
     # 搜索框的搜索函数
     def search_tree():
