@@ -535,7 +535,7 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
                                           command=lambda: disp_all_analysis(grade_window), width=20,
                                           bootstyle=bootstyle, padding=padding)
     disp_all_analysis_button.pack(pady=pady)
-    disp_single_grade_button = ttk.Button(grade_window, text='查询学生成绩',
+    disp_single_grade_button = ttk.Button(grade_window, text='查询单个学生成绩',
                                           command=lambda: disp_single_grade(grade_window), width=20,
                                           bootstyle=bootstyle, padding=padding)
     disp_single_grade_button.pack(pady=pady)
@@ -718,7 +718,7 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
     blank_title = ttk.Label(tea_window, text='', font=('黑体', 10))
     blank_title.pack(pady=20)
     # 查看成绩->一个新的页面 包括各种成绩与分析
-    query_button = ttk.Button(tea_window, text="查询成绩", command=lambda: disp_grades(tea_window, name),
+    query_button = ttk.Button(tea_window, text="查询学生成绩", command=lambda: disp_grades(tea_window, name),
                               width=20, bootstyle=bootstyle, padding=padding)
     query_button.pack(pady=pady)
     # 申请复核成绩按钮
