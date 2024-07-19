@@ -424,7 +424,7 @@ def disp_all_analysis(grade_window):
     choice2 = ttk.Toplevel(grade_window)
     choice2.title("成绩分析")
     choice2.geometry("800x1000+800+400")
-    l2 = ttk.Label(choice2, text='成绩分析功能', font=("楷体", 25))
+    l2 = ttk.Label(choice2, text='成绩分析功能', font=("黑体", 25))
     l2.pack(pady=20)
     choice2.focus_force()
     # 显示成绩分布直方图
@@ -490,7 +490,7 @@ def disp_single_grade(grade_window):
     stuID_label = ttk.Label(choice3, text="请输入学号:", font=('黑体', 16))
     stuID_label.place(x=70, y=100)
     # 输入框
-    stuID_entry = ttk.Entry(choice3, show="", width=17, font=('楷体', 16), textvariable=stuID_var)
+    stuID_entry = ttk.Entry(choice3, show="", width=17, font=('黑体', 16), textvariable=stuID_var)
     stuID_entry.place(x=70, y=220)
     # stuID里面放输入的内容
     # stuID = stuID_entry.get()
@@ -527,7 +527,7 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
 
     blank_title = ttk.Label(grade_window, text='', font=('黑体', 15))
     blank_title.pack(pady=20)
-    disp_all_grades_button = ttk.Button(grade_window, text='显示所有学生成绩',
+    disp_all_grades_button = ttk.Button(grade_window, text='显示学生成绩',
                                         command=lambda: disp_all_grades(grade_window), width=20, bootstyle=bootstyle,
                                         padding=padding)
     disp_all_grades_button.pack(pady=pady)
@@ -535,13 +535,13 @@ def disp_grades(tea_window, name):  # 这里存在一个问题,就是老师选�
                                           command=lambda: disp_all_analysis(grade_window), width=20,
                                           bootstyle=bootstyle, padding=padding)
     disp_all_analysis_button.pack(pady=pady)
-    disp_single_grade_button = ttk.Button(grade_window, text='查看个人成绩',
+    disp_single_grade_button = ttk.Button(grade_window, text='查找学生成绩',
                                           command=lambda: disp_single_grade(grade_window), width=20,
                                           bootstyle=bootstyle, padding=padding)
     disp_single_grade_button.pack(pady=pady)
     # disp_single_analysis_button = tk.Button(grade_window, text='查看个人成绩分析',
     #                                         command=lambda: disp_single_analysis(grade_window),
-    #                                         font=('楷体', 18), width=20, height=1)
+    #                                         font=('黑体', 18), width=20, height=1)
     # disp_single_analysis_button.place(x=180, y=220)
     last_step_button = ttk.Button(grade_window, text='返回', command=lambda: last_step(grade_window, tea_window),
                                   width=20, bootstyle=bootstyle, padding=padding)
@@ -668,7 +668,7 @@ def change_my_password(tea_window, password, user_id):
     page4.title('修改密码')
     page4.geometry("800x600+800+400")
     # 修改密码标题
-    change_password_title = tk.Label(page4, text='修改密码', font=('楷体', 30, 'bold'), width=20, height=2)
+    change_password_title = tk.Label(page4, text='修改密码', font=('黑体', 30, 'bold'), width=20, height=2)
     change_password_title.pack(side='top')
     # 原密码提示标签和文本框
     ttk.Label(page4, text='原密码:', font=('黑体', 15)).place(x=158, y=145)
@@ -727,7 +727,7 @@ def show_teacher_window(login_window, userid_entry, password_entry, name):
     app_review_button.pack(pady=pady)
     # 修改自己的密码
     user_id = userid_entry.get()
-    cha_my_button = ttk.Button(tea_window, text="修改我的密码",
+    cha_my_button = ttk.Button(tea_window, text="修改密码",
                                command=lambda: change_my_password(tea_window, password_entry.get(), userid_entry),
                                width=20, bootstyle=bootstyle, padding=padding)
     cha_my_button.pack(pady=pady)

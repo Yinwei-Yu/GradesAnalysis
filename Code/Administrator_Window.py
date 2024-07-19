@@ -53,7 +53,7 @@ def clear_grades(admin_window):
     clear_window.geometry("540x300+800+400")
     clear_window.resizable(False, False)
     # 提示信息
-    clear_label = tk.Label(clear_window, text='确认清空所有成绩吗？', font=('楷体', 20, 'bold'), width=20, height=2)
+    clear_label = tk.Label(clear_window, text='确认清空所有成绩吗？', font=('黑体', 20, 'bold'), width=20, height=2)
     clear_label.pack(side="top")
     # 确认和取消按钮
     confirm_button = ttk.Button(clear_window, text='确认', command=lambda: confirm_clear(clear_window, admin_window),
@@ -647,7 +647,7 @@ def show_admin_window(login_window, userid_entry, password_entry, res_name):
     # bt_import_grades.place(x=180, y=100)
 
     # 查看学生成绩按钮 # 复用教师的查看成绩窗口
-    bt_show_grades = ttk.Button(admin_window, text='查看成绩', command=lambda: disp_grades(admin_window, res_name),
+    bt_show_grades = ttk.Button(admin_window, text='查询成绩', command=lambda: disp_grades(admin_window, res_name),
                                 width=20,
                                 bootstyle=bootstyle, padding=padding)
     bt_show_grades.pack(pady=pady)
