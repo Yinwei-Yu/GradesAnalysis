@@ -20,7 +20,6 @@ path:
 def excelToCsv(excelFilePath, sheetName, csvFilePath):
     # 读取excel文件
     df = pd.read_excel(excelFilePath)
-    print(df)
     # 将数据保存为csv文件
     df.to_csv(csvFilePath, index=False)
     return True

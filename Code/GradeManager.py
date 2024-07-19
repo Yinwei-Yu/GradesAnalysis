@@ -726,7 +726,6 @@ class GradeManager:
                           ):
         # 将数据转换为 DataFrame
         df = pd.DataFrame(2, self.getGradesTable(self.student))
-        print(df)
         # 将dataframe保存至数据库
         global mydb
         try:
@@ -871,7 +870,6 @@ class GradeManager:
                                      ):
         # 将数据转换为 DataFrame
         df = pd.DataFrame(self.getCheckApplicaionsTable())
-        print(df)
         # print(df)
         # 将dataframe保存至数据库
         global mydb
