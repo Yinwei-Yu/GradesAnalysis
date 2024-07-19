@@ -140,9 +140,9 @@ def start():
     first_title.place(x=230, y=100)
     # first_title.pack(side='top')
     # 用和密码的提示标签
-    userid_label = ttk.Label(login_window, text='学号/工号:')  # , font=('楷体', 15))
+    userid_label = ttk.Label(login_window, text='学号/工号:')  # , font=('黑体', 15))
     userid_label.place(x=120, y=300)
-    password_label = ttk.Label(login_window, text='密码:')  # , font=('楷体', 15))
+    password_label = ttk.Label(login_window, text='密码:')  # , font=('黑体', 15))
     password_label.place(x=120, y=400)
     # 设置两个var获取输入的学号和密码
     var_userid = ttk.StringVar()
@@ -150,10 +150,10 @@ def start():
     var_password = ttk.StringVar()
     var_password.trace("w", lambda name, index, mode, var=var_password: check_input_length(var))
     # 学号和密码的输入框
-    userid_entry = ttk.Entry(login_window, font=('楷体', 20), textvariable=var_userid, bootstyle='info')
+    userid_entry = ttk.Entry(login_window, font=('黑体', 20), textvariable=var_userid, bootstyle='info')
     userid_entry.place(x=370, y=300)
 
-    password_entry = ttk.Entry(login_window, show='*', font=('楷体', 20), textvariable=var_password, bootstyle='info')
+    password_entry = ttk.Entry(login_window, show='*', font=('黑体', 20), textvariable=var_password, bootstyle='info')
     password_entry.place(x=370, y=400)
 
     # 学号/工号和密码
