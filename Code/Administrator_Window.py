@@ -533,6 +533,8 @@ def admin_disp_users(admin_window):
     category_dropdown['values'] = ("全部", "管理员", "学生", "教师")
     category_dropdown.pack(pady=10, side=tk.LEFT, anchor='nw')
 
+
+
     # 一个函数过滤数据,得到所选择的数据
     def filter_data(event):
         # 根据选项更新数据
@@ -559,23 +561,62 @@ def admin_disp_users(admin_window):
     search_entry = ttk.Entry(users_window, textvariable=search_var)
     search_entry.pack(pady=10, side=tk.LEFT, anchor='nw')
 
+
+
     # 搜索框的搜索函数
     def search_tree():
+        search_term = search_entry.get()
+        # 如果搜索框为空，则清除所有行的标签并重置背景颜色
+        if not search_term:
+            for item in tree.get_children():
+                tree.item(item, tags=())
+            tree.tag_configure('match', background='white')
+            tree.selection_remove(tree.selection())  # 取消所有选中的行
+            return
         search_term = search_var.get().lower()
+        matches = []
+
+        # 遍历一次，收集匹配项并设置初始标签
         for child in tree.get_children():
-            values = tree.item(child, 'values')
-            if any(search_term in str(value).lower() for value in values):
-                tree.see(child)
-                tree.selection_set(child)
+            s_values = tree.item(child, 'values')
+            if search_term in s_values[0].lower() or search_term in s_values[2].lower():
+                matches.append(child)
+                tree.item(child, tags=('match',))
             else:
-                tree.selection_remove(child)
+                tree.item(child, tags=('nomatch',))
+
+        # 配置标签样式，仅需一次
+        tree.tag_configure('match', background='grey', foreground='white')
+        tree.tag_configure('nomatch', background='white')
+
+        # 显示匹配项并清除旧选择
+        for child in matches:
+            tree.see(child)
+            tree.selection_set(child)
+        else:
+            tree.selection_remove(tree.selection())  # 清除非匹配项的选择
+
+        # 这里假设不需要每次搜索都重置所有行的背景，因为上面已经根据匹配状态设置了
+
+        # 确保搜索变量的trace只触发搜索函数
+
+    search_var.trace("w", lambda name, index, mode: search_tree())
+    # def search_tree():
+    #     search_term = search_var.get().lower()
+    #     for child in tree.get_children():
+    #         values = tree.item(child, 'values')
+    #         if any(search_term in str(value).lower() for value in values):
+    #             tree.see(child)
+    #             tree.selection_set(child)
+    #         else:
+    #             tree.selection_remove(child)
 
     search_var.trace("w", lambda name, index, mode: search_tree())
 
     # 再做一个确认并返回的按钮
     con_button = ttk.Button(users_window, text='确认', command=lambda: last_step(users_window, admin_window), width=10,
                             bootstyle=bootstyle)
-    con_button.pack(pady=10)
+    con_button.pack(padx=700, side=tk.LEFT)
     users_window.mainloop()
 
 
