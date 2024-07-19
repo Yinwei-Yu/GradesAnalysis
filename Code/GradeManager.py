@@ -669,7 +669,6 @@ class GradeManager:
                 }
                 # 将这个学生的信息字典添加到数据列表中
                 data.append(student_data)
-        print(data)
         return data
 
     # mode1==0物理类mode1==1历史类
@@ -692,16 +691,7 @@ class GradeManager:
             selected_subjects = sorted(selected_subjects,
                                        key=lambda sub: sub.stuGrades.totalRanking,
                                        reverse=mode3)
-        for stu in selected_subjects:
-            for i in range(9):
-                print(stu.stuGrades.grades[i].score, end='\t')
-            print(end='|')
-            print(stu.stuGrades.totalRanking, end=' |')
-            for i in range(9):
-                print(stu.stuGrades.rankings[i], end='\t')
-            print(end='|')
-            print()
-        print('----------------------------------------------------------------')
+
         return self.getGradesTable(2, selected_subjects)
 
     def saveGradesToCSV(self, path='./excelFiles/rankedGrades.csv'):
